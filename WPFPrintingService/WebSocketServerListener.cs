@@ -4,14 +4,17 @@ using WebSocketSharp.Server;
 
 namespace WPFPrintingService
 {
-    internal delegate void OnOpenCallBack(string clientIp, string clientName);
+    internal delegate void OnOpenCallBack(string clientId, string clientIp, string clientName);
+    internal delegate void OnCloseCallBack(string clientIp);
     internal class WebSocketServerListener : WebSocketBehavior
     {
         private OnOpenCallBack _onOpenCallBack;
+        private OnCloseCallBack _onCloseCallBack;
 
-        public WebSocketServerListener(OnOpenCallBack onOpenCallBack)
+        public WebSocketServerListener(OnOpenCallBack onOpenCallBack, OnCloseCallBack onCloseCallBack)
         {
             this._onOpenCallBack = onOpenCallBack;
+            _onCloseCallBack = onCloseCallBack;
         }
 
         protected override void OnOpen()
@@ -26,7 +29,7 @@ namespace WPFPrintingService
             System.Console.WriteLine(OriginValidator);
             System.Console.WriteLine(ID);
             System.Console.WriteLine(EmitOnPing);
-            this._onOpenCallBack(_getClientIP(), _getClientName());
+            this._onOpenCallBack(_getClientId() ,_getClientIP(), _getClientName());
         }
 
         protected override void OnMessage(MessageEventArgs e)
@@ -42,8 +45,13 @@ namespace WPFPrintingService
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
+            this._onCloseCallBack(_getClientId());
         }
 
+        private string _getClientId()
+        {
+            return ID;
+        }
         private string _getClientIP()
         {
             return Context.RequestUri.Host;

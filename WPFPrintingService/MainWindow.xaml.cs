@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
@@ -8,6 +10,8 @@ namespace WPFPrintingService
 {
     public partial class MainWindow : Window
     {
+        private List<ClientWebSocket> _allConnectedWebSocketClients = new List<ClientWebSocket>();
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -17,6 +21,10 @@ namespace WPFPrintingService
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _initializeWebSocketServer();
+
+
+            //set list of all connected websocket clients to list view
+            lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
         }
 
         private void _initializeWebSocketServer()
@@ -25,21 +33,42 @@ namespace WPFPrintingService
 
             //add listener
             _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener(
-                (clientIp, clientName) => {
-                    _addConnectedWebSocketClientToListView(clientIp, clientName);
-                    Debug.WriteLine("Client IP : " + clientIp + ", Client Name : " + clientName);
+                (clientId, clientIp, clientName) => {
+                    _addConnectedWebSocketClientToListView(clientId, clientIp, clientName);
+                },
+                (disconnectedClientId) =>
+                {
+                    //_removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
                 }
             ));
         }
 
         
-        private void _addConnectedWebSocketClientToListView(string ip, string name)
+        private void _addConnectedWebSocketClientToListView(string id, string ip, string name)
         {
-            //to update ui
+            _allConnectedWebSocketClients.Add(new ClientWebSocket(id, ip, name));
+            lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
+
+            _updateListViewOfAllConnectedWebSocketClients();
+        }
+
+        private void _updateListViewOfAllConnectedWebSocketClients()
+        {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                lvConnectWebSocketClients.Items.Add(new ClientWebSocket(ip, name));
+                lvConnectWebSocketClients.Items.Refresh();
             }), DispatcherPriority.Background);
+        }
+
+        private void _removeDisconnectedWebSocketClientFromListView(string disconnectedClientId)
+        {
+            ClientWebSocket? _disconnectedWebSocketClient = _allConnectedWebSocketClients.Find(x => x.Id == disconnectedClientId);
+            if (_disconnectedWebSocketClient == null) return;
+            _allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
+            lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
+
+            //to update ui
+            _updateListViewOfAllConnectedWebSocketClients();
         }
 
         private void _startWebSocketServer()

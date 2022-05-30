@@ -1,11 +1,11 @@
 ﻿namespace WPFPrintingService
 {
-    internal class ClientWebSocket
+    internal class ClientWebSocketModel
     {
         private string _id;
         private string _ip;
         private string _name;
-        public ClientWebSocket(string id, string ip, string name)
+        public ClientWebSocketModel(string id, string ip, string name)
         {
             this._id = id;
             this._ip = ip;

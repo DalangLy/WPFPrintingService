@@ -1,40 +1,42 @@
-﻿using System.Diagnostics;
-using WebSocketSharp;
+﻿using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace WPFPrintingService
 {
     internal delegate void OnOpenCallBack(string clientId, string clientIp, string clientName);
+    internal delegate void onMessageCallBack(string clientId, string clientName, string message);
     internal delegate void OnCloseCallBack(string clientIp);
     internal class WebSocketServerListener : WebSocketBehavior
     {
         private OnOpenCallBack _onOpenCallBack;
+        private onMessageCallBack _onMessageCallBack;
         private OnCloseCallBack _onCloseCallBack;
 
-        public WebSocketServerListener(OnOpenCallBack onOpenCallBack, OnCloseCallBack onCloseCallBack)
+        public WebSocketServerListener(OnOpenCallBack onOpenCallBack, onMessageCallBack onMessageCallBack, OnCloseCallBack onCloseCallBack)
         {
             this._onOpenCallBack = onOpenCallBack;
-            _onCloseCallBack = onCloseCallBack;
+            this._onMessageCallBack = onMessageCallBack;
+            this._onCloseCallBack = onCloseCallBack;
         }
 
         protected override void OnOpen()
         {
-            Debug.WriteLine("Open Success");
             base.OnOpen();
-            System.Console.WriteLine(Context.QueryString["name"]);
-            System.Console.WriteLine(Sessions);
-            System.Console.WriteLine(State);
-            System.Console.WriteLine(StartTime);
-            System.Console.WriteLine(Protocol);
-            System.Console.WriteLine(OriginValidator);
-            System.Console.WriteLine(ID);
-            System.Console.WriteLine(EmitOnPing);
+            //System.Console.WriteLine(Context.QueryString["name"]);
+            //System.Console.WriteLine(Sessions);
+            //System.Console.WriteLine(State);
+            //System.Console.WriteLine(StartTime);
+            //System.Console.WriteLine(Protocol);
+            //System.Console.WriteLine(OriginValidator);
+            //System.Console.WriteLine(ID);
+            //System.Console.WriteLine(EmitOnPing);
             this._onOpenCallBack(_getClientId() ,_getClientIP(), _getClientName());
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
+            this._onMessageCallBack(_getClientId(), _getClientName(), e.Data);
         }
 
         protected override void OnError(ErrorEventArgs e)
@@ -56,7 +58,6 @@ namespace WPFPrintingService
         {
             return Context.RequestUri.Host;
         }
-
         private string _getClientName()
         {
             string? name = Context.QueryString["name"];

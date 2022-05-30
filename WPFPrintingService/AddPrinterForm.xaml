@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="WPFPrintingService.AddPrinterForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFPrintingService"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" MouseDown="UserControl_MouseDown">
+    <Grid>
+        <Rectangle HorizontalAlignment="Left" Stroke="Black" VerticalAlignment="Center" Fill="#7F000000" Height="450" Width="790"/>
+        <TextBox x:Name="txtIp" HorizontalAlignment="Left" Margin="146,225,0,0" TextWrapping="Wrap" Text="192.168.0.12" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="txtPort" HorizontalAlignment="Left" Margin="290,225,0,0" TextWrapping="Wrap" Text="9100" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Printer IP" HorizontalAlignment="Left" Margin="146,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="White"/>
+        <Label Content="Printer Port" HorizontalAlignment="Left" Margin="290,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="White"/>
+        <Button x:Name="btnConnectPrinter" Content="Connect" HorizontalAlignment="Left" Margin="427,225,0,0" VerticalAlignment="Top" Width="81" Click="btnConnectPrinter_Click"/>
+
+    </Grid>
+</UserControl>

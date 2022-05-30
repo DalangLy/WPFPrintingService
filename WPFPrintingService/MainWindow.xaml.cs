@@ -1,8 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ESCPOS_NET;
+using ESCPOS_NET.Emitters;
+using ESCPOS_NET.Utilities;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
 
@@ -12,7 +16,8 @@ namespace WPFPrintingService
     {
         private List<ClientWebSocketModel> _allConnectedWebSocketClients = new List<ClientWebSocketModel>();
         private WebSocketServer? _webSocketServer;
-
+        private List<NetworkPrinter> _allConnectedNetworkPrinters = new List<NetworkPrinter>();
+        private List<PrinterModel> _allConnectedPrinters = new List<PrinterModel>();
         public MainWindow()
         {
             InitializeComponent();
@@ -26,6 +31,9 @@ namespace WPFPrintingService
 
             //bind list of all connected websocket clients to list view
             lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
+
+            //bind list of all connected printers to list view
+            lvConnectedPrinters.ItemsSource = _allConnectedNetworkPrinters;
         }
 
         private void _initializeWebSocketServer()
@@ -40,32 +48,30 @@ namespace WPFPrintingService
                 },
                 (clientId, clientName, message) =>
                 {
-                    Debug.WriteLine($"ID : {clientId}, Name : {clientName}, Message : {message}");
-                    //JObject json = JObject.Parse(message);
-                    //JToken k = json.First;
-                    //int code = (int)k.Last;
-                    //JToken l = json.Last;
-                    //String data = (String)l.Last;
+                    //Debug.WriteLine($"ID : {clientId}, Name : {clientName}, Message : {message}");
+                    JObject json = JObject.Parse(message);
+                    JToken k = json.First;
+                    string printerName = (string)k.Last;
+                    JToken l = json.Last;
+                    string data = (string)l.Last;
 
-                    //switch (code)
-                    //{
-                    //    case 1:
-                    //        // client details connected
-                    //        ClientDetail _connectedClientDetail = new ClientDetail("Preset Client", "192.168.0.137");
-                    //        this._onClientConnectedDetailCallBack(_connectedClientDetail);
-                    //        Send(e.Data); //send to new connected client
-                    //        Sessions.Broadcast(e.Data);//broadcast to all client
-                    //        break;
-                    //    case 2:
-                    //        // on print
-                    //        this._onPrintCallBack(data);
-                    //        break;
-                    //    case 3:
-                    //        // on test message
-                    //        this._onPrintTestCallBack(data);
-                    //        break;
+                    //find printer
+                    int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printerName));
 
-                    //}
+
+                    //print test
+                    var epson = new EPSON();
+                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                      ByteSplicer.Combine(
+                        epson.CenterAlign(),
+                        epson.PrintLine($"Selected Printer {printerName}"),
+                        epson.PrintLine("B&H PHOTO & VIDEO"),
+                        epson.PrintLine("End Printer 1"),
+                        epson.PartialCutAfterFeed(5)
+                      )
+                    );
+
+                    return "Success";
                 },
                 (disconnectedClientId) =>
                 {
@@ -125,6 +131,61 @@ namespace WPFPrintingService
             }
             _isWebSocketSeverRunning = !_isWebSocketSeverRunning;
             btnStartStopServer.Content = _isWebSocketSeverRunning ? "Stop" : "Start";
+        }
+
+        private void btnAddPrinter_Click(object sender, RoutedEventArgs e)
+        {
+            mainGrid.Children.Add(new AddPrinterForm(
+                (ip, port, childForm) =>
+                {
+                    this._addPrinter(ip, port);
+                    mainGrid.Children.Remove(childForm);
+                },
+                (childForm) =>
+                {
+                    mainGrid.Children.Remove(childForm);
+                }
+            ));
+        }
+
+        private void _addPrinter(string ip, string port)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                //test connect to printer
+                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = "POS80" };
+                NetworkPrinter printer = new NetworkPrinter(printerSetting);
+
+                //add connected printer to list
+                _allConnectedNetworkPrinters.Add(printer);
+
+                Button _removeButton = new Button();
+                _removeButton.Content = "Remove";
+                _allConnectedPrinters.Add(new PrinterModel("", printerSetting.PrinterName, "IP", _removeButton));
+
+                lvConnectedPrinters.ItemsSource = _allConnectedPrinters;
+                lvConnectedPrinters.Items.Refresh();
+            }), DispatcherPriority.Background);
+        }
+
+        private void Remove_Printer_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Printer REmove");
+        }
+
+        private void lvConnectedPrinters_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("Hello");
+            var item = sender as ListViewItem;
+            if (item != null && item.IsSelected)
+            {
+                Debug.WriteLine(item);
+            }
+        }
+
+        private void StackPanel_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("hello World");
         }
     }
 }

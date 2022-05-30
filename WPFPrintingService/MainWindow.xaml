@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WPFPrintingService"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
-    <Grid>
+    <Grid x:Name="mainGrid">
         <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,33,0,0" VerticalAlignment="Top" Height="33" Width="100" Click="btnStartStopServer_Click"/>
         <ListView x:Name="lvConnectWebSocketClients" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="24,126,553,26">
             <ListView.View>
@@ -17,6 +17,56 @@
             </ListView.View>
         </ListView>
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,100,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnAddPrinter" Content="Add Printer" HorizontalAlignment="Left" Margin="677,34,0,0" VerticalAlignment="Top" Height="32" Width="91" Click="btnAddPrinter_Click"/>
+        <ListView x:Name="lvConnectedPrinters" Margin="502,126,32,26">
+            <!--<ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Column 1" Width="200">
+                        <GridViewColumn.HeaderContainerStyle>
+                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            </Style>
+                        </GridViewColumn.HeaderContainerStyle>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Column 2" Width="200"></GridViewColumn>
+                    <GridViewColumn Header="Column 3" Width="200"/>
+                </GridView>
+            </ListView.View>-->
+            <!--<GridView>
+                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding PrinterName}"/>
+                <GridViewColumn Header="IP" DisplayMemberBinding="{Binding PrinterIp}"/>
+                <GridViewColumn Header="Delete" Width="200">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Remove" CommandParameter="{Binding}" Click="Remove_Printer_Button_Click"/>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                </GridViewColumn>
+            </GridView>-->
+            <!--<ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" MouseDown="StackPanel_MouseDown">
+                        <TextBlock Text="{Binding PrinterName}" Margin="10"></TextBlock>
+                        <TextBlock Text="{Binding PrinterIp}"></TextBlock>
+                        <Button Content="Remove" CommandParameter="{Binding}" Click="Remove_Printer_Button_Click"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>-->
+        </ListView>
+
+
+        <!--<ListView.View>
+            <GridView>
+                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding PrinterName}"/>
+                <GridViewColumn Header="IP" DisplayMemberBinding="{Binding PrinterIp}"/>
+                <GridViewColumn Header="Delete" Width="200">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                </GridViewColumn>
+            </GridView>
+        </ListView.View>-->
 
     </Grid>
 </Window>

@@ -1,10 +1,11 @@
-﻿using WebSocketSharp;
+﻿using System.Diagnostics;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace WPFPrintingService
 {
     internal delegate void OnOpenCallBack(string clientId, string clientIp, string clientName);
-    internal delegate void onMessageCallBack(string clientId, string clientName, string message);
+    internal delegate dynamic onMessageCallBack(string clientId, string clientName, string message);
     internal delegate void OnCloseCallBack(string clientIp);
     internal class WebSocketServerListener : WebSocketBehavior
     {
@@ -36,7 +37,9 @@ namespace WPFPrintingService
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
-            this._onMessageCallBack(_getClientId(), _getClientName(), e.Data);
+            string status = this._onMessageCallBack(_getClientId(), _getClientName(), e.Data);
+
+            Send(status);
         }
 
         protected override void OnError(ErrorEventArgs e)

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
 
@@ -50,10 +51,10 @@ namespace WPFPrintingService
                 {
                     //Debug.WriteLine($"ID : {clientId}, Name : {clientName}, Message : {message}");
                     JObject json = JObject.Parse(message);
-                    JToken k = json.First;
-                    string printerName = (string)k.Last;
-                    JToken l = json.Last;
-                    string data = (string)l.Last;
+                    JToken? k = json.First;
+                    string printerName = (string)k!.Last!;
+                    JToken? l = json.Last;
+                    string data = (string)l!.Last!;
 
                     //find printer
                     int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printerName));
@@ -136,9 +137,9 @@ namespace WPFPrintingService
         private void btnAddPrinter_Click(object sender, RoutedEventArgs e)
         {
             mainGrid.Children.Add(new AddPrinterForm(
-                (ip, port, childForm) =>
+                (ip, port, name, childForm) =>
                 {
-                    this._addPrinter(ip, port);
+                    this._addPrinter(ip, port, name);
                     mainGrid.Children.Remove(childForm);
                 },
                 (childForm) =>
@@ -148,12 +149,12 @@ namespace WPFPrintingService
             ));
         }
 
-        private void _addPrinter(string ip, string port)
+        private void _addPrinter(string ip, string port, string name)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 //test connect to printer
-                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = "POS80" };
+                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name };
                 NetworkPrinter printer = new NetworkPrinter(printerSetting);
 
                 //add connected printer to list
@@ -161,7 +162,7 @@ namespace WPFPrintingService
 
                 Button _removeButton = new Button();
                 _removeButton.Content = "Remove";
-                _allConnectedPrinters.Add(new PrinterModel("", printerSetting.PrinterName, "IP", _removeButton));
+                _allConnectedPrinters.Add(new PrinterModel("", printerSetting.PrinterName, ip, _removeButton));
 
                 lvConnectedPrinters.ItemsSource = _allConnectedPrinters;
                 lvConnectedPrinters.Items.Refresh();

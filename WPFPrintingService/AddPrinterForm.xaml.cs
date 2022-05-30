@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace WPFPrintingService
 {
-    public delegate void OnConnectPrinterCallBack(string ip, string port, UserControl thisForm);
+    public delegate void OnConnectPrinterCallBack(string ip, string port, string name, UserControl thisForm);
     public delegate void OnPopUpFormClickCallBack(UserControl thisForm);
     public partial class AddPrinterForm : UserControl
     {
@@ -19,7 +19,7 @@ namespace WPFPrintingService
         private void btnConnectPrinter_Click(object sender, RoutedEventArgs e)
         {
             if (txtIp.Text == "" || txtPort.Text == "") return;
-            this._onConnectPrinterCallBack(txtIp.Text, txtPort.Text, this);
+            this._onConnectPrinterCallBack(txtIp.Text, txtPort.Text, txtPrinterName.Text, this);
         }
 
         private void UserControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

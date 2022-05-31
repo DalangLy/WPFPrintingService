@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,7 +19,7 @@ namespace WPFPrintingService
         private List<ClientWebSocketModel> _allConnectedWebSocketClients = new List<ClientWebSocketModel>();
         private WebSocketServer? _webSocketServer;
         private List<NetworkPrinter> _allConnectedNetworkPrinters = new List<NetworkPrinter>();
-        private List<PrinterModel> _allConnectedPrinters = new List<PrinterModel>();
+        private List<PrinterModel> _allConnectedPrintersToDisplayOnDataGridView = new List<PrinterModel>();
         private BaseCommandEmitter _epson = new EPSON();
 
         public MainWindow()
@@ -156,34 +157,71 @@ namespace WPFPrintingService
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 //test connect to printer
-                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name};
+                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}"};
                 NetworkPrinter printer = new NetworkPrinter(printerSetting);
+                printer.StatusChanged += StatusChanged;
+                printer.Connected += _printerConnectedListener;
+                printer.Disconnected += _printerDisconnectedListener;
+
+                BaseCommandEmitter _ff = new EPSON();
+                printer.Write(_ff.Initialize());
+                printer.Write(_ff.Enable());
+                printer.Write(_ff.EnableAutomaticStatusBack());
+
 
                 //add connected printer to list
                 _allConnectedNetworkPrinters.Add(printer);
 
-                Button _removeButton = new Button();
-                _removeButton.Content = "Remove";
-                _allConnectedPrinters.Add(new PrinterModel("", printerSetting.PrinterName, ip, _removeButton));
+                _allConnectedPrintersToDisplayOnDataGridView.Add(new PrinterModel("", ip, printer.PrinterName));
 
-                dgConnectedPrinters.ItemsSource = _allConnectedPrinters;
+                dgConnectedPrinters.ItemsSource = _allConnectedPrintersToDisplayOnDataGridView;
                 dgConnectedPrinters.Items.Refresh();
             }), DispatcherPriority.Background);
+        }
+
+        private void _printerDisconnectedListener(object sender, EventArgs ps)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                NetworkPrinter printer = (NetworkPrinter)sender;
+                var status = (ConnectionEventArgs)ps;
+                PrinterModel printerModel = this._allConnectedPrintersToDisplayOnDataGridView.Find(e => e.PrinterName == printer.PrinterName)!;
+                printerModel.IsOnline = status.IsConnected;
+                dgConnectedPrinters.Items.Refresh();
+                Debug.WriteLine($"On Printer Disconnect Event: {status.IsConnected}");
+            }), DispatcherPriority.Background);
+        }
+
+        private void _printerConnectedListener(object sender, EventArgs ps)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                NetworkPrinter printer = (NetworkPrinter)sender;
+                var status = (ConnectionEventArgs)ps;
+                PrinterModel printerModel = this._allConnectedPrintersToDisplayOnDataGridView.Find(e => e.PrinterName == printer.PrinterName)!;
+                printerModel.IsOnline = status.IsConnected;
+                dgConnectedPrinters.Items.Refresh();
+                Debug.WriteLine($"On Printer Connect Event: {status.IsConnected}");
+            }), DispatcherPriority.Background);
+        }
+
+        private void StatusChanged(object sender, EventArgs ps)
+        {
+            var status = (PrinterStatusEventArgs)ps;
+            Debug.WriteLine($"On Status Change: {status.IsPrinterOnline}");
+            Debug.WriteLine($"Has Paper? {status.IsPaperOut}");
+            Debug.WriteLine($"Paper Running Low? {status.IsPaperLow}");
+            Debug.WriteLine($"Cash Drawer Open? {status.IsCashDrawerOpen}");
+            Debug.WriteLine($"Cover Open? {status.IsCoverOpen}");
+            Debug.WriteLine($"Feeding? {status.IsPaperCurrentlyFeeding}");
+            Debug.WriteLine($"Error State? {status.IsInErrorState}");
+            Debug.WriteLine($"Waiting? {status.IsWaitingForOnlineRecovery}");
+            
         }
 
         private void Remove_Printer_Button_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Printer REmove");
-        }
-
-        private void lvConnectedPrinters_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Debug.WriteLine("Hello");
-            var item = sender as ListViewItem;
-            if (item != null && item.IsSelected)
-            {
-                Debug.WriteLine(item);
-            }
         }
 
         private void Print_Test_Button_Click(object sender, RoutedEventArgs e)
@@ -194,13 +232,19 @@ namespace WPFPrintingService
             int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printer.PrinterIp));
 
 
+            int index = dgConnectedPrinters.SelectedIndex;
+
+
+            //var gg = File.ReadAllBytes();
+
             //print test
-            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+            _allConnectedNetworkPrinters[index].Write(
               ByteSplicer.Combine(
-                _epson.CenterAlign(),
-                _epson.PrintLine($"Selected Printer {printer}"),
-                _epson.PrintLine("B&H PHOTO & VIDEO"),
-                _epson.PrintLine($"End Printer {printer}"),
+                //_epson.CenterAlign(),
+                //_epson.PrintLine($"Selected Printer {printer}"),
+                //_epson.PrintLine("B&H PHOTO & VIDEO"),
+                _epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
+                // _epson.PrintLine($"End Printer {printer}"),
                 _epson.PartialCutAfterFeed(5)
               )
             );

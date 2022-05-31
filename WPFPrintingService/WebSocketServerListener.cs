@@ -32,6 +32,8 @@ namespace WPFPrintingService
             //System.Console.WriteLine(ID);
             //System.Console.WriteLine(EmitOnPing);
             this._onOpenCallBack(_getClientId() ,_getClientIP(), _getClientName());
+            Send("Connected");
+            Sessions.Broadcast($"{_getClientName()} Has Joined");
         }
 
         protected override void OnMessage(MessageEventArgs e)

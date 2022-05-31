@@ -27,7 +27,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="Remove"/>
+                                <Button Content="Monitor"/>
                                 <Button Content="Print Test"/>
                             </StackPanel>
                         </DataTemplate>
@@ -47,6 +47,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding IsOnline}" Width="*"/>
                 <DataGridTemplateColumn Header="Actions">
 
                     <DataGridTemplateColumn.CellTemplate>

@@ -18,24 +18,27 @@
         </ListView>
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,100,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnAddPrinter" Content="Add Printer" HorizontalAlignment="Left" Margin="677,34,0,0" VerticalAlignment="Top" Height="32" Width="91" Click="btnAddPrinter_Click"/>
-        <ListView x:Name="lvConnectedPrinters" Margin="502,126,32,26">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding PrinterName}"/>
-                    <GridViewColumn Header="IP" DisplayMemberBinding="{Binding PrinterIp}"/>
-                    <GridViewColumn Header="Delete" Width="200">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Remove" CommandParameter="{Binding}" Click="Remove_Printer_Button_Click"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
 
+        <DataGrid x:Name="dgConnectedPrinters" Margin="502,126,32,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
+                <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
+                <DataGridTemplateColumn Header="Actions">
 
-        
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Remove" Click="Remove_Printer_Button_Click" />
+                                <Button Content="Print Test" Click="Print_Test_Button_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="148,34,0,0" VerticalAlignment="Top" Height="32" Width="99"/>
+
 
     </Grid>
 </Window>

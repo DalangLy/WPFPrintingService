@@ -19,6 +19,8 @@ namespace WPFPrintingService
         private WebSocketServer? _webSocketServer;
         private List<NetworkPrinter> _allConnectedNetworkPrinters = new List<NetworkPrinter>();
         private List<PrinterModel> _allConnectedPrinters = new List<PrinterModel>();
+        private BaseCommandEmitter _epson = new EPSON();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -34,7 +36,7 @@ namespace WPFPrintingService
             lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
 
             //bind list of all connected printers to list view
-            lvConnectedPrinters.ItemsSource = _allConnectedNetworkPrinters;
+            dgConnectedPrinters.ItemsSource = _allConnectedNetworkPrinters;
         }
 
         private void _initializeWebSocketServer()
@@ -61,14 +63,13 @@ namespace WPFPrintingService
 
 
                     //print test
-                    var epson = new EPSON();
                     _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
                       ByteSplicer.Combine(
-                        epson.CenterAlign(),
-                        epson.PrintLine($"Selected Printer {printerName}"),
-                        epson.PrintLine("B&H PHOTO & VIDEO"),
-                        epson.PrintLine("End Printer 1"),
-                        epson.PartialCutAfterFeed(5)
+                        _epson.CenterAlign(),
+                        _epson.PrintLine($"Selected Printer {printerName}"),
+                        _epson.PrintLine("B&H PHOTO & VIDEO"),
+                        _epson.PrintLine("End Printer 1"),
+                        _epson.PartialCutAfterFeed(5)
                       )
                     );
 
@@ -164,8 +165,8 @@ namespace WPFPrintingService
                 _removeButton.Content = "Remove";
                 _allConnectedPrinters.Add(new PrinterModel("", printerSetting.PrinterName, ip, _removeButton));
 
-                lvConnectedPrinters.ItemsSource = _allConnectedPrinters;
-                lvConnectedPrinters.Items.Refresh();
+                dgConnectedPrinters.ItemsSource = _allConnectedPrinters;
+                dgConnectedPrinters.Items.Refresh();
             }), DispatcherPriority.Background);
         }
 
@@ -184,9 +185,24 @@ namespace WPFPrintingService
             }
         }
 
-        private void StackPanel_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Print_Test_Button_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("hello World");
+            PrinterModel printer = ((FrameworkElement)sender).DataContext as PrinterModel;
+            if (printer == null) return;
+            //find printer
+            int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printer.PrinterIp));
+
+
+            //print test
+            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+              ByteSplicer.Combine(
+                _epson.CenterAlign(),
+                _epson.PrintLine($"Selected Printer {printer}"),
+                _epson.PrintLine("B&H PHOTO & VIDEO"),
+                _epson.PrintLine($"End Printer {printer}"),
+                _epson.PartialCutAfterFeed(5)
+              )
+            );
         }
     }
 }

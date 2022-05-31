@@ -5,15 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFPrintingService"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" MouseDown="UserControl_MouseDown">
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Rectangle HorizontalAlignment="Left" Stroke="Black" VerticalAlignment="Center" Fill="#7F000000" Height="450" Width="790"/>
+        <Rectangle HorizontalAlignment="Left" Stroke="Black" VerticalAlignment="Center" Fill="#7F000000" Height="450" Width="790" MouseDown="UserControl_MouseDown"/>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="106,139,105,129" Background="White" CornerRadius="5,5,5,5">
+            <Border.Effect>
+                <DropShadowEffect/>
+            </Border.Effect>
+        </Border>
         <TextBox x:Name="txtIp" HorizontalAlignment="Left" Margin="146,225,0,0" TextWrapping="Wrap" Text="192.168.0.12" VerticalAlignment="Top" Width="120"/>
         <TextBox x:Name="txtPort" HorizontalAlignment="Left" Margin="290,225,0,0" TextWrapping="Wrap" Text="9100" VerticalAlignment="Top" Width="120"/>
-        <Label Content="Printer IP" HorizontalAlignment="Left" Margin="146,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="White"/>
-        <Label Content="Printer Port" HorizontalAlignment="Left" Margin="290,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="White"/>
+        <Label Content="Printer IP" HorizontalAlignment="Left" Margin="146,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="Black"/>
+        <Label Content="Printer Port" HorizontalAlignment="Left" Margin="290,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="Black"/>
         <Button x:Name="btnConnectPrinter" Content="Connect" HorizontalAlignment="Left" Margin="578,223,0,0" VerticalAlignment="Top" Width="81" Click="btnConnectPrinter_Click"/>
         <TextBox x:Name="txtPrinterName" HorizontalAlignment="Left" Margin="425,225,0,0" TextWrapping="Wrap" Text="POS80" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Printer Name" HorizontalAlignment="Left" Margin="425,199,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="Black"/>
 
     </Grid>
 </UserControl>

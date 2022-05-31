@@ -133,6 +133,7 @@ namespace WPFPrintingService
             }
             _isWebSocketSeverRunning = !_isWebSocketSeverRunning;
             btnStartStopServer.Content = _isWebSocketSeverRunning ? "Stop" : "Start";
+            txtServerStatus.Text = _isWebSocketSeverRunning ? "Service on 127.0.0.1:8000" : "Server Stopped";
         }
 
         private void btnAddPrinter_Click(object sender, RoutedEventArgs e)
@@ -155,7 +156,7 @@ namespace WPFPrintingService
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 //test connect to printer
-                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name };
+                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name};
                 NetworkPrinter printer = new NetworkPrinter(printerSetting);
 
                 //add connected printer to list
@@ -203,6 +204,11 @@ namespace WPFPrintingService
                 _epson.PartialCutAfterFeed(5)
               )
             );
+        }
+
+        private void btnMonitorWebSocketServer_Click(object sender, RoutedEventArgs e)
+        {
+            mainGrid.Children.Add(new MonitorServerForm());
         }
     }
 }

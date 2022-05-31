@@ -5,21 +5,45 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFPrintingService"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Printing Service" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid x:Name="mainGrid">
         <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,33,0,0" VerticalAlignment="Top" Height="33" Width="100" Click="btnStartStopServer_Click"/>
-        <ListView x:Name="lvConnectWebSocketClients" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="24,126,553,26">
+        <!--<ListView x:Name="lvConnectWebSocketClients" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="24,126,553,26">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
                     <GridViewColumn Header="IP" DisplayMemberBinding="{Binding Ip}"/>
                 </GridView>
             </ListView.View>
-        </ListView>
-        <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,100,0,0" VerticalAlignment="Top"/>
+        </ListView>-->
+
+
+        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,186,553,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="IP" Binding="{Binding Ip}" Width="*"/>
+                <DataGridTemplateColumn Header="Actions">
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Remove"/>
+                                <Button Content="Print Test"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+
+
+        <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnAddPrinter" Content="Add Printer" HorizontalAlignment="Left" Margin="677,34,0,0" VerticalAlignment="Top" Height="32" Width="91" Click="btnAddPrinter_Click"/>
 
-        <DataGrid x:Name="dgConnectedPrinters" Margin="502,126,32,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid x:Name="dgConnectedPrinters" Margin="502,126,32,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
@@ -37,7 +61,9 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="148,34,0,0" VerticalAlignment="Top" Height="32" Width="99"/>
+        <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="148,34,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click"/>
+        <TextBox x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" Height="50"/>
+        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,33,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click"/>
 
 
     </Grid>

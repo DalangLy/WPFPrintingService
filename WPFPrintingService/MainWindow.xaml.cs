@@ -89,6 +89,9 @@ namespace WPFPrintingService
                 _allConnectedWebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
                 lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
                 lvConnectWebSocketClients.Items.Refresh();
+
+                //update text status
+                txtServerStatus.Text += $"\n{name} has joined";
             }), DispatcherPriority.Background);
         }
 

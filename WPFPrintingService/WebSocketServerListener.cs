@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using WebSocketSharp;
+﻿using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace WPFPrintingService

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFPrintingService"
         mc:Ignorable="d"
-        Title="Printing Service" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        Title="Printing Service" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid x:Name="mainGrid">
         <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,33,0,0" VerticalAlignment="Top" Height="33" Width="100" Click="btnStartStopServer_Click"/>
         <!--<ListView x:Name="lvConnectWebSocketClients" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="24,126,553,26">
@@ -43,7 +44,7 @@
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnAddPrinter" Content="Add Printer" HorizontalAlignment="Left" Margin="677,34,0,0" VerticalAlignment="Top" Height="32" Width="91" Click="btnAddPrinter_Click"/>
 
-        <DataGrid x:Name="dgConnectedPrinters" Margin="502,126,32,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
+        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="502,126,32,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
@@ -64,8 +65,60 @@
         </DataGrid>
         <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="148,34,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click"/>
         <TextBox x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" Height="50"/>
-        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,33,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click"/>
+        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,33,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click"/>
 
+
+        <tb:TaskbarIcon x:Name="myNotifyIcon"
+                    Visibility="Hidden"
+                    ToolTipText="Printing Servcie"
+                    IconSource="/Icons/cherry.ico"
+                    PopupActivation="RightClick"
+                    MenuActivation="DoubleClick">
+            <tb:TaskbarIcon.TrayToolTip>
+                <Border
+                    Background="White"
+                    BorderBrush="Orange"
+                    BorderThickness="2"
+                    CornerRadius="4"
+                    Opacity="0.8"
+                    Width="160"
+                    Height="40"
+                >
+                <TextBlock
+                    Text="hello world"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                />  
+                </Border>
+            </tb:TaskbarIcon.TrayToolTip>
+
+
+            <tb:TaskbarIcon.TrayPopup>
+                <Border
+                  Background="White"
+                  BorderBrush="Orange"
+                  BorderThickness="2"
+                  CornerRadius="4"
+                  Width="160"
+                  Height="40">
+                <Button x:Name="btnExitPrintingServiceViaSystemTray"
+                    Content="Exit"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" Click="btnExitPrintingServiceViaSystemTray_Click" />
+                </Border>
+            </tb:TaskbarIcon.TrayPopup>
+
+
+            <!-- Set a simple context menu  -->
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu
+      Background="LightCoral">
+                    <MenuItem Header="First Menu Item" />
+                    <MenuItem Header="Second Menu Item"/>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+
+        </tb:TaskbarIcon>
 
     </Grid>
 </Window>

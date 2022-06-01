@@ -158,7 +158,7 @@ namespace WPFPrintingService
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 //test connect to printer
-                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}"};
+                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name};
                 NetworkPrinter printer = new NetworkPrinter(printerSetting);
                 printer.StatusChanged += StatusChanged;
                 printer.Connected += _printerConnectedListener;
@@ -254,6 +254,28 @@ namespace WPFPrintingService
         private void btnMonitorWebSocketServer_Click(object sender, RoutedEventArgs e)
         {
             mainGrid.Children.Add(new MonitorServerForm());
+        }
+
+        private void btnServerInfo_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Hello World");
+            mainGrid.Children.Add(new ServerInfoForm((childForm) =>
+            {
+                mainGrid.Children.Remove(childForm);
+            }));
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //hide windows to system tray
+            Hide();
+            myNotifyIcon.Visibility = Visibility.Visible;
+            e.Cancel = true;
+        }
+
+        private void btnExitPrintingServiceViaSystemTray_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Management;
 using System.Windows;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
@@ -230,7 +231,7 @@ namespace WPFPrintingService
             PrinterModel printer = ((FrameworkElement)sender).DataContext as PrinterModel;
             if (printer == null) return;
             //find printer
-            int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printer.PrinterIp));
+            int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printer.PrinterName));
 
 
             int index = dgConnectedPrinters.SelectedIndex;
@@ -241,11 +242,11 @@ namespace WPFPrintingService
             //print test
             _allConnectedNetworkPrinters[index].Write(
               ByteSplicer.Combine(
-                //_epson.CenterAlign(),
-                //_epson.PrintLine($"Selected Printer {printer}"),
-                //_epson.PrintLine("B&H PHOTO & VIDEO"),
-                _epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
-                // _epson.PrintLine($"End Printer {printer}"),
+                _epson.CenterAlign(),
+                _epson.PrintLine($"Selected Printer {printer.GetHashCode}"),
+                _epson.PrintLine("B&H PHOTO & VIDEO"),
+                //_epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
+                _epson.PrintLine($"End Printer {printer.PrinterName}"),
                 _epson.PartialCutAfterFeed(5)
               )
             );
@@ -275,7 +276,87 @@ namespace WPFPrintingService
 
         private void btnExitPrintingServiceViaSystemTray_Click(object sender, RoutedEventArgs e)
         {
+            _shutdownThisApplication();
+        }
+
+        private void btnQuitApplication_Click(object sender, RoutedEventArgs e)
+        {
+            _shutdownThisApplication();
+        }
+
+        private void _shutdownThisApplication()
+        {
             Application.Current.Shutdown();
+        }
+
+        private void btnAddPrinter_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var scope = new ManagementScope(@"\root\cimv2");
+                scope.Connect();
+
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Printer");
+                var results = searcher.Get();
+                Console.WriteLine("Network printers list:");
+                foreach (var printer in results)
+                {
+                    var portName = printer.Properties["PortName"].Value;
+
+                    var searcher2 = new ManagementObjectSearcher("SELECT * FROM Win32_TCPIPPrinterPort where Name LIKE '" + portName + "'");
+                    var results2 = searcher2.Get();
+                    foreach (var printer2 in results2)
+                    {
+                        Debug.WriteLine("Name:" + printer.Properties["Name"].Value);
+                        //Console.WriteLine("PortName:" + portName);
+                        Debug.WriteLine("PortNumber:" + printer2.Properties["PortNumber"].Value);
+                        Debug.WriteLine("HostAddress:" + printer2.Properties["HostAddress"].Value);
+
+
+                        NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{printer2.Properties["HostAddress"].Value}:{printer2.Properties["PortNumber"].Value}", PrinterName = printer.Properties["Name"].Value.ToString() };
+                        NetworkPrinter printer1 = new NetworkPrinter(printerSetting);
+
+                        _epson = new EPSON();
+                        //print test
+                        printer1.Write(
+                          ByteSplicer.Combine(
+                            _epson.CenterAlign(),
+                            _epson.PrintLine($"Selected Printer 1"),
+                            _epson.PrintLine("B&H PHOTO & VIDEO"),
+                             //_epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
+                             _epson.PrintLine($"End Printer"),
+                            _epson.Print("Test")
+                          )
+                        );
+
+
+                        NetworkPrinterSettings printerSetting1 = new NetworkPrinterSettings() { ConnectionString = $"{printer2.Properties["HostAddress"].Value}:{printer2.Properties["PortNumber"].Value}", PrinterName = printer.Properties["Name"].Value.ToString() };
+                        NetworkPrinter printer3 = new NetworkPrinter(printerSetting1);
+
+                        _epson = new EPSON();
+                        //print test
+                        printer3.Write(
+                          ByteSplicer.Combine(
+                            _epson.CenterAlign(),
+                            _epson.PrintLine($"Selected Printer 2"),
+                            _epson.PrintLine("B&H PHOTO & VIDEO"),
+                             //_epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
+                             _epson.PrintLine($"End Printer"),
+                            _epson.Print("Test")
+                          )
+                        );
+
+                    }
+                    Console.WriteLine();
+                }
+                Console.ReadLine();
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "");
+                throw;
+            }
         }
     }
 }

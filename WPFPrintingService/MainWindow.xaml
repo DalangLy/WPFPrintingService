@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:WPFPrintingService"
         mc:Ignorable="d"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        Title="Printing Service" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Printing Service" Height="600
+        " Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid x:Name="mainGrid">
         <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,33,0,0" VerticalAlignment="Top" Height="33" Width="100" Click="btnStartStopServer_Click"/>
         <!--<ListView x:Name="lvConnectWebSocketClients" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="24,126,553,26">
@@ -19,7 +20,7 @@
         </ListView>-->
 
 
-        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,186,553,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
+        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,186,553,128" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding Ip}" Width="*"/>
@@ -44,7 +45,7 @@
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnAddPrinter" Content="Add Printer" HorizontalAlignment="Left" Margin="677,34,0,0" VerticalAlignment="Top" Height="32" Width="91" Click="btnAddPrinter_Click"/>
 
-        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="502,126,32,26" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
+        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="502,126,32,117" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
@@ -84,11 +85,11 @@
                     Width="160"
                     Height="40"
                 >
-                <TextBlock
+                    <TextBlock
                     Text="hello world"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                />  
+                />
                 </Border>
             </tb:TaskbarIcon.TrayToolTip>
 
@@ -101,7 +102,7 @@
                   CornerRadius="4"
                   Width="160"
                   Height="40">
-                <Button x:Name="btnExitPrintingServiceViaSystemTray"
+                    <Button x:Name="btnExitPrintingServiceViaSystemTray"
                     Content="Exit"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center" Click="btnExitPrintingServiceViaSystemTray_Click" />
@@ -119,6 +120,9 @@
             </tb:TaskbarIcon.ContextMenu>
 
         </tb:TaskbarIcon>
+        <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="24,560,0,0" VerticalAlignment="Top" Width="129"/>
+        <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="564,546,0,0" VerticalAlignment="Top" Width="78" Click="btnQuitApplication_Click"/>
 
     </Grid>
 </Window>

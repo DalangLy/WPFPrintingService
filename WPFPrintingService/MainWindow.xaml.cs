@@ -1,6 +1,7 @@
 ﻿using ESCPOS_NET;
 using ESCPOS_NET.Emitters;
 using ESCPOS_NET.Utilities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace WPFPrintingService
 
         private void _initializeWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer("ws://127.0.0.1:8000");
+            _webSocketServer = new WebSocketServer("ws://172.30.160.1:8000");
 
             //add web socket server listeners
             _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener(
@@ -49,31 +50,83 @@ namespace WPFPrintingService
                     //on open or on client connected
                     _addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
                 },
-                (clientId, clientName, message) =>
+                (clientId, clientName, message, onPrintResonse, onSendToServer, OnSendToEveryone) =>
                 {
-                    //Debug.WriteLine($"ID : {clientId}, Name : {clientName}, Message : {message}");
-                    JObject json = JObject.Parse(message);
-                    JToken? k = json.First;
-                    string printerName = (string)k!.Last!;
-                    JToken? l = json.Last;
-                    string data = (string)l!.Last!;
+                    try
+                    {
+                        RequestModel? requestModel = JsonConvert.DeserializeObject<RequestModel>(message);
+                        if(requestModel == null)
+                        {
+                            onPrintResonse("Wrong Format");
+                            return;
+                        }
+                        switch (requestModel.Code)
+                        {
+                            case "SendToEveryOne":
+                                OnSendToEveryone($"{clientName} Said : {requestModel.Data}");
+                                break;
+                            case "SendToServer":
 
-                    //find printer
-                    int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printerName));
+                                Dispatcher.BeginInvoke(new Action(() =>
+                                {
+                                    //update text status
+                                    txtServerStatus.Text += $"\n {clientName} Said : {requestModel.Data}";
 
+                                }), DispatcherPriority.Background);
 
-                    //print test
-                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                      ByteSplicer.Combine(
-                        _epson.CenterAlign(),
-                        _epson.PrintLine($"Selected Printer {printerName}"),
-                        _epson.PrintLine("B&H PHOTO & VIDEO"),
-                        _epson.PrintLine("End Printer 1"),
-                        _epson.PartialCutAfterFeed(5)
-                      )
-                    );
+                                onSendToServer();
+                                break;
+                            case "Print":
 
-                    return "Success";
+                                //serialize print data model
+                                try
+                                {
+                                    PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
+                                    if(printDataModel == null)
+                                    {
+                                        onPrintResonse("Wrong Data Format");
+                                        return;
+                                    }
+                                    //find printer
+                                    int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printDataModel.PrinterName));
+                                    if (_selectedPrinterIndex == -1)
+                                    {
+                                        onPrintResonse("Can't Find Printer");
+                                        return;
+                                    }
+
+                                    if(printDataModel.Base64Image == "")
+                                    {
+                                        onPrintResonse("Base64 Image Null");
+                                        return;
+                                    }
+
+                                    //print test
+                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                      ByteSplicer.Combine(
+                                        _epson.CenterAlign(),
+                                        _epson.PrintLine($"Selected Printer {printDataModel.PrinterName}"),
+                                        _epson.PrintLine("B&H PHOTO & VIDEO"),
+                                        _epson.PrintLine("End Printer 1"),
+                                        _epson.PartialCutAfterFeed(5)
+                                      )
+                                    );
+                                    onPrintResonse("Success Print But No Implementation");
+                                }
+                                catch (Exception ex)
+                                {
+                                    onPrintResonse("Wrong Print Format");
+                                }
+                                break;
+                            default:
+                                onPrintResonse("Wrong Code");
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        onPrintResonse("Wrong Format");
+                    }
                 },
                 (disconnectedClientId) =>
                 {
@@ -108,6 +161,9 @@ namespace WPFPrintingService
                 _allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
                 lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
                 lvConnectWebSocketClients.Items.Refresh();
+
+                //update text status
+                txtServerStatus.Text += $"\n{_disconnectedWebSocketClient.Name} has Left";
             }), DispatcherPriority.Background);
         }
 

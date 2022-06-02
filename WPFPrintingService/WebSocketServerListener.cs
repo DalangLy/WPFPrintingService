@@ -3,8 +3,12 @@ using WebSocketSharp.Server;
 
 namespace WPFPrintingService
 {
+    internal delegate void OnPrintResponse(string status);
+    internal delegate void OnSendToEveryone(string message);
+    internal delegate void OnSendToServer();
+
     internal delegate void OnOpenCallBack(string clientId, string clientIp, string clientName);
-    internal delegate dynamic onMessageCallBack(string clientId, string clientName, string message);
+    internal delegate void onMessageCallBack(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone);
     internal delegate void OnCloseCallBack(string clientIp);
     internal class WebSocketServerListener : WebSocketBehavior
     {
@@ -38,20 +42,39 @@ namespace WPFPrintingService
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
-            string status = this._onMessageCallBack(_getClientId(), _getClientName(), e.Data);
+            this._onMessageCallBack(_getClientId(), _getClientName(), e.Data,
+            (status) =>
+            {
+                //on print response
+                Send(status);
+            },
+            () =>
+            {
+                //on send to server
+                Send("Sent");
+            },
+            (message) =>
+            {
+                //on send to everyone
+                Sessions.Broadcast(message);
+                Send("Sent");
+            }
+            );
 
-            Send(status);
+            
         }
 
         protected override void OnError(ErrorEventArgs e)
         {
             base.OnError(e);
+            Sessions.Broadcast("Server Error");
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
             this._onCloseCallBack(_getClientId());
+            Sessions.Broadcast($"{_getClientName()} Has Left");
         }
 
         private string _getClientId()

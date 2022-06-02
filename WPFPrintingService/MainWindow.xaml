@@ -74,7 +74,8 @@
                     ToolTipText="Printing Servcie"
                     IconSource="/Icons/cherry.ico"
                     PopupActivation="RightClick"
-                    MenuActivation="DoubleClick">
+                    MenuActivation="DoubleClick"
+                        >
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
                     Background="White"

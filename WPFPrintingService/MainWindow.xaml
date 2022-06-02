@@ -74,7 +74,7 @@
                     ToolTipText="Printing Servcie"
                     IconSource="/Icons/cherry.ico"
                     PopupActivation="RightClick"
-                    MenuActivation="DoubleClick"
+                    TrayMouseDoubleClick="myNotifyIcon_TrayMouseDoubleClick"
                         >
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
@@ -112,13 +112,12 @@
 
 
             <!-- Set a simple context menu  -->
-            <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu
-      Background="LightCoral">
+            <!--<tb:TaskbarIcon.ContextMenu>
+                <ContextMenu Background="LightCoral">
                     <MenuItem Header="First Menu Item" />
                     <MenuItem Header="Second Menu Item"/>
                 </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>-->
 
         </tb:TaskbarIcon>
         <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="24,560,0,0" VerticalAlignment="Top" Width="129"/>

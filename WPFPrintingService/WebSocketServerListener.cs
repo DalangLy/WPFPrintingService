@@ -60,8 +60,6 @@ namespace WPFPrintingService
                 Send("Sent");
             }
             );
-
-            
         }
 
         protected override void OnError(ErrorEventArgs e)

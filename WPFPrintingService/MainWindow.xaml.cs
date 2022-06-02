@@ -2,11 +2,9 @@
 using ESCPOS_NET.Emitters;
 using ESCPOS_NET.Utilities;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Management;
 using System.Windows;
 using System.Windows.Threading;
@@ -413,6 +411,13 @@ namespace WPFPrintingService
                 MessageBox.Show(ex.ToString(), "");
                 throw;
             }
+        }
+
+        private void myNotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            //hide windows to system tray
+            Show();
+            myNotifyIcon.Visibility = Visibility.Collapsed;
         }
     }
 }

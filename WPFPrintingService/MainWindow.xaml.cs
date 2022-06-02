@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
@@ -38,9 +40,22 @@ namespace WPFPrintingService
             dgConnectedPrinters.ItemsSource = _allConnectedNetworkPrinters;
         }
 
+        private string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+
         private void _initializeWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer("ws://172.30.160.1:8000");
+            _webSocketServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:8000");
 
             //add web socket server listeners
             _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener(
@@ -190,7 +205,7 @@ namespace WPFPrintingService
             }
             _isWebSocketSeverRunning = !_isWebSocketSeverRunning;
             btnStartStopServer.Content = _isWebSocketSeverRunning ? "Stop" : "Start";
-            txtServerStatus.Text = _isWebSocketSeverRunning ? "Service on 127.0.0.1:8000" : "Server Stopped";
+            txtServerStatus.Text = _isWebSocketSeverRunning ? $"Service on http://{GetLocalIPAddress()}:8000" : "Server Stopped";
         }
 
         private void btnAddPrinter_Click(object sender, RoutedEventArgs e)

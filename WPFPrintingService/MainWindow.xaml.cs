@@ -450,9 +450,11 @@ namespace WPFPrintingService
                 RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 Assembly curAssembly = Assembly.GetExecutingAssembly();
                 //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
-                key.SetValue("Test Printing Service", curAssembly.Location);
+                key!.SetValue("Test Printing Service", curAssembly.Location);
             }
-            catch { }
+            catch (Exception e){
+                Debug.WriteLine(e.Message);
+            }
         }
     }
 }

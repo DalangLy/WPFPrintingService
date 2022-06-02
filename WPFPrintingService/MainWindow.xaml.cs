@@ -1,13 +1,16 @@
 ﻿using ESCPOS_NET;
 using ESCPOS_NET.Emitters;
 using ESCPOS_NET.Utilities;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
@@ -433,6 +436,23 @@ namespace WPFPrintingService
             //hide windows to system tray
             Show();
             myNotifyIcon.Visibility = Visibility.Collapsed;
+        }
+
+        private void chbRunOnStartUp_Checked(object sender, RoutedEventArgs e)
+        {
+            _setToRunOnWindowsStartUp();
+        }
+
+        private void _setToRunOnWindowsStartUp()
+        {
+            try
+            {
+                RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                Assembly curAssembly = Assembly.GetExecutingAssembly();
+                //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
+                key.SetValue("Test Printing Service", curAssembly.Location);
+            }
+            catch { }
         }
     }
 }

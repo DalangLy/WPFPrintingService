@@ -121,7 +121,7 @@
 
         </tb:TaskbarIcon>
         <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="24,560,0,0" VerticalAlignment="Top" Width="129"/>
-        <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked"/>
         <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="564,546,0,0" VerticalAlignment="Top" Width="78" Click="btnQuitApplication_Click"/>
 
     </Grid>

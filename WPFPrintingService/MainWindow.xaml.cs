@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
@@ -13,6 +14,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using WebSocketSharp.Server;
+using WPFPrintingService.ImageConversion;
 
 namespace WPFPrintingService
 {
@@ -108,34 +110,51 @@ namespace WPFPrintingService
                                         return;
                                     }
                                     //find printer
-                                    int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printDataModel.PrinterName));
-                                    if (_selectedPrinterIndex == -1)
+                                    
+                                    PrinterModel? _foundPrinterModel = _allConnectedPrintersToDisplayOnDataGridView.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                                    if (_foundPrinterModel == null)
                                     {
                                         onPrintResonse("Can't Find Printer");
                                         return;
                                     }
 
-                                    if(printDataModel.Base64Image == "")
+                                    if (!_foundPrinterModel.IsOnline)
+                                    {
+                                        onPrintResonse("Select Printer Offline");
+                                        return;
+                                    }
+
+                                    if (printDataModel.Base64Image == "")
                                     {
                                         onPrintResonse("Base64 Image Null");
                                         return;
                                     }
 
+                                    //validate base64 image
+                                    IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
+                                    if (attachmentType != AttachmentType.Photo)
+                                    {
+                                        return;
+                                    }
+                                    string path = AppDomain.CurrentDomain.BaseDirectory;
+                                    String savedImage = path + "\\temp_print." + attachmentType.Extension;
+                                    File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
+
+
+                                    int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
+
                                     //print test
                                     _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
                                       ByteSplicer.Combine(
-                                        _epson.CenterAlign(),
-                                        _epson.PrintLine($"Selected Printer {printDataModel.PrinterName}"),
-                                        _epson.PrintLine("B&H PHOTO & VIDEO"),
-                                        _epson.PrintLine("End Printer 1"),
+                                        _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
                                         _epson.PartialCutAfterFeed(5)
                                       )
-                                    );
-                                    onPrintResonse("Success Print But No Implementation");
+                                    ); ;
+                                    onPrintResonse("Print Success!");
                                 }
                                 catch (Exception ex)
                                 {
-                                    onPrintResonse("Wrong Print Format");
+                                    onPrintResonse($"Wrong Print Format {ex.Message}");
                                 }
                                 break;
                             default:
@@ -461,5 +480,24 @@ namespace WPFPrintingService
                 key!.SetValue("DX Printing Service", curAssembly.Location);
             }
         }
+
+
+        //Image Conversion
+        private IAttachmentType GetMimeType(string value)
+        {
+            IAttachmentType result;
+
+            return string.IsNullOrEmpty(value)
+                ? AttachmentType.UnknownMime
+                : (mimeMap.TryGetValue(value.Substring(0, 5), out result) ? result : AttachmentType.Unknown);
+        }
+        private static readonly IDictionary<string, IAttachmentType> mimeMap =
+        new Dictionary<string, IAttachmentType>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "IVBOR", AttachmentType.Photo },
+            { "/9J/4", AttachmentType.Photo },
+            { "AAAAF", AttachmentType.Video },
+            { "JVBER", AttachmentType.Document }
+        };
     }
 }

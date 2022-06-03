@@ -43,7 +43,7 @@
 
 
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnAddPrinter" Content="Add Printer" HorizontalAlignment="Left" Margin="677,34,0,0" VerticalAlignment="Top" Height="32" Width="91" Click="btnAddPrinter_Click"/>
+        <Button x:Name="btnAddPrinter" Content="Manual Add Printer" HorizontalAlignment="Left" Margin="635,34,0,0" VerticalAlignment="Top" Height="32" Width="133" Click="btnAddPrinter_Click"/>
 
         <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="502,126,32,117" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
             <DataGrid.Columns>
@@ -123,6 +123,7 @@
         <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="24,560,0,0" VerticalAlignment="Top" Width="129"/>
         <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked"/>
         <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="564,546,0,0" VerticalAlignment="Top" Width="78" Click="btnQuitApplication_Click"/>
+        <Button x:Name="btnSearchPrinter" Content="Search Printer" HorizontalAlignment="Left" Margin="502,34,0,0" VerticalAlignment="Top" Height="36" Width="97"/>
 
     </Grid>
 </Window>

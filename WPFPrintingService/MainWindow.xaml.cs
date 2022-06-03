@@ -335,7 +335,6 @@ namespace WPFPrintingService
 
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Hello World");
             mainGrid.Children.Add(new ServerInfoForm((childForm) =>
             {
                 mainGrid.Children.Remove(childForm);

@@ -493,23 +493,26 @@ namespace WPFPrintingService
 
         private void chbRunOnStartUp_Checked(object sender, RoutedEventArgs e)
         {
-            bool _isChecked = chbRunOnStartUp.IsChecked ?? false;
-
-            Properties.Settings.Default.is_run_at_start_up = _isChecked;
+            Properties.Settings.Default.is_run_at_start_up = true;
             Properties.Settings.Default.Save();
 
             //set run on start up
             RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             Assembly curAssembly = Assembly.GetExecutingAssembly();
             //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
-            if (_isChecked)
-            {
-                key!.SetValue("DX Printing Service", curAssembly.Location);
-            }
-            else
-            {
-                key!.SetValue("DX Printing Service", curAssembly.Location);
-            }
+            key!.SetValue("DX Printing Service", curAssembly.Location);
+        }
+
+        private void chbRunOnStartUp_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.is_run_at_start_up = false;
+            Properties.Settings.Default.Save();
+
+            //remove run on start up
+            RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            Assembly curAssembly = Assembly.GetExecutingAssembly();
+            //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
+            key!.DeleteValue("DX Printing Service");
         }
 
 

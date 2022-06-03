@@ -9,6 +9,7 @@
     internal class PrintDataModel
     {
         public string PrinterName { get; set; } = string.Empty;
+        public string PrintMethod { get; set; } = "PrintAndCut";
         public string Base64Image { get; set; } = string.Empty;
     }
 }

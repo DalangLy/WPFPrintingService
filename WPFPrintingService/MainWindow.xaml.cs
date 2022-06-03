@@ -120,7 +120,7 @@ namespace WPFPrintingService
 
                                     if (!_foundPrinterModel.IsOnline)
                                     {
-                                        onPrintResonse("Select Printer Offline");
+                                        onPrintResonse("Select Printer is currently Offline");
                                         return;
                                     }
 
@@ -136,20 +136,51 @@ namespace WPFPrintingService
                                     {
                                         return;
                                     }
-                                    string path = AppDomain.CurrentDomain.BaseDirectory;
-                                    String savedImage = path + "\\temp_print." + attachmentType.Extension;
+
+                                    string _path = AppDomain.CurrentDomain.BaseDirectory;
+                                    String savedImage = _path + "\\temp_print." + attachmentType.Extension;
                                     File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
 
 
                                     int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
 
-                                    //print test
-                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                      ByteSplicer.Combine(
-                                        _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
-                                        _epson.PartialCutAfterFeed(5)
-                                      )
-                                    ); ;
+                                    switch (printDataModel.PrintMethod)
+                                    {
+                                        case "PrintOnly":
+                                            //print test
+                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                              ByteSplicer.Combine(
+                                                _epson.PrintImage(File.ReadAllBytes(savedImage), true, true)
+                                              )
+                                            );
+                                            break;
+                                        case "CutOnly":
+                                            //print test
+                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                              ByteSplicer.Combine(
+                                                _epson.PartialCutAfterFeed(5)
+                                              )
+                                            );
+                                            break;
+                                        case "OpenCashDrawer":
+                                            //print test
+                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                              ByteSplicer.Combine(
+                                                _epson.CashDrawerOpenPin2()
+                                              )
+                                            );
+                                            break;
+                                        default:
+                                            //print test
+                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                              ByteSplicer.Combine(
+                                                _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
+                                                _epson.PartialCutAfterFeed(5)
+                                              )
+                                            );
+                                            break;
+                                    }
+                                    
                                     onPrintResonse("Print Success!");
                                 }
                                 catch (Exception ex)

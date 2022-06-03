@@ -41,6 +41,11 @@ namespace WPFPrintingService
 
             //bind list of all connected printers to list view
             dgConnectedPrinters.ItemsSource = _allConnectedNetworkPrinters;
+
+
+            //check if run on start up button is enable
+            bool _isRunAtStartUp = Properties.Settings.Default.is_run_at_start_up;
+            chbRunOnStartUp.IsChecked = _isRunAtStartUp;
         }
 
         private string GetLocalIPAddress()
@@ -300,7 +305,7 @@ namespace WPFPrintingService
 
         private void Print_Test_Button_Click(object sender, RoutedEventArgs e)
         {
-            PrinterModel printer = ((FrameworkElement)sender).DataContext as PrinterModel;
+            PrinterModel? printer = ((FrameworkElement)sender).DataContext as PrinterModel;
             if (printer == null) return;
             //find printer
             int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printer.PrinterName));
@@ -440,20 +445,22 @@ namespace WPFPrintingService
 
         private void chbRunOnStartUp_Checked(object sender, RoutedEventArgs e)
         {
-            _setToRunOnWindowsStartUp();
-        }
+            bool _isChecked = chbRunOnStartUp.IsChecked ?? false;
 
-        private void _setToRunOnWindowsStartUp()
-        {
-            try
+            Properties.Settings.Default.is_run_at_start_up = _isChecked;
+            Properties.Settings.Default.Save();
+
+            //set run on start up
+            RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            Assembly curAssembly = Assembly.GetExecutingAssembly();
+            //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
+            if (_isChecked)
             {
-                RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                Assembly curAssembly = Assembly.GetExecutingAssembly();
-                //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
-                key!.SetValue("Test Printing Service", curAssembly.Location);
+                key!.SetValue("DX Printing Service", curAssembly.Location);
             }
-            catch (Exception e){
-                Debug.WriteLine(e.Message);
+            else
+            {
+                key!.SetValue("DX Printing Service", curAssembly.Location);
             }
         }
     }

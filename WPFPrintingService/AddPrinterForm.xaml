@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Rectangle HorizontalAlignment="Left" Stroke="Black" VerticalAlignment="Center" Fill="#7F000000" Height="450" Width="790" MouseDown="UserControl_MouseDown"/>
+        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="#7F000000" MouseDown="UserControl_MouseDown"/>
         <Border BorderBrush="Black" BorderThickness="1" Margin="106,139,105,129" Background="White" CornerRadius="5,5,5,5">
             <Border.Effect>
                 <DropShadowEffect/>

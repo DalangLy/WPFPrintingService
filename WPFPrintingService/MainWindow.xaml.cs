@@ -195,7 +195,7 @@ namespace WPFPrintingService
                     }
                     catch (Exception ex)
                     {
-                        onPrintResonse("Wrong Format");
+                        onPrintResonse($"Wrong Format : {ex.Message}");
                     }
                 },
                 (disconnectedClientId) =>

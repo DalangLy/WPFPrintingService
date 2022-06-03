@@ -20,9 +20,16 @@ namespace WPFPrintingService
     /// </summary>
     public partial class MonitorServerForm : UserControl
     {
-        public MonitorServerForm()
+        private OnPopUpFormClickCallBack _onPopUpFormClickCallBack;
+        public MonitorServerForm(OnPopUpFormClickCallBack onPopUpFormClickCallBack)
         {
             InitializeComponent();
+            _onPopUpFormClickCallBack = onPopUpFormClickCallBack;
+        }
+
+        private void Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this._onPopUpFormClickCallBack(this);
         }
     }
 }

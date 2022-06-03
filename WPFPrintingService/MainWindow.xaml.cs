@@ -380,7 +380,10 @@ namespace WPFPrintingService
 
         private void btnMonitorWebSocketServer_Click(object sender, RoutedEventArgs e)
         {
-            mainGrid.Children.Add(new MonitorServerForm());
+            mainGrid.Children.Add(new MonitorServerForm((childForm) =>
+            {
+                mainGrid.Children.Remove(childForm);
+            }));
         }
 
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)

@@ -13,6 +13,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 using WPFPrintingService.ImageConversion;
 
@@ -63,148 +64,136 @@ namespace WPFPrintingService
             return localIP;
         }
 
+        private void _onClientResponseMessage(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone)
+        {
+            try
+            {
+                RequestModel? requestModel = JsonConvert.DeserializeObject<RequestModel>(message);
+                if (requestModel == null)
+                {
+                    onPrintResponse("Wrong Format");
+                    return;
+                }
+                switch (requestModel.Code)
+                {
+                    case "SendToEveryOne":
+                        onSendToEveryone($"{clientName} Said : {requestModel.Data}");
+                        break;
+                    case "SendToServer":
+
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            //update text status
+                            txtServerStatus.Text += $"\n {clientName} Said : {requestModel.Data}";
+
+                        }), DispatcherPriority.Background);
+
+                        onSendToServer();
+                        break;
+                    case "Print":
+
+                        //serialize print data model
+                        try
+                        {
+                            PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
+                            if (printDataModel == null)
+                            {
+                                onPrintResponse("Wrong Data Format");
+                                return;
+                            }
+                            //find printer
+
+                            PrinterModel? _foundPrinterModel = _allConnectedPrintersToDisplayOnDataGridView.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                            if (_foundPrinterModel == null)
+                            {
+                                onPrintResponse("Can't Find Printer");
+                                return;
+                            }
+
+                            if (!_foundPrinterModel.IsOnline)
+                            {
+                                onPrintResponse("Select Printer is currently Offline");
+                                return;
+                            }
+
+                            if (printDataModel.Base64Image == "")
+                            {
+                                onPrintResponse("Base64 Image Null");
+                                return;
+                            }
+
+                            //validate base64 image
+                            IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
+                            if (attachmentType != AttachmentType.Photo)
+                            {
+                                return;
+                            }
+
+                            string _path = AppDomain.CurrentDomain.BaseDirectory;
+                            String savedImage = _path + "\\temp_print." + attachmentType.Extension;
+                            File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
+
+
+                            int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
+
+                            switch (printDataModel.PrintMethod)
+                            {
+                                case "PrintOnly":
+                                    //print test
+                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                      ByteSplicer.Combine(
+                                        _epson.PrintImage(File.ReadAllBytes(savedImage), true, true)
+                                      )
+                                    );
+                                    break;
+                                case "CutOnly":
+                                    //print test
+                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                      ByteSplicer.Combine(
+                                        _epson.PartialCutAfterFeed(5)
+                                      )
+                                    );
+                                    break;
+                                case "OpenCashDrawer":
+                                    //print test
+                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                      ByteSplicer.Combine(
+                                        _epson.CashDrawerOpenPin2()
+                                      )
+                                    );
+                                    break;
+                                default:
+                                    //print test
+                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                      ByteSplicer.Combine(
+                                        _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
+                                        _epson.PartialCutAfterFeed(5)
+                                      )
+                                    );
+                                    break;
+                            }
+
+                            onPrintResponse("Print Success!");
+                        }
+                        catch (Exception ex)
+                        {
+                            onPrintResponse($"Wrong Print Format {ex.Message}");
+                        }
+                        break;
+                    default:
+                        onPrintResponse("Wrong Code");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                onPrintResponse($"Wrong Format : {ex.Message}");
+            }
+        }
+
         private void _initializeWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{PORT}");
-
-            //add web socket server listeners
-            _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener(
-                (connectedClientId, connectedClientIp, connectedClientName) => {
-                    //on open or on client connected
-                    _addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
-                },
-                (clientId, clientName, message, onPrintResonse, onSendToServer, OnSendToEveryone) =>
-                {
-                    try
-                    {
-                        RequestModel? requestModel = JsonConvert.DeserializeObject<RequestModel>(message);
-                        if(requestModel == null)
-                        {
-                            onPrintResonse("Wrong Format");
-                            return;
-                        }
-                        switch (requestModel.Code)
-                        {
-                            case "SendToEveryOne":
-                                OnSendToEveryone($"{clientName} Said : {requestModel.Data}");
-                                break;
-                            case "SendToServer":
-
-                                Dispatcher.BeginInvoke(new Action(() =>
-                                {
-                                    //update text status
-                                    txtServerStatus.Text += $"\n {clientName} Said : {requestModel.Data}";
-
-                                }), DispatcherPriority.Background);
-
-                                onSendToServer();
-                                break;
-                            case "Print":
-
-                                //serialize print data model
-                                try
-                                {
-                                    PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
-                                    if(printDataModel == null)
-                                    {
-                                        onPrintResonse("Wrong Data Format");
-                                        return;
-                                    }
-                                    //find printer
-                                    
-                                    PrinterModel? _foundPrinterModel = _allConnectedPrintersToDisplayOnDataGridView.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
-                                    if (_foundPrinterModel == null)
-                                    {
-                                        onPrintResonse("Can't Find Printer");
-                                        return;
-                                    }
-
-                                    if (!_foundPrinterModel.IsOnline)
-                                    {
-                                        onPrintResonse("Select Printer is currently Offline");
-                                        return;
-                                    }
-
-                                    if (printDataModel.Base64Image == "")
-                                    {
-                                        onPrintResonse("Base64 Image Null");
-                                        return;
-                                    }
-
-                                    //validate base64 image
-                                    IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
-                                    if (attachmentType != AttachmentType.Photo)
-                                    {
-                                        return;
-                                    }
-
-                                    string _path = AppDomain.CurrentDomain.BaseDirectory;
-                                    String savedImage = _path + "\\temp_print." + attachmentType.Extension;
-                                    File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
-
-
-                                    int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
-
-                                    switch (printDataModel.PrintMethod)
-                                    {
-                                        case "PrintOnly":
-                                            //print test
-                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                              ByteSplicer.Combine(
-                                                _epson.PrintImage(File.ReadAllBytes(savedImage), true, true)
-                                              )
-                                            );
-                                            break;
-                                        case "CutOnly":
-                                            //print test
-                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                              ByteSplicer.Combine(
-                                                _epson.PartialCutAfterFeed(5)
-                                              )
-                                            );
-                                            break;
-                                        case "OpenCashDrawer":
-                                            //print test
-                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                              ByteSplicer.Combine(
-                                                _epson.CashDrawerOpenPin2()
-                                              )
-                                            );
-                                            break;
-                                        default:
-                                            //print test
-                                            _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                              ByteSplicer.Combine(
-                                                _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
-                                                _epson.PartialCutAfterFeed(5)
-                                              )
-                                            );
-                                            break;
-                                    }
-                                    
-                                    onPrintResonse("Print Success!");
-                                }
-                                catch (Exception ex)
-                                {
-                                    onPrintResonse($"Wrong Print Format {ex.Message}");
-                                }
-                                break;
-                            default:
-                                onPrintResonse("Wrong Code");
-                                break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        onPrintResonse($"Wrong Format : {ex.Message}");
-                    }
-                },
-                (disconnectedClientId) =>
-                {
-                    //on close or on client disconnected
-                    _removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
-                }
-            ));
+            _webSocketServer = new WebSocketServer(IPAddress.Parse(GetLocalIPAddress()), PORT);
         }
         
         private void _addConnectedWebSocketClientToListView(string id, string ip, string name)
@@ -241,13 +230,35 @@ namespace WPFPrintingService
         private void _startWebSocketServer()
         {
             if (_webSocketServer == null) return;
+
+            //add web socket server listeners
+            _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener(
+                (connectedClientId, connectedClientIp, connectedClientName) => {
+                    //on open or on client connected
+                    _addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
+                },
+                (clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
+                {
+                    //onMessageCallBack
+                    _onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
+                },
+                (disconnectedClientId) =>
+                {
+                    //on close or on client disconnected
+                    _removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
+                }
+            ));
+
             _webSocketServer.Start();
         }
 
         private void _stopWebSocketServer()
         {
             if (_webSocketServer == null) return;
-            _webSocketServer.Stop();
+
+            _webSocketServer.RemoveWebSocketService("/");
+
+            _webSocketServer.Stop(CloseStatusCode.Away, "Server Stop");
         }
 
         private bool _isWebSocketSeverRunning = false;

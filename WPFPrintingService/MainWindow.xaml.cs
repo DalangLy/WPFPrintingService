@@ -25,6 +25,7 @@ namespace WPFPrintingService
         private List<NetworkPrinter> _allConnectedNetworkPrinters = new List<NetworkPrinter>();
         private List<PrinterModel> _allConnectedPrintersToDisplayOnDataGridView = new List<PrinterModel>();
         private BaseCommandEmitter _epson = new EPSON();
+        private const int PORT = 1100;
 
         public MainWindow()
         {
@@ -55,7 +56,7 @@ namespace WPFPrintingService
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
             {
                 socket.Connect("8.8.8.8", 65530);
-                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                IPEndPoint? endPoint = socket.LocalEndPoint as IPEndPoint;
                 localIP = endPoint!.Address.ToString();
             }
             //Console.WriteLine("IP Address = " + localIP);
@@ -64,7 +65,7 @@ namespace WPFPrintingService
 
         private void _initializeWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:8000");
+            _webSocketServer = new WebSocketServer($"ws://{GetLocalIPAddress()}:{PORT}");
 
             //add web socket server listeners
             _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener(
@@ -262,7 +263,7 @@ namespace WPFPrintingService
             }
             _isWebSocketSeverRunning = !_isWebSocketSeverRunning;
             btnStartStopServer.Content = _isWebSocketSeverRunning ? "Stop" : "Start";
-            txtServerStatus.Text = _isWebSocketSeverRunning ? $"Service on http://{GetLocalIPAddress()}:8000" : "Server Stopped";
+            txtServerStatus.Text = _isWebSocketSeverRunning ? $"Service on ws://{GetLocalIPAddress()}:{PORT}" : "Server Stopped";
         }
 
         private void btnAddPrinter_Click(object sender, RoutedEventArgs e)
@@ -287,14 +288,13 @@ namespace WPFPrintingService
                 //test connect to printer
                 NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name};
                 NetworkPrinter printer = new NetworkPrinter(printerSetting);
-                printer.StatusChanged += StatusChanged;
+                printer.StatusChanged += _StatusChanged;
                 printer.Connected += _printerConnectedListener;
                 printer.Disconnected += _printerDisconnectedListener;
 
-                BaseCommandEmitter _ff = new EPSON();
-                printer.Write(_ff.Initialize());
-                printer.Write(_ff.Enable());
-                printer.Write(_ff.EnableAutomaticStatusBack());
+                printer.Write(_epson.Initialize());
+                printer.Write(_epson.Enable());
+                printer.Write(_epson.EnableAutomaticStatusBack());
 
 
                 //add connected printer to list
@@ -333,7 +333,7 @@ namespace WPFPrintingService
             }), DispatcherPriority.Background);
         }
 
-        private void StatusChanged(object sender, EventArgs ps)
+        private void _StatusChanged(object sender, EventArgs ps)
         {
             var status = (PrinterStatusEventArgs)ps;
             Debug.WriteLine($"On Status Change: {status.IsPrinterOnline}");
@@ -444,7 +444,6 @@ namespace WPFPrintingService
                         NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{printer2.Properties["HostAddress"].Value}:{printer2.Properties["PortNumber"].Value}", PrinterName = printer.Properties["Name"].Value.ToString() };
                         NetworkPrinter printer1 = new NetworkPrinter(printerSetting);
 
-                        _epson = new EPSON();
                         //print test
                         printer1.Write(
                           ByteSplicer.Combine(
@@ -461,7 +460,6 @@ namespace WPFPrintingService
                         NetworkPrinterSettings printerSetting1 = new NetworkPrinterSettings() { ConnectionString = $"{printer2.Properties["HostAddress"].Value}:{printer2.Properties["PortNumber"].Value}", PrinterName = printer.Properties["Name"].Value.ToString() };
                         NetworkPrinter printer3 = new NetworkPrinter(printerSetting1);
 
-                        _epson = new EPSON();
                         //print test
                         printer3.Write(
                           ByteSplicer.Combine(
@@ -536,5 +534,11 @@ namespace WPFPrintingService
             { "AAAAF", AttachmentType.Video },
             { "JVBER", AttachmentType.Document }
         };
+
+        private void btnSendToEveryClients_Click(object sender, RoutedEventArgs e)
+        {
+            if (_webSocketServer == null) return;
+            _webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
+        }
     }
 }

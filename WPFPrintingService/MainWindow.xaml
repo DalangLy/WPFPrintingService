@@ -124,6 +124,8 @@
         <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked"/>
         <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="564,546,0,0" VerticalAlignment="Top" Width="78" Click="btnQuitApplication_Click"/>
         <Button x:Name="btnSearchPrinter" Content="Search Printer" HorizontalAlignment="Left" Margin="502,34,0,0" VerticalAlignment="Top" Height="36" Width="97"/>
+        <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,483,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="147" Height="54"/>
+        <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="178,483,0,0" VerticalAlignment="Top" Height="54" Width="144" Click="btnSendToEveryClients_Click"/>
 
     </Grid>
 </Window>

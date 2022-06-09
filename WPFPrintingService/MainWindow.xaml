@@ -6,13 +6,12 @@
         xmlns:local="clr-namespace:WPFPrintingService"
         mc:Ignorable="d"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        Title="Printing Service" Height="600
-        " Width="1264" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Printing Service" Height="688" Width="1295" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid x:Name="mainGrid">
-        <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,33,0,0" VerticalAlignment="Top" Height="33" Width="100" Click="btnStartStopServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
+        <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,66,0,0" VerticalAlignment="Top" Height="32" Width="100" Click="btnStartStopServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
-                    <!--<Setter Property="Background" Value="Green"/>-->
+                    <Setter Property="Background" Value="Aquamarine"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
@@ -24,7 +23,7 @@
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="Gray"/>
+                            <Setter Property="Background" Value="AliceBlue"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -34,7 +33,7 @@
             </Button.Effect>
         </Button>
 
-        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,186,940,113" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
+        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,278,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" HorizontalAlignment="Left" VerticalAlignment="Top" Height="201" Width="358">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding Ip}" Width="*"/>
@@ -43,9 +42,9 @@
 
 
 
-        
-        <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="148,34,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
+
+        <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="155,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <!--<Setter Property="Background" Value="Green"/>-->
@@ -69,8 +68,8 @@
                 <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
             </Button.Effect>
         </Button>
-        <TextBox x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" Height="50"/>
-        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,33,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" BorderBrush="{x:Null}" Cursor="Hand">
+        <TextBox x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
+        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <!--<Setter Property="Background" Value="Green"/>-->
@@ -147,12 +146,39 @@
             </tb:TaskbarIcon.ContextMenu>-->
 
         </tb:TaskbarIcon>
-        <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="24,560,0,0" VerticalAlignment="Top" Width="129"/>
-        <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked"/>
-        <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="564,546,0,0" VerticalAlignment="Top" Width="78" Click="btnQuitApplication_Click" BorderBrush="{x:Null}" Cursor="Hand">
+        <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="267,19,0,0" VerticalAlignment="Top" Width="115" Cursor="Hand"/>
+        <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="1018,602,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked" Cursor="Hand"/>
+        <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="1169,594,0,0" VerticalAlignment="Top" Width="85" Click="btnQuitApplication_Click" BorderBrush="{x:Null}" Cursor="Hand" Height="32">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
-                    <!--<Setter Property="Background" Value="Green"/>-->
+                    <Setter Property="Background" Value="Red"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border CornerRadius="5" Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="DarkRed"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
+            </Button.Effect>
+        </Button>
+        <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,510,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="358" Height="70"/>
+        <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="26,592,0,0" VerticalAlignment="Top" Height="37" Width="356" Click="btnSendToEveryClients_Click" BorderBrush="{x:Null}" Cursor="Hand">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="Green"/>
+                    <Setter Property="Foreground" Value="White"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
@@ -173,32 +199,7 @@
                 <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
             </Button.Effect>
         </Button>
-        <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,483,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="147" Height="54"/>
-        <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="178,483,0,0" VerticalAlignment="Top" Height="54" Width="144" Click="btnSendToEveryClients_Click" BorderBrush="{x:Null}" Cursor="Hand">
-            <Button.Style>
-                <Style TargetType="{x:Type Button}">
-                    <!--<Setter Property="Background" Value="Green"/>-->
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Border CornerRadius="5" Background="{TemplateBinding Background}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="Gray"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-            <Button.Effect>
-                <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
-            </Button.Effect>
-        </Button>
-        <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="422,130,26,113" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1" CanUserAddRows="False">
+        <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="441,66,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1" CanUserAddRows="False" HorizontalAlignment="Left" VerticalAlignment="Top" Height="514" Width="813">
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -231,7 +232,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Actions" Width="*">
+                <DataGridTemplateColumn Header="Test Actions" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -247,7 +248,34 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Label Content="Available Printers" HorizontalAlignment="Left" Margin="422,99,0,0" VerticalAlignment="Top"/>
+        <Label Content="Available Printers" HorizontalAlignment="Left" Margin="441,11,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Foreground="Red"/>
+        <Label Content="Service" HorizontalAlignment="Left" Margin="20,11,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="Red"/>
+        <Label Content="Message" HorizontalAlignment="Left" Margin="19,481,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <Label Content="Status" HorizontalAlignment="Left" Margin="20,102,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <Button x:Name="btnRefreshPrinterList" Content="Refresh" HorizontalAlignment="Left" Margin="1155,11,0,0" VerticalAlignment="Top" Height="32" Width="99" BorderBrush="{x:Null}" Cursor="Hand">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <!--<Setter Property="Background" Value="Green"/>-->
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border CornerRadius="5" Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="Gray"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
+            </Button.Effect>
+        </Button>
 
     </Grid>
 </Window>

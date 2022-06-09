@@ -25,10 +25,8 @@ namespace WPFPrintingService
     {
         private List<ClientWebSocketModel> _allConnectedWebSocketClients = new List<ClientWebSocketModel>();
         private WebSocketServer? _webSocketServer;
-        private List<NetworkPrinter> _allConnectedNetworkPrinters = new List<NetworkPrinter>();
-        private List<PrinterModel> _allConnectedPrintersToDisplayOnDataGridView = new List<PrinterModel>();
-        private BaseCommandEmitter _epson = new EPSON();
         private const int PORT = 1100;
+        private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
 
         public MainWindow()
         {
@@ -40,23 +38,17 @@ namespace WPFPrintingService
             //initialize websocket server
             _initializeWebSocketServer();
 
-
             //load all printer from windows system
             _loadAllPrintersFromWindowsSystem();
 
             //bind list of all connected websocket clients to list view
             lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
 
-            //bind list of all connected printers to list view
-            dgConnectedPrinters.ItemsSource = _allConnectedNetworkPrinters;
-
-
             //check if run on start up button is enable
             bool _isRunAtStartUp = Properties.Settings.Default.is_run_at_start_up;
             chbRunOnStartUp.IsChecked = _isRunAtStartUp;
         }
 
-        private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
         private void _loadAllPrintersFromWindowsSystem()
         {
             var printerQuery = new ManagementObjectSearcher("SELECT * from Win32_Printer");
@@ -164,37 +156,18 @@ namespace WPFPrintingService
                             {
                                 case "PrintOnly":
                                     //print test
-                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                      ByteSplicer.Combine(
-                                        _epson.PrintImage(File.ReadAllBytes(savedImage), true, true)
-                                      )
-                                    );
+                                    
                                     break;
                                 case "CutOnly":
                                     //print test
-                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                      ByteSplicer.Combine(
-                                        _epson.PartialCutAfterFeed(5)
-                                      )
-                                    );
+                                    
                                     break;
                                 case "OpenCashDrawer":
                                     //print test
-                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                      ByteSplicer.Combine(
-                                        _epson.CashDrawerOpenPin2()
-                                      )
-                                    );
+                                    
                                     break;
                                 default:
                                     //print test
-                                    //_allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                    //  ByteSplicer.Combine(
-                                    //    _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
-                                    //    _epson.PartialCutAfterFeed(5)
-                                    //  )
-                                    //);
-
                                     _printAndCut(printDataModel.PrinterName);
                                     break;
                             }
@@ -303,118 +276,6 @@ namespace WPFPrintingService
             txtServerStatus.Text = _isWebSocketSeverRunning ? $"Service on ws://{GetLocalIPAddress()}:{PORT}" : "Server Stopped";
         }
 
-        private void btnAddPrinter_Click(object sender, RoutedEventArgs e)
-        {
-            mainGrid.Children.Add(new AddPrinterForm(
-                (ip, port, name, childForm) =>
-                {
-                    this._addPrinter(ip, port, name);
-                    mainGrid.Children.Remove(childForm);
-                },
-                (childForm) =>
-                {
-                    mainGrid.Children.Remove(childForm);
-                }
-            ));
-        }
-
-        private void _addPrinter(string ip, string port, string name)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                //test connect to printer
-                NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{ip}:{port}", PrinterName = name};
-                NetworkPrinter printer = new NetworkPrinter(printerSetting);
-                printer.StatusChanged += _StatusChanged;
-                printer.Connected += _printerConnectedListener;
-                printer.Disconnected += _printerDisconnectedListener;
-
-                printer.Write(_epson.Initialize());
-                printer.Write(_epson.Enable());
-                printer.Write(_epson.EnableAutomaticStatusBack());
-
-
-                //add connected printer to list
-                _allConnectedNetworkPrinters.Add(printer);
-
-                _allConnectedPrintersToDisplayOnDataGridView.Add(new PrinterModel("", ip, printer.PrinterName));
-
-                dgConnectedPrinters.ItemsSource = _allConnectedPrintersToDisplayOnDataGridView;
-                dgConnectedPrinters.Items.Refresh();
-            }), DispatcherPriority.Background);
-        }
-
-        private void _printerDisconnectedListener(object sender, EventArgs ps)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                NetworkPrinter printer = (NetworkPrinter)sender;
-                var status = (ConnectionEventArgs)ps;
-                PrinterModel printerModel = this._allConnectedPrintersToDisplayOnDataGridView.Find(e => e.PrinterName == printer.PrinterName)!;
-                printerModel.IsOnline = status.IsConnected;
-                dgConnectedPrinters.Items.Refresh();
-                Debug.WriteLine($"On Printer Disconnect Event: {status.IsConnected}");
-            }), DispatcherPriority.Background);
-        }
-
-        private void _printerConnectedListener(object sender, EventArgs ps)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                NetworkPrinter printer = (NetworkPrinter)sender;
-                var status = (ConnectionEventArgs)ps;
-                PrinterModel printerModel = this._allConnectedPrintersToDisplayOnDataGridView.Find(e => e.PrinterName == printer.PrinterName)!;
-                printerModel.IsOnline = status.IsConnected;
-                dgConnectedPrinters.Items.Refresh();
-                Debug.WriteLine($"On Printer Connect Event: {status.IsConnected}");
-            }), DispatcherPriority.Background);
-        }
-
-        private void _StatusChanged(object sender, EventArgs ps)
-        {
-            var status = (PrinterStatusEventArgs)ps;
-            Debug.WriteLine($"On Status Change: {status.IsPrinterOnline}");
-            Debug.WriteLine($"Has Paper? {status.IsPaperOut}");
-            Debug.WriteLine($"Paper Running Low? {status.IsPaperLow}");
-            Debug.WriteLine($"Cash Drawer Open? {status.IsCashDrawerOpen}");
-            Debug.WriteLine($"Cover Open? {status.IsCoverOpen}");
-            Debug.WriteLine($"Feeding? {status.IsPaperCurrentlyFeeding}");
-            Debug.WriteLine($"Error State? {status.IsInErrorState}");
-            Debug.WriteLine($"Waiting? {status.IsWaitingForOnlineRecovery}");
-            
-        }
-
-        private void Remove_Printer_Button_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Printer REmove");
-        }
-
-        private void Print_Test_Button_Click(object sender, RoutedEventArgs e)
-        {
-            PrinterModel? printer = ((FrameworkElement)sender).DataContext as PrinterModel;
-            if (printer == null) return;
-            //find printer
-            int _selectedPrinterIndex = _allConnectedNetworkPrinters.FindIndex(e => e.PrinterName.Equals(printer.PrinterName));
-
-
-            int index = dgConnectedPrinters.SelectedIndex;
-
-
-            //var gg = File.ReadAllBytes();
-
-            //print test
-            _allConnectedNetworkPrinters[index].Write(
-              ByteSplicer.Combine(
-                _epson.CenterAlign(),
-                _epson.PrintLine($"Selected Printer {printer.GetHashCode}"),
-                _epson.PrintLine("B&H PHOTO & VIDEO"),
-                //_epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
-                _epson.PrintLine($"End Printer {printer.PrinterName}"),
-                _epson.PartialCutAfterFeed(5)
-              )
-            );
-        }
-
         private void btnMonitorWebSocketServer_Click(object sender, RoutedEventArgs e)
         {
             mainGrid.Children.Add(new MonitorServerForm((childForm) =>
@@ -476,39 +337,6 @@ namespace WPFPrintingService
                         //Console.WriteLine("PortName:" + portName);
                         Debug.WriteLine("PortNumber:" + printer2.Properties["PortNumber"].Value);
                         Debug.WriteLine("HostAddress:" + printer2.Properties["HostAddress"].Value);
-
-
-                        NetworkPrinterSettings printerSetting = new NetworkPrinterSettings() { ConnectionString = $"{printer2.Properties["HostAddress"].Value}:{printer2.Properties["PortNumber"].Value}", PrinterName = printer.Properties["Name"].Value.ToString() };
-                        NetworkPrinter printer1 = new NetworkPrinter(printerSetting);
-
-                        //print test
-                        printer1.Write(
-                          ByteSplicer.Combine(
-                            _epson.CenterAlign(),
-                            _epson.PrintLine($"Selected Printer 1"),
-                            _epson.PrintLine("B&H PHOTO & VIDEO"),
-                             //_epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
-                             _epson.PrintLine($"End Printer"),
-                            _epson.Print("Test")
-                          )
-                        );
-
-
-                        NetworkPrinterSettings printerSetting1 = new NetworkPrinterSettings() { ConnectionString = $"{printer2.Properties["HostAddress"].Value}:{printer2.Properties["PortNumber"].Value}", PrinterName = printer.Properties["Name"].Value.ToString() };
-                        NetworkPrinter printer3 = new NetworkPrinter(printerSetting1);
-
-                        //print test
-                        printer3.Write(
-                          ByteSplicer.Combine(
-                            _epson.CenterAlign(),
-                            _epson.PrintLine($"Selected Printer 2"),
-                            _epson.PrintLine("B&H PHOTO & VIDEO"),
-                             //_epson.PrintImage(File.ReadAllBytes("C:\\Users\\dalan\\Downloads\\kitten.jpg"), true, true),
-                             _epson.PrintLine($"End Printer"),
-                            _epson.Print("Test")
-                          )
-                        );
-
                     }
                     Console.WriteLine();
                 }

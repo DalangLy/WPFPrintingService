@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Management;
 using System.Net;
@@ -39,6 +41,9 @@ namespace WPFPrintingService
             _initializeWebSocketServer();
 
 
+            //load all printer from windows system
+            _loadAllPrintersFromWindowsSystem();
+
             //bind list of all connected websocket clients to list view
             lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
 
@@ -49,6 +54,25 @@ namespace WPFPrintingService
             //check if run on start up button is enable
             bool _isRunAtStartUp = Properties.Settings.Default.is_run_at_start_up;
             chbRunOnStartUp.IsChecked = _isRunAtStartUp;
+        }
+
+        private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
+        private void _loadAllPrintersFromWindowsSystem()
+        {
+            var printerQuery = new ManagementObjectSearcher("SELECT * from Win32_Printer");
+            foreach (var printer in printerQuery.Get())
+            {
+                var name = printer.GetPropertyValue("Name");
+                var status = printer.GetPropertyValue("Status");
+                var isDefault = printer.GetPropertyValue("Default");
+                var isNetworkPrinter = printer.GetPropertyValue("Network");
+
+                Debug.WriteLine("{0} (Status: {1}, Default: {2}, Network: {3}",
+                            name, status, isDefault, isNetworkPrinter);
+                _allPrintersFromWindowsSystem.Add(new PrinterFromWindowsSystemModel(name.ToString()));
+            }
+
+            dgPrinters.ItemsSource = _allPrintersFromWindowsSystem;
         }
 
         private string GetLocalIPAddress()
@@ -550,6 +574,149 @@ namespace WPFPrintingService
         {
             if (_webSocketServer == null) return;
             _webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
+        }
+
+        private void btnPrintAndCut_Click(object sender, RoutedEventArgs e)
+        {
+            PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
+            if (printer == null) return;
+
+            _printAndCut(printer.PrinterName);
+        }
+
+        private void _printAndCut(string printerName)
+        {
+            //print and cut using default windows print document
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (o, ev) =>
+            {
+                if (ev.Graphics == null) return;
+                ev.Graphics.DrawString(
+                    "Print Test",
+                    new Font("Arial", 10),
+                    Brushes.Black,
+                    ev.MarginBounds.Left,
+                    0,
+                    new StringFormat()
+                );
+            };
+            printDocument.PrinterSettings.PrinterName = printerName;
+            printDocument.Print();
+            printDocument.Dispose();
+        }
+
+        private void _printOnly(string printerName)
+        {
+            //print only using default windows print document
+
+            MessageBox.Show("Sorry, This Feature In Progress");
+            //PrintDocument printDocument = new PrintDocument();
+            //printDocument.PrintPage += (o, ev) =>
+            //{
+            //    if (ev.Graphics == null) return;
+            //    ev.Graphics.DrawString(
+            //        "",
+            //        new Font("Arial", 10),
+            //        Brushes.Black,
+            //        ev.MarginBounds.Left,
+            //        0,
+            //        new StringFormat()
+            //    );
+            //    //ev.HasMorePages = true;
+            //    //printDocument.Dispose();
+            //};
+            //printDocument.PrinterSettings.PrinterName = printerName;
+            //printDocument.EndPrint += (o, ev) =>
+            //{
+            //    PrintEventArgs printEventArgs = (PrintEventArgs)ev;
+            //    Debug.WriteLine("Print Success");
+            //    Debug.WriteLine(printEventArgs.PrintAction);
+            //    //if(printEventArgs.PrintAction == PrintAction.PrintToPrinter)
+            //    //{
+            //    //    printEventArgs.Cancel = true;
+            //    //}
+            //    printDocument.Dispose();
+            //};
+            //printDocument.BeginPrint += (o, ev) =>
+            //{
+            //    Debug.WriteLine("Print Start");
+            //};
+            //printDocument.QueryPageSettings += (o, ev) =>
+            //{
+            //    Debug.WriteLine("");
+            //};
+            //printDocument.Print();
+            //printDocument.Dispose();
+        }
+
+        private void _printAndKickCashDrawer(string printerName)
+        {
+            //print and kick out cash drawer using default windows print document
+
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (o, ev) =>
+            {
+                if (ev.Graphics == null) return;
+                ev.Graphics.DrawString(
+                    "Print Test",
+                    new Font("Arial", 10),
+                    Brushes.Black,
+                    ev.MarginBounds.Left,
+                    0,
+                    new StringFormat()
+                );
+            };
+            printDocument.PrinterSettings.PrinterName = printerName;
+            printDocument.Print();
+            printDocument.EndPrint += (o, ev) =>
+            {
+                //open cash drawer command
+                const string ESC1 = "\u001B";
+                const string p = "\u0070";
+                const string m = "\u0000";
+                const string t1 = "\u0025";
+                const string t2 = "\u0250";
+                const string openTillCommand = ESC1 + p + m + t1 + t2;
+                RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+            };
+            printDocument.Dispose();
+        }
+
+        private void _cutOnly(string printerName)
+        {
+            //cut only using default windows print document
+
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrinterSettings.PrinterName = printerName;
+
+            //cut command
+            string GS = Convert.ToString((char)29);
+            string ESC = Convert.ToString((char)27);
+            string COMMAND = "";
+            COMMAND = ESC + "@";
+            COMMAND += GS + "V" + (char)1;
+            RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, COMMAND);
+
+            printDocument.Dispose();
+        }
+        
+        private void _kickCashDrawer(string printerName)
+        {
+            //kick out cash drawer using default windows print document
+
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrinterSettings.PrinterName = printerName;
+
+            //open cash drawer command
+            const string ESC1 = "\u001B";
+            const string p = "\u0070";
+            const string m = "\u0000";
+            const string t1 = "\u0025";
+            const string t2 = "\u0250";
+            const string openTillCommand = ESC1 + p + m + t1 + t2;
+            RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+
+            printDocument.Dispose();
         }
     }
 }

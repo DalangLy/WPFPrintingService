@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         Title="Printing Service" Height="600
-        " Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
+        " Width="1500" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid x:Name="mainGrid">
         <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,33,0,0" VerticalAlignment="Top" Height="33" Width="100" Click="btnStartStopServer_Click"/>
         <!--<ListView x:Name="lvConnectWebSocketClients" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="24,126,553,26">
@@ -20,7 +20,7 @@
         </ListView>-->
 
 
-        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,186,553,128" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
+        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,186,1178,128" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding Ip}" Width="*"/>
@@ -43,9 +43,9 @@
 
 
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnAddPrinter" Content="Manual Add Printer" HorizontalAlignment="Left" Margin="635,34,0,0" VerticalAlignment="Top" Height="32" Width="133" Click="btnAddPrinter_Click"/>
+        <Button x:Name="btnAddPrinter" Content="Manual Add Printer" HorizontalAlignment="Left" Margin="564,34,0,0" VerticalAlignment="Top" Height="32" Width="133" Click="btnAddPrinter_Click"/>
 
-        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="502,126,32,117" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
+        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="435,105,803,138" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
@@ -123,9 +123,29 @@
         <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="24,560,0,0" VerticalAlignment="Top" Width="129"/>
         <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="669,548,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked"/>
         <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="564,546,0,0" VerticalAlignment="Top" Width="78" Click="btnQuitApplication_Click"/>
-        <Button x:Name="btnSearchPrinter" Content="Search Printer" HorizontalAlignment="Left" Margin="502,34,0,0" VerticalAlignment="Top" Height="36" Width="97"/>
+        <Button x:Name="btnSearchPrinter" Content="Search Printer" HorizontalAlignment="Left" Margin="435,31,0,0" VerticalAlignment="Top" Height="36" Width="97"/>
         <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,483,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="147" Height="54"/>
         <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="178,483,0,0" VerticalAlignment="Top" Height="54" Width="144" Click="btnSendToEveryClients_Click"/>
+        <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="729,105,23,138" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
+                <DataGridTemplateColumn Header="Actions" Width="*">
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click"/>
+                                <Button x:Name="btnPrintAndKickDrawer" Content="Print And Kich Cash Drawer"/>
+                                <Button x:Name="btnPrintOnly" Content="Print Only"/>
+                                <Button x:Name="btnCutOnly" Content="Cut Only"/>
+                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
 
     </Grid>
 </Window>

@@ -45,7 +45,7 @@
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="24,160,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnAddPrinter" Content="Manual Add Printer" HorizontalAlignment="Left" Margin="564,34,0,0" VerticalAlignment="Top" Height="32" Width="133" Click="btnAddPrinter_Click"/>
 
-        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="435,105,803,138" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
+        <DataGrid x:Name="dgConnectedPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="380,105,858,138" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding PrinterIp}" Width="*"/>
@@ -55,7 +55,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="Remove" Click="Remove_Printer_Button_Click" />
+                                <Button Content="Remove" Click="Remove_Printer_Button_Click"/>
                                 <Button Content="Print Test" Click="Print_Test_Button_Click"/>
                             </StackPanel>
                         </DataTemplate>
@@ -126,19 +126,33 @@
         <Button x:Name="btnSearchPrinter" Content="Search Printer" HorizontalAlignment="Left" Margin="435,31,0,0" VerticalAlignment="Top" Height="36" Width="97"/>
         <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,483,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="147" Height="54"/>
         <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="178,483,0,0" VerticalAlignment="Top" Height="54" Width="144" Click="btnSendToEveryClients_Click"/>
-        <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="729,105,23,138" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1">
+        <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="694,105,23,138" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1" CanUserAddRows="False">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </Style>
+                <!--<Style TargetType="DataGridCell">
+                    <Setter Property="ContentPre" Value="Center"/>
+                </Style>-->
+            </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding PrinterName}"/>
+                <DataGridTemplateColumn Header="Printer Name" Width="200">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding PrinterName}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Actions" Width="*">
-
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click"/>
-                                <Button x:Name="btnPrintAndKickDrawer" Content="Print And Kich Cash Drawer"/>
-                                <Button x:Name="btnPrintOnly" Content="Print Only"/>
-                                <Button x:Name="btnCutOnly" Content="Cut Only"/>
-                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)"/>
+                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
+                                <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
+                                <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
+                                <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
+                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -146,6 +160,7 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <Label Content="Available Printers" HorizontalAlignment="Left" Margin="729,79,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

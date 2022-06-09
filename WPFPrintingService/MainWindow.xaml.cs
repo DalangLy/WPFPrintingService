@@ -127,18 +127,18 @@ namespace WPFPrintingService
                             }
                             //find printer
 
-                            PrinterModel? _foundPrinterModel = _allConnectedPrintersToDisplayOnDataGridView.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
-                            if (_foundPrinterModel == null)
-                            {
-                                onPrintResponse("Can't Find Printer");
-                                return;
-                            }
+                            //PrinterModel? _foundPrinterModel = _allConnectedPrintersToDisplayOnDataGridView.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                            //if (_foundPrinterModel == null)
+                            //{
+                            //    onPrintResponse("Can't Find Printer");
+                            //    return;
+                            //}
 
-                            if (!_foundPrinterModel.IsOnline)
-                            {
-                                onPrintResponse("Select Printer is currently Offline");
-                                return;
-                            }
+                            //if (!_foundPrinterModel.IsOnline)
+                            //{
+                            //    onPrintResponse("Select Printer is currently Offline");
+                            //    return;
+                            //}
 
                             if (printDataModel.Base64Image == "")
                             {
@@ -158,8 +158,8 @@ namespace WPFPrintingService
                             File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
 
 
-                            int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
-
+                            //int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
+                            int _selectedPrinterIndex = 0;
                             switch (printDataModel.PrintMethod)
                             {
                                 case "PrintOnly":
@@ -188,12 +188,14 @@ namespace WPFPrintingService
                                     break;
                                 default:
                                     //print test
-                                    _allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
-                                      ByteSplicer.Combine(
-                                        _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
-                                        _epson.PartialCutAfterFeed(5)
-                                      )
-                                    );
+                                    //_allConnectedNetworkPrinters[_selectedPrinterIndex].Write(
+                                    //  ByteSplicer.Combine(
+                                    //    _epson.PrintImage(File.ReadAllBytes(savedImage), true, true),
+                                    //    _epson.PartialCutAfterFeed(5)
+                                    //  )
+                                    //);
+
+                                    _printAndCut(printDataModel.PrinterName);
                                     break;
                             }
 
@@ -584,6 +586,39 @@ namespace WPFPrintingService
             _printAndCut(printer.PrinterName);
         }
 
+        private void btnPrintAndKickDrawer_Click(object sender, RoutedEventArgs e)
+        {
+            PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
+            if (printer == null) return;
+
+            _printAndKickCashDrawer(printer.PrinterName);
+        }
+
+        private void btnPrintOnly_Click(object sender, RoutedEventArgs e)
+        {
+            PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
+            if (printer == null) return;
+
+            _printOnly(printer.PrinterName);
+        }
+
+        private void btnCutOnly_Click(object sender, RoutedEventArgs e)
+        {
+            PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
+            if (printer == null) return;
+
+            _cutOnly(printer.PrinterName);
+        }
+
+        private void btnKickDrawer_Click(object sender, RoutedEventArgs e)
+        {
+            PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
+            if (printer == null) return;
+
+            _kickCashDrawer(printer.PrinterName);
+        }
+
+        //default windows print functions
         private void _printAndCut(string printerName)
         {
             //print and cut using default windows print document
@@ -601,6 +636,12 @@ namespace WPFPrintingService
                 );
             };
             printDocument.PrinterSettings.PrinterName = printerName;
+            printDocument.EndPrint += (o, ev) =>
+            {
+                MessageBox.Show("Print Success");
+                if(_webSocketServer != null)
+                    _webSocketServer.WebSocketServices["/"].Sessions.Broadcast("Print Success hahha");
+            };
             printDocument.Print();
             printDocument.Dispose();
         }
@@ -667,7 +708,6 @@ namespace WPFPrintingService
                 );
             };
             printDocument.PrinterSettings.PrinterName = printerName;
-            printDocument.Print();
             printDocument.EndPrint += (o, ev) =>
             {
                 //open cash drawer command
@@ -679,6 +719,7 @@ namespace WPFPrintingService
                 const string openTillCommand = ESC1 + p + m + t1 + t2;
                 RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
             };
+            printDocument.Print();
             printDocument.Dispose();
         }
 
@@ -695,11 +736,14 @@ namespace WPFPrintingService
             string COMMAND = "";
             COMMAND = ESC + "@";
             COMMAND += GS + "V" + (char)1;
-            RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, COMMAND);
-
+            bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, COMMAND);
+            if (_cutted)
+            {
+                MessageBox.Show("Cut Success");
+            }
             printDocument.Dispose();
         }
-        
+
         private void _kickCashDrawer(string printerName)
         {
             //kick out cash drawer using default windows print document
@@ -714,8 +758,11 @@ namespace WPFPrintingService
             const string t1 = "\u0025";
             const string t2 = "\u0250";
             const string openTillCommand = ESC1 + p + m + t1 + t2;
-            RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
-
+            bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+            if(_cashDrawerOpened)
+            {
+                MessageBox.Show("Cash Drawer Opened");
+            }
             printDocument.Dispose();
         }
     }

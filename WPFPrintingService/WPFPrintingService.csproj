@@ -5,10 +5,15 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>cherry.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Icons\cherry.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="cherry.ico" />
   </ItemGroup>
 
   <ItemGroup>

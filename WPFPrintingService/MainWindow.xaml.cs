@@ -44,6 +44,14 @@ namespace WPFPrintingService
             //check if run on start up button is enable
             bool _isRunAtStartUp = Properties.Settings.Default.is_run_at_start_up;
             chbRunOnStartUp.IsChecked = _isRunAtStartUp;
+
+            //check if start service on start up
+            bool _isStartServiceAtStartUp = Properties.Settings.Default.is_start_server_on_start_up;
+            chbAutoRunService.IsChecked = _isStartServiceAtStartUp;
+            if (_isStartServiceAtStartUp)
+            {
+                _startWebSocketServer();
+            }
         }
 
         private void _loadAllPrintersFromWindowsSystem()
@@ -418,10 +426,12 @@ namespace WPFPrintingService
 
         private void btnPrintOnly_Click(object sender, RoutedEventArgs e)
         {
-            PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
-            if (printer == null) return;
+            //PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
+            //if (printer == null) return;
 
-            _printOnly(printer.PrinterName);
+            //_printOnly(printer.PrinterName);
+
+            MessageBox.Show("Sorry this feature is in progress");
         }
 
         private void btnCutOnly_Click(object sender, RoutedEventArgs e)
@@ -591,6 +601,18 @@ namespace WPFPrintingService
         private void btnRefreshPrinterList_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Not Implement");
+        }
+
+        private void chbAutoRunService_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.is_start_server_on_start_up = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chbAutoRunService_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.is_start_server_on_start_up = true;
+            Properties.Settings.Default.Save();
         }
     }
 }

@@ -34,5 +34,17 @@ namespace WPFPrintingService.Properties {
                 this["is_run_at_start_up"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool is_start_server_on_start_up {
+            get {
+                return ((bool)(this["is_start_server_on_start_up"]));
+            }
+            set {
+                this["is_start_server_on_start_up"] = value;
+            }
+        }
     }
 }

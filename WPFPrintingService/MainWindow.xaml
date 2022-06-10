@@ -123,7 +123,7 @@
             </tb:TaskbarIcon.ContextMenu>-->
 
         </tb:TaskbarIcon>
-        <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="267,19,0,0" VerticalAlignment="Top" Width="115" Cursor="Hand"/>
+        <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="267,19,0,0" VerticalAlignment="Top" Width="115" Cursor="Hand" Checked="chbAutoRunService_Checked" Unchecked="chbAutoRunService_Unchecked"/>
         <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="1018,602,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked" Cursor="Hand"/>
         <Button x:Name="btnQuitApplication" Content="Quit" HorizontalAlignment="Left" Margin="1169,594,0,0" VerticalAlignment="Top" Width="85" Click="btnQuitApplication_Click" BorderBrush="{x:Null}" Cursor="Hand" Height="32">
             <Button.Style>

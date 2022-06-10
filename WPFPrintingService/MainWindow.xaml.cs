@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
@@ -25,6 +26,7 @@ namespace WPFPrintingService
         private const int PORT = 1100;
         private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
         private bool _isWebSocketSeverRunning = false;
+        private bool _isDialogShow = false;
 
         public MainWindow()
         {
@@ -51,7 +53,8 @@ namespace WPFPrintingService
 
         private void _setupWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer(IPAddress.Parse(GetLocalIPAddress()), PORT);
+            _webSocketServer = new WebSocketServer(IPAddress.Parse(_getLocalIPAddress()), PORT);
+            _webSocketServer.Realm = "DXPrintService";
         }
 
         private void _loadAllPrintersFromWindowsSystem()
@@ -87,7 +90,7 @@ namespace WPFPrintingService
             }
         }
 
-        private string GetLocalIPAddress()
+        private string _getLocalIPAddress()
         {
             string localIP = string.Empty;
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
@@ -146,7 +149,7 @@ namespace WPFPrintingService
             _webSocketServer.Start();
 
             btnStartStopServer.Content = "Stop";
-            txtServerStatus.Text = $"Service on ws://{GetLocalIPAddress()}:{PORT}";
+            txtServerStatus.Text = $"Service on ws://{_getLocalIPAddress()}:{PORT}";
             _isWebSocketSeverRunning = true;
         }
 
@@ -301,9 +304,17 @@ namespace WPFPrintingService
             }
         }
 
+        
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)
         {
-            mainGrid.Children.Add(new ServerInfoForm());
+            if (this._isDialogShow) return;
+            ServerInfoForm serverInfoForm = new ServerInfoForm(_getLocalIPAddress(), PORT);
+            serverInfoForm.OnDialogClosed += (s, e) =>
+            {
+                this._isDialogShow = false;
+            };
+            mainGrid.Children.Add(serverInfoForm);
+            this._isDialogShow = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -321,12 +332,18 @@ namespace WPFPrintingService
 
         private void btnQuitApplication_Click(object sender, RoutedEventArgs e)
         {
+            if(this._isDialogShow) return;
             CustomConfirmDialog confirmExitDialog = new CustomConfirmDialog("Exit?");
             confirmExitDialog.OnConfirmClickCallBack += (s, ev) =>
             {
                 _shutdownThisApplication();
             };
+            confirmExitDialog.OnDialogClosed += (s, e) =>
+            {
+                this._isDialogShow = false;
+            };
             mainGrid.Children.Add(confirmExitDialog);
+            this._isDialogShow = true;
         }
 
         private void _shutdownThisApplication()

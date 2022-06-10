@@ -8,6 +8,7 @@ namespace WPFPrintingService
     public partial class CustomConfirmDialog : UserControl
     {
         public event VoidCallBack? OnConfirmClickCallBack;
+        public event VoidCallBack? OnDialogClosed;
         private string _title;
 
         public CustomConfirmDialog(string title)
@@ -31,6 +32,8 @@ namespace WPFPrintingService
         private void confirmExitDialogOverlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             this._closeThisDialog();
+            if(OnDialogClosed != null)
+                OnDialogClosed(this, EventArgs.Empty);
         }
 
         private void _closeThisDialog()

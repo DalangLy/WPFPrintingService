@@ -90,7 +90,7 @@
 
         <Label Content="Connected Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBox Padding="5" x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
-        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" BorderBrush="{x:Null}" Cursor="Hand">
+        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" BorderBrush="{x:Null}" Cursor="Hand" RenderTransformOrigin="0.5,0.5">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <!--<Setter Property="Background" Value="Green"/>-->
@@ -238,10 +238,11 @@
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                     <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="Height" Value="40"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Printer Name" Width="200">
+                <DataGridTemplateColumn Header="Printer Name" Width="250">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding PrinterName}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">

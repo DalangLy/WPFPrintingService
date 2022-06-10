@@ -124,12 +124,12 @@ namespace WPFPrintingService
                             }
                             //find printer
 
-                            //PrinterModel? _foundPrinterModel = _allConnectedPrintersToDisplayOnDataGridView.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
-                            //if (_foundPrinterModel == null)
-                            //{
-                            //    onPrintResponse("Can't Find Printer");
-                            //    return;
-                            //}
+                            PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                            if (_foundPrinterModel == null)
+                            {
+                                onPrintResponse("Can't Find Printer");
+                                return;
+                            }
 
                             //if (!_foundPrinterModel.IsOnline)
                             //{
@@ -154,9 +154,6 @@ namespace WPFPrintingService
                             String savedImage = _path + "\\temp_print." + attachmentType.Extension;
                             File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
 
-
-                            //int _selectedPrinterIndex = _allConnectedPrintersToDisplayOnDataGridView.IndexOf(_foundPrinterModel);
-                            int _selectedPrinterIndex = 0;
                             switch (printDataModel.PrintMethod)
                             {
                                 case "PrintOnly":
@@ -283,10 +280,7 @@ namespace WPFPrintingService
 
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)
         {
-            mainGrid.Children.Add(new ServerInfoForm((childForm) =>
-            {
-                mainGrid.Children.Remove(childForm);
-            }));
+            mainGrid.Children.Add(new ServerInfoForm());
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -405,6 +399,13 @@ namespace WPFPrintingService
         private void btnSendToEveryClients_Click(object sender, RoutedEventArgs e)
         {
             if (_webSocketServer == null) return;
+            if (!_webSocketServer.IsListening)
+            {
+                MessageBox.Show("Start Service First");
+                return;
+            }
+               
+
             _webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
         }
 

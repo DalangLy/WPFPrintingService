@@ -8,16 +8,14 @@ namespace WPFPrintingService
 {
     public partial class ServerInfoForm : UserControl
     {
-        private OnPopUpFormClickCallBack _onPopUpFormClickCallBack;
-        public ServerInfoForm(OnPopUpFormClickCallBack onPopUpFormClickCallBack)
+        public ServerInfoForm()
         {
             InitializeComponent();
-            this._onPopUpFormClickCallBack = onPopUpFormClickCallBack;
         }
 
-        private void Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
+        private void serverInfoDialogOverlay_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this._onPopUpFormClickCallBack(this);
+            this._closeThisDialog();
         }
 
         private string GetLocalIPAddress()
@@ -36,6 +34,11 @@ namespace WPFPrintingService
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             txtIp.Content = $"ws://{GetLocalIPAddress()}:8000";
+        }
+
+        private void _closeThisDialog()
+        {
+            ((Panel)this.Parent).Children.Remove(this);
         }
     }
 }

@@ -35,17 +35,61 @@
         </Button>
 
         <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,278,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" HorizontalAlignment="Left" VerticalAlignment="Top" Height="201" Width="358">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="FontSize" Value="10"/>
+                    <Setter Property="Background" Value="SteelBlue"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="SeparatorBrush" Value="Black"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="SeparatorVisibility" Value="Visible"/>
+                </Style>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="Height" Value="30"/>
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="IP" Binding="{Binding Ip}" Width="*"/>
+                <DataGridTemplateColumn Header="Client Name" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                                <TextBlock.ToolTip>
+                                    <ToolTip>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="IP" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Ip}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                                <TextBlock.ToolTip>
+                                    <ToolTip>
+                                        <TextBlock Text="{Binding Ip}"/>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
 
 
 
 
-        <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <TextBox x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
+        <Label Content="Connected Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <TextBox Padding="5" x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
         <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
@@ -150,7 +194,7 @@
                 <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
             </Button.Effect>
         </Button>
-        <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,510,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="358" Height="70"/>
+        <TextBox Padding="5" x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,510,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="358" Height="70"/>
         <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="26,592,0,0" VerticalAlignment="Top" Height="37" Width="356" Click="btnSendToEveryClients_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">

@@ -16,7 +16,7 @@ namespace WPFPrintingService
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            _closeThisDialog();
+            this._closeThisDialog();
         }
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
@@ -26,9 +26,9 @@ namespace WPFPrintingService
             OnConfirmExitClickCallBack(this, EventArgs.Empty);
         }
 
-        private void Rectangle_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void confirmExitDialogOverlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _closeThisDialog();
+            this._closeThisDialog();
         }
 
         private void _closeThisDialog()

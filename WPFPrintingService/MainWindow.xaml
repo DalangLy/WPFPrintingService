@@ -242,7 +242,7 @@
                                         </Style>
                                     </Button.Resources>
                                 </Button>
-                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand">
+                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand" Click="btnKickDrawer_Click">
                                     <Button.Resources>
                                         <Style TargetType="{x:Type Border}">
                                             <Setter Property="CornerRadius" Value="5.0"/>

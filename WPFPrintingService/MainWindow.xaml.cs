@@ -1,7 +1,4 @@
-﻿using ESCPOS_NET;
-using ESCPOS_NET.Emitters;
-using ESCPOS_NET.Utilities;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

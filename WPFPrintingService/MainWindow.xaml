@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:WPFPrintingService"
         mc:Ignorable="d"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        ResizeMode="CanMinimize"
         Title="Printing Service" Height="688" Width="1295" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid x:Name="mainGrid">
-        <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,66,0,0" VerticalAlignment="Top" Height="32" Width="100" Click="btnStartStopServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
+        <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,66,0,0" VerticalAlignment="Top" Height="32" Width="238" Click="btnStartStopServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="Aquamarine"/>
@@ -44,30 +45,6 @@
 
 
         <Label Content="Connect Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Button x:Name="btnMonitorWebSocketServer" Content="Monitor" HorizontalAlignment="Left" Margin="155,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnMonitorWebSocketServer_Click" BorderBrush="{x:Null}" Cursor="Hand">
-            <Button.Style>
-                <Style TargetType="{x:Type Button}">
-                    <!--<Setter Property="Background" Value="Green"/>-->
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Border CornerRadius="5" Background="{TemplateBinding Background}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="Gray"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-            <Button.Effect>
-                <DropShadowEffect BlurRadius="3" ShadowDepth="3" Opacity="0.5" Color="Gray"/>
-            </Button.Effect>
-        </Button>
         <TextBox x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
         <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" BorderBrush="{x:Null}" Cursor="Hand">
             <Button.Style>
@@ -206,6 +183,7 @@
                     <Setter Property="FontWeight" Value="Bold" />
                     <Setter Property="FontSize" Value="10"/>
                     <Setter Property="Background" Value="SteelBlue"/>
+                    <Setter Property="Foreground" Value="White"/>
                     <Setter Property="Height" Value="40"/>
                     <Setter Property="SeparatorBrush" Value="Black"/>
                     <Setter Property="BorderBrush" Value="Black"/>
@@ -236,11 +214,41 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
-                                <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
-                                <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
-                                <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
-                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand"/>
+                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="5.0"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="5.0"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="5.0"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="5.0"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="5.0"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -252,7 +260,7 @@
         <Label Content="Service" HorizontalAlignment="Left" Margin="20,11,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="Red"/>
         <Label Content="Message" HorizontalAlignment="Left" Margin="19,481,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <Label Content="Status" HorizontalAlignment="Left" Margin="20,102,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Button x:Name="btnRefreshPrinterList" Content="Refresh" HorizontalAlignment="Left" Margin="1155,11,0,0" VerticalAlignment="Top" Height="32" Width="99" BorderBrush="{x:Null}" Cursor="Hand">
+        <Button x:Name="btnRefreshPrinterList" Content="Refresh" HorizontalAlignment="Left" Margin="1155,11,0,0" VerticalAlignment="Top" Height="32" Width="99" BorderBrush="{x:Null}" Cursor="Hand" Click="btnRefreshPrinterList_Click">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <!--<Setter Property="Background" Value="Green"/>-->

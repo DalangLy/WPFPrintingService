@@ -276,14 +276,6 @@ namespace WPFPrintingService
             txtServerStatus.Text = _isWebSocketSeverRunning ? $"Service on ws://{GetLocalIPAddress()}:{PORT}" : "Server Stopped";
         }
 
-        private void btnMonitorWebSocketServer_Click(object sender, RoutedEventArgs e)
-        {
-            mainGrid.Children.Add(new MonitorServerForm((childForm) =>
-            {
-                mainGrid.Children.Remove(childForm);
-            }));
-        }
-
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)
         {
             mainGrid.Children.Add(new ServerInfoForm((childForm) =>
@@ -307,7 +299,12 @@ namespace WPFPrintingService
 
         private void btnQuitApplication_Click(object sender, RoutedEventArgs e)
         {
-            _shutdownThisApplication();
+            ConfirmExitDialog confirmExitDialog = new ConfirmExitDialog();
+            confirmExitDialog.OnConfirmExitClickCallBack += (s, ev) =>
+            {
+                _shutdownThisApplication();
+            };
+            mainGrid.Children.Add(confirmExitDialog);
         }
 
         private void _shutdownThisApplication()
@@ -592,6 +589,11 @@ namespace WPFPrintingService
                 MessageBox.Show("Cash Drawer Opened");
             }
             printDocument.Dispose();
+        }
+
+        private void btnRefreshPrinterList_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Not Implement");
         }
     }
 }

@@ -5,13 +5,15 @@ using WPFPrintingService.UICallBackDelegates;
 
 namespace WPFPrintingService
 {
-    public partial class ConfirmExitDialog : UserControl
+    public partial class CustomConfirmDialog : UserControl
     {
-        public event VoidCallBack? OnConfirmExitClickCallBack;
+        public event VoidCallBack? OnConfirmClickCallBack;
+        private string _title;
 
-        public ConfirmExitDialog()
+        public CustomConfirmDialog(string title)
         {
             InitializeComponent();
+            this._title = title;
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -19,11 +21,11 @@ namespace WPFPrintingService
             this._closeThisDialog();
         }
 
-        private void btnExit_Click(object sender, RoutedEventArgs e)
+        private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
-            if (OnConfirmExitClickCallBack == null) return;
+            if (OnConfirmClickCallBack == null) return;
 
-            OnConfirmExitClickCallBack(this, EventArgs.Empty);
+            OnConfirmClickCallBack(this, EventArgs.Empty);
         }
 
         private void confirmExitDialogOverlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -34,6 +36,11 @@ namespace WPFPrintingService
         private void _closeThisDialog()
         {
             ((Panel)this.Parent).Children.Remove(this);
+        }
+
+        private void confirmExitDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            lblTitle.Content = _title;
         }
     }
 }

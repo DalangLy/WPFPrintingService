@@ -1,27 +1,15 @@
-﻿using WebSocketSharp;
+﻿using System;
+using WebSocketSharp;
 using WebSocketSharp.Server;
+using WPFPrintingService.UICallBackDelegates;
 
 namespace WPFPrintingService
 {
-    internal delegate void OnPrintResponse(string status);
-    internal delegate void OnSendToEveryone(string message);
-    internal delegate void OnSendToServer();
-
-    internal delegate void OnOpenCallBack(string clientId, string clientIp, string clientName);
-    internal delegate void onMessageCallBack(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone);
-    internal delegate void OnCloseCallBack(string clientIp);
     internal class WebSocketServerListener : WebSocketBehavior
     {
-        private OnOpenCallBack _onOpenCallBack;
-        private onMessageCallBack _onMessageCallBack;
-        private OnCloseCallBack _onCloseCallBack;
-
-        public WebSocketServerListener(OnOpenCallBack onOpenCallBack, onMessageCallBack onMessageCallBack, OnCloseCallBack onCloseCallBack)
-        {
-            this._onOpenCallBack = onOpenCallBack;
-            this._onMessageCallBack = onMessageCallBack;
-            this._onCloseCallBack = onCloseCallBack;
-        }
+        public event OnOpenCallBack? OnClientConnected;
+        public event onMessageCallBack? OnMessageCallBack;
+        public event OnCloseCallBack? OnClientDisconnected;
 
         protected override void OnOpen()
         {
@@ -34,7 +22,10 @@ namespace WPFPrintingService
             //System.Console.WriteLine(OriginValidator);
             //System.Console.WriteLine(ID);
             //System.Console.WriteLine(EmitOnPing);
-            this._onOpenCallBack(_getClientId() ,_getClientIP(), _getClientName());
+            if (OnClientConnected == null) return;
+
+            this.OnClientConnected(this, EventArgs.Empty, _getClientId() ,_getClientIP(), _getClientName());
+
             Send("Connected");
             Sessions.Broadcast($"{_getClientName()} Has Joined");
         }
@@ -42,23 +33,31 @@ namespace WPFPrintingService
         protected override void OnMessage(MessageEventArgs e)
         {
             base.OnMessage(e);
-            this._onMessageCallBack(_getClientId(), _getClientName(), e.Data,
-            (status) =>
-            {
-                //on print response
-                Send(status);
-            },
-            () =>
-            {
-                //on send to server
-                Send("Sent");
-            },
-            (message) =>
-            {
-                //on send to everyone
-                Sessions.Broadcast(message);
-                Send("Sent");
-            }
+
+            if (OnMessageCallBack == null) return;
+
+            this.OnMessageCallBack(
+                this, 
+                EventArgs.Empty,
+                _getClientId(),
+                _getClientName(), 
+                e.Data,
+                (s, ev, status) =>
+                {
+                    //on print response
+                    Send(status);
+                },
+                (s, ev) =>
+                {
+                    //on send to server
+                    Send("Sent");
+                },
+                (s, ev, message) =>
+                {
+                    //on send to everyone
+                    Sessions.Broadcast(message);
+                    Send("Sent");
+                }
             );
         }
 
@@ -71,7 +70,11 @@ namespace WPFPrintingService
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
-            this._onCloseCallBack(_getClientId());
+
+            if (OnClientDisconnected == null) return;
+
+            this.OnClientDisconnected(this, EventArgs.Empty, _getClientId());
+
             Sessions.Broadcast($"{_getClientName()} Has Left");
         }
 

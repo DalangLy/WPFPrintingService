@@ -14,6 +14,8 @@
             </Border.Effect>
             <Grid VerticalAlignment="Stretch">
                 <Label x:Name="txtIp" HorizontalAlignment="Center" Content="Server : http://127.0.0.1:8000" Margin="10,50,10,50"/>
+                <Rectangle Margin="10,29,10,104" Fill="Black" RadiusX="2" RadiusY="2" />
+                <Label HorizontalAlignment="Left" Content="This Service Run On" Margin="5,0,0,99" FontWeight="Bold" FontSize="14"/>
             </Grid>
         </Border>
     </Grid>

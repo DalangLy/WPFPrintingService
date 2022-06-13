@@ -265,6 +265,7 @@ namespace WPFPrintingService
                             IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
                             if (attachmentType != AttachmentType.Photo)
                             {
+                                onPrintResponse(this, EventArgs.Empty, "Only Support Image");
                                 return;
                             }
 

@@ -7,9 +7,16 @@ namespace WPFPrintingService
 {
     internal class WebSocketServerListener : WebSocketBehavior
     {
-        public event OnOpenCallBack? OnClientConnected;
-        public event onMessageCallBack? OnMessageCallBack;
-        public event OnCloseCallBack? OnClientDisconnected;
+        private OnOpenCallBack _onClientConnected;
+        private onMessageCallBack _onMessageCallBack;
+        public event OnCloseCallBack _onClientDisconnected;
+
+        public WebSocketServerListener(OnOpenCallBack onClientConnected, onMessageCallBack onMessageCallBack, OnCloseCallBack onClientDisconnected)
+        {
+            this._onClientConnected = onClientConnected;
+            this._onMessageCallBack = onMessageCallBack;
+            this._onClientDisconnected = onClientDisconnected;
+        }
 
         protected override void OnOpen()
         {
@@ -22,9 +29,9 @@ namespace WPFPrintingService
             System.Console.WriteLine(OriginValidator);
             System.Console.WriteLine(ID);
             System.Console.WriteLine(EmitOnPing);
-            if (OnClientConnected == null) return;
+            
 
-            this.OnClientConnected(this, EventArgs.Empty, _getClientId() ,_getClientIP(), _getClientName());
+            this._onClientConnected(this, EventArgs.Empty, _getClientId() ,_getClientIP(), _getClientName());
 
             Send("Connected");
             Sessions.Broadcast($"{_getClientName()} Has Joined");
@@ -34,9 +41,7 @@ namespace WPFPrintingService
         {
             base.OnMessage(e);
 
-            if (OnMessageCallBack == null) return;
-
-            this.OnMessageCallBack(
+            this._onMessageCallBack(
                 this, 
                 EventArgs.Empty,
                 _getClientId(),
@@ -70,9 +75,8 @@ namespace WPFPrintingService
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
-            if (OnClientDisconnected == null) return;
-
-            this.OnClientDisconnected(this, e, _getClientId());
+            
+            this._onClientDisconnected(this, e, _getClientId());
 
             Sessions.Broadcast($"{_getClientName()} Has Left");
         }

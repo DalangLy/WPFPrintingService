@@ -14,7 +14,6 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using WPFPrintingService.ImageConversion;
 using WPFPrintingService.UICallBackDelegates;
-using System.Text.Json;
 using Newtonsoft.Json;
 using System.Windows.Controls;
 using System.Diagnostics;
@@ -55,13 +54,10 @@ namespace WPFPrintingService
 
         private void _setupWebSocketServer()
         {
-            //_webSocketServer = new WebSocketServer(IPAddress.Parse(_getLocalIPAddress()), PORT);
+            _webSocketServer = new WebSocketServer(IPAddress.Parse(_getLocalIPAddress()), PORT);
 
             //// Not to remove the inactive sessions periodically.
             //_webSocketServer.KeepClean = true;
-
-
-
         }
 
         private void _loadAllPrintersFromWindowsSystem()
@@ -134,25 +130,24 @@ namespace WPFPrintingService
             if (_webSocketServer == null) return;
 
             //add web socket server listeners
-            WebSocketServerListener webSocketServerListener = new WebSocketServerListener();
-            webSocketServerListener.OnClientConnected += (sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
+            _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
             {
                 //on open or on client connected
                 _addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
-            };
-            webSocketServerListener.OnMessageCallBack += (sender, args, clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
-            {
-                //onMessageCallBack
-                _onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
 
-            };
-            webSocketServerListener.OnClientDisconnected += (sender, args, disconnectedClientId) =>
-            {
-                //on close or on client disconnected
-                _removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
-            };
+            },
+                (sender, args, clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
+                {
+                    //onMessageCallBack
+                    _onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
 
-            _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => webSocketServerListener);
+                },
+                (sender, args, disconnectedClientId) =>
+                {
+                    //on close or on client disconnected
+                    _removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
+                }
+            ));
 
             _webSocketServer.Start();
 

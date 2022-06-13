@@ -397,7 +397,7 @@ namespace WPFPrintingService
             }
 
 
-            this._webSocketServer.WebSocketServices["/Print"].Sessions.Broadcast(txtMessage.Text);
+            this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
             this.mainGrid.Children.Add(new CustomMessageDialog());
         }
 

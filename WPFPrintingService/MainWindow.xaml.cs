@@ -343,8 +343,13 @@ namespace WPFPrintingService
             confirmExitDialog.OnConfirmClickCallBack += (s, ev) =>
             {
                 this._shutdownThisApplication();
+                this._isDialogShow = false;
             };
-            confirmExitDialog.OnDialogClosed += (s, e) =>
+            confirmExitDialog.OnOverlayClicked += (s, e) =>
+            {
+                this._isDialogShow = false;
+            };
+            confirmExitDialog.OnCancelClicked += (s, e) =>
             {
                 this._isDialogShow = false;
             };

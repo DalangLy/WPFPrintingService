@@ -13,9 +13,10 @@
                 <DropShadowEffect/>
             </Border.Effect>
             <Grid VerticalAlignment="Stretch">
-                <Label x:Name="txtIp" HorizontalAlignment="Center" Content="Server : http://127.0.0.1:8000" Margin="10,50,10,50"/>
+                <Label x:Name="txtIp" HorizontalAlignment="Center" Content="Server : http://127.0.0.1:8000" Margin="0,62,0,44"/>
                 <Rectangle Margin="10,29,10,104" Fill="Black" RadiusX="2" RadiusY="2" />
                 <Label HorizontalAlignment="Left" Content="This Service Run On" Margin="5,0,0,99" FontWeight="Bold" FontSize="14"/>
+                <Label x:Name="txtIp_Copy" HorizontalAlignment="Center" Content="Vertsion : 1.1.0" Margin="0,108,0,0" FontSize="10" Background="Transparent" Foreground="#FF585858"/>
             </Grid>
         </Border>
     </Grid>

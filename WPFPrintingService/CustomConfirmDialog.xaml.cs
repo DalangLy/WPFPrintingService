@@ -8,7 +8,9 @@ namespace WPFPrintingService
     public partial class CustomConfirmDialog : UserControl
     {
         public event VoidCallBack? OnConfirmClickCallBack;
-        public event VoidCallBack? OnDialogClosed;
+        public event VoidCallBack? OnOverlayClicked;
+        public event VoidCallBack? OnCancelClicked;
+
         private string _title;
 
         public CustomConfirmDialog(string title)
@@ -20,20 +22,28 @@ namespace WPFPrintingService
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             this._closeThisDialog();
+            if (this.OnCancelClicked != null)
+                this.OnCancelClicked(this, EventArgs.Empty);
         }
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
-            if (OnConfirmClickCallBack == null) return;
-
-            OnConfirmClickCallBack(this, EventArgs.Empty);
+            if (OnConfirmClickCallBack == null)
+            {
+                this._closeThisDialog();
+                return;
+            }
+            else
+            {
+                OnConfirmClickCallBack(this, EventArgs.Empty);
+            }
         }
 
         private void confirmExitDialogOverlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             this._closeThisDialog();
-            if(OnDialogClosed != null)
-                OnDialogClosed(this, EventArgs.Empty);
+            if(OnOverlayClicked != null)
+                OnOverlayClicked(this, EventArgs.Empty);
         }
 
         private void _closeThisDialog()

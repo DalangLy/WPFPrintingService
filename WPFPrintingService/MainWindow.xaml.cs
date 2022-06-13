@@ -16,7 +16,6 @@ using WPFPrintingService.ImageConversion;
 using WPFPrintingService.UICallBackDelegates;
 using Newtonsoft.Json;
 using System.Windows.Controls;
-using System.Diagnostics;
 
 namespace WPFPrintingService
 {
@@ -54,10 +53,10 @@ namespace WPFPrintingService
 
         private void _setupWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer(IPAddress.Parse(_getLocalIPAddress()), PORT);
+            this._webSocketServer = new WebSocketServer(IPAddress.Parse(this._getLocalIPAddress()), PORT);
 
             //// Not to remove the inactive sessions periodically.
-            //_webSocketServer.KeepClean = true;
+            //_webSocketServer.KeepClean = false;
         }
 
         private void _loadAllPrintersFromWindowsSystem()
@@ -102,7 +101,6 @@ namespace WPFPrintingService
                 IPEndPoint? endPoint = socket.LocalEndPoint as IPEndPoint;
                 localIP = endPoint!.Address.ToString();
             }
-            //Console.WriteLine("IP Address = " + localIP);
             return localIP;
         }
 
@@ -114,71 +112,69 @@ namespace WPFPrintingService
                 CustomConfirmDialog customConfirmDialog = new CustomConfirmDialog("Stop The Service?");
                 customConfirmDialog.OnConfirmClickCallBack += (sender, e) =>
                 {
-                    _stopWebSocketServer();
-                    mainGrid.Children.Remove((UserControl)sender);
+                    this._stopWebSocketServer();
+                    this.mainGrid.Children.Remove((UserControl)sender);
                 };
-                mainGrid.Children.Add(customConfirmDialog);
+                this.mainGrid.Children.Add(customConfirmDialog);
             }
             else
             {
-                _startWebSocketServer();
+                this._startWebSocketServer();
             }
         }
 
         private void _startWebSocketServer()
         {
-            if (_webSocketServer == null) return;
+            if (this._webSocketServer == null) return;
 
             //add web socket server listeners
-            _webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
-            {
-                //on open or on client connected
-                _addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
-
-            },
+            this._webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
+                {
+                    //on open or on client connected
+                    this._addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
+                },
                 (sender, args, clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
                 {
                     //onMessageCallBack
-                    _onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
-
+                    this._onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
                 },
                 (sender, args, disconnectedClientId) =>
                 {
                     //on close or on client disconnected
-                    _removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
+                    this._removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
                 }
             ));
 
-            _webSocketServer.Start();
+            this._webSocketServer.Start();
 
-            btnStartStopServer.Content = "Stop";
-            txtServerStatus.Text = $"Service on ws://{_getLocalIPAddress()}:{PORT}";
-            _isWebSocketSeverRunning = true;
+            this.btnStartStopServer.Content = "Stop";
+            this.txtServerStatus.Text = $"Service on ws://{this._getLocalIPAddress()}:{PORT}";
+            this._isWebSocketSeverRunning = true;
         }
 
         private void _stopWebSocketServer()
         {
-            if (_webSocketServer == null) return;
+            if (this._webSocketServer == null) return;
 
-            _webSocketServer.RemoveWebSocketService("/");
+            this._webSocketServer.RemoveWebSocketService("/");
 
-            _webSocketServer.Stop(CloseStatusCode.Away, "Server Stop");
+            this._webSocketServer.Stop(CloseStatusCode.Away, "Server Stop");
 
-            btnStartStopServer.Content = "Start";
-            txtServerStatus.Text = "Server Stopped";
-            _isWebSocketSeverRunning = false;
+            this.btnStartStopServer.Content = "Start";
+            this.txtServerStatus.Text = "Server Stopped";
+            this._isWebSocketSeverRunning = false;
         }
 
         private void _addConnectedWebSocketClientToListView(string id, string ip, string name)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                _allConnectedWebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
-                lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
-                lvConnectWebSocketClients.Items.Refresh();
+                this._allConnectedWebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
+                this.lvConnectWebSocketClients.ItemsSource = this._allConnectedWebSocketClients;
+                this.lvConnectWebSocketClients.Items.Refresh();
 
                 //update text status
-                txtServerStatus.Text += $"\n{name} has joined";
+                this.txtServerStatus.Text += $"\n{name} has joined";
             }), DispatcherPriority.Background);
         }
 
@@ -191,12 +187,12 @@ namespace WPFPrintingService
                 if (_disconnectedWebSocketClient == null) return;
 
                 //remove disconnected client from list and listview
-                _allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
-                lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
-                lvConnectWebSocketClients.Items.Refresh();
+                this._allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
+                this.lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
+                this.lvConnectWebSocketClients.Items.Refresh();
 
                 //update text status
-                txtServerStatus.Text += $"\n{_disconnectedWebSocketClient.Name} has Left";
+                this.txtServerStatus.Text += $"\n{_disconnectedWebSocketClient.Name} has Left";
             }), DispatcherPriority.Background);
         }
 
@@ -219,7 +215,7 @@ namespace WPFPrintingService
                             _webSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
                         }
                         break;
-                    case "SendToEveryOne":
+                    case "SendToEveryone":
                         onSendToEveryone(this, EventArgs.Empty, $"{clientName} Said : {requestModel.Data}");
                         break;
                     case "SendToServer":
@@ -279,20 +275,19 @@ namespace WPFPrintingService
                             switch (printDataModel.PrintMethod)
                             {
                                 case "PrintOnly":
-                                    //print test
-                                    
+                                    this._printOnly(printDataModel.PrinterName);
                                     break;
                                 case "CutOnly":
-                                    //print test
-                                    
+                                    this._cutOnly(printDataModel.PrinterName, clientId);
                                     break;
                                 case "OpenCashDrawer":
-                                    //print test
-                                    
+                                    this._kickCashDrawer(printDataModel.PrinterName, clientId);
+                                    break;
+                                case "PrintAndKickCashDrawer":
+                                    this._printAndKickCashDrawer(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
                                     break;
                                 default:
-                                    //print test
-                                    _printAndCut(printDataModel.PrinterName);
+                                    _printAndCut(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
                                     break;
                             }
 
@@ -317,14 +312,13 @@ namespace WPFPrintingService
         
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine(_webSocketServer.IsListening);
             if (this._isDialogShow) return;
             ServerInfoForm serverInfoForm = new ServerInfoForm(_getLocalIPAddress(), PORT);
             serverInfoForm.OnDialogClosed += (s, e) =>
             {
                 this._isDialogShow = false;
             };
-            mainGrid.Children.Add(serverInfoForm);
+            this.mainGrid.Children.Add(serverInfoForm);
             this._isDialogShow = true;
         }
 
@@ -338,7 +332,7 @@ namespace WPFPrintingService
 
         private void btnExitPrintingServiceViaSystemTray_Click(object sender, RoutedEventArgs e)
         {
-            _shutdownThisApplication();
+            this._shutdownThisApplication();
         }
 
         private void btnQuitApplication_Click(object sender, RoutedEventArgs e)
@@ -347,13 +341,13 @@ namespace WPFPrintingService
             CustomConfirmDialog confirmExitDialog = new CustomConfirmDialog("Exit?");
             confirmExitDialog.OnConfirmClickCallBack += (s, ev) =>
             {
-                _shutdownThisApplication();
+                this._shutdownThisApplication();
             };
             confirmExitDialog.OnDialogClosed += (s, e) =>
             {
                 this._isDialogShow = false;
             };
-            mainGrid.Children.Add(confirmExitDialog);
+            this.mainGrid.Children.Add(confirmExitDialog);
             this._isDialogShow = true;
         }
 
@@ -395,16 +389,16 @@ namespace WPFPrintingService
 
         private void btnSendToEveryClients_Click(object sender, RoutedEventArgs e)
         {
-            if (_webSocketServer == null) return;
-            if (!_webSocketServer.IsListening)
+            if (this._webSocketServer == null) return;
+            if (!this._webSocketServer.IsListening)
             {
                 MessageBox.Show("Start Service First");
                 return;
             }
 
 
-            _webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
-            mainGrid.Children.Add(new CustomMessageDialog());
+            this._webSocketServer.WebSocketServices["/Print"].Sessions.Broadcast(txtMessage.Text);
+            this.mainGrid.Children.Add(new CustomMessageDialog());
         }
 
         private void btnRefreshPrinterList_Click(object sender, RoutedEventArgs e)
@@ -429,7 +423,27 @@ namespace WPFPrintingService
             PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
             if (printer == null) return;
 
-            _printAndCut(printer.PrinterName);
+            //print test
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (o, ev) =>
+            {
+                if (ev.Graphics == null) return;
+                ev.Graphics.DrawString(
+                    "Print Test",
+                    new Font("Arial", 10),
+                    Brushes.Black,
+                    ev.MarginBounds.Left,
+                    0,
+                    new StringFormat()
+                );
+            };
+            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+            printDocument.EndPrint += (o, ev) =>
+            {
+                MessageBox.Show("Print Success");
+            };
+            printDocument.Print();
+            printDocument.Dispose();
         }
 
         private void btnPrintAndKickDrawer_Click(object sender, RoutedEventArgs e)
@@ -437,7 +451,35 @@ namespace WPFPrintingService
             PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
             if (printer == null) return;
 
-            _printAndKickCashDrawer(printer.PrinterName);
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (o, ev) =>
+            {
+                if (ev.Graphics == null) return;
+                ev.Graphics.DrawString(
+                    "Print Test",
+                    new Font("Arial", 10),
+                    Brushes.Black,
+                    ev.MarginBounds.Left,
+                    0,
+                    new StringFormat()
+                );
+            };
+            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+            printDocument.EndPrint += (o, ev) =>
+            {
+                //open cash drawer command
+                const string ESC1 = "\u001B";
+                const string p = "\u0070";
+                const string m = "\u0000";
+                const string t1 = "\u0025";
+                const string t2 = "\u0250";
+                const string openTillCommand = ESC1 + p + m + t1 + t2;
+                RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+
+                MessageBox.Show("Print Success");
+            };
+            printDocument.Print();
+            printDocument.Dispose();
         }
 
         private void btnPrintOnly_Click(object sender, RoutedEventArgs e)
@@ -455,7 +497,21 @@ namespace WPFPrintingService
             PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
             if (printer == null) return;
 
-            _cutOnly(printer.PrinterName);
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+
+            //cut command
+            string GS = Convert.ToString((char)29);
+            string ESC = Convert.ToString((char)27);
+            string COMMAND = "";
+            COMMAND = ESC + "@";
+            COMMAND += GS + "V" + (char)1;
+            bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, COMMAND);
+            if (_cutted)
+            {
+                MessageBox.Show("Cut Success");
+            }
+            printDocument.Dispose();
         }
 
         private void btnKickDrawer_Click(object sender, RoutedEventArgs e)
@@ -463,34 +519,54 @@ namespace WPFPrintingService
             PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
             if (printer == null) return;
 
-            _kickCashDrawer(printer.PrinterName);
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+
+            //open cash drawer command
+            const string ESC1 = "\u001B";
+            const string p = "\u0070";
+            const string m = "\u0000";
+            const string t1 = "\u0025";
+            const string t2 = "\u0250";
+            const string openTillCommand = ESC1 + p + m + t1 + t2;
+            bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+            if (_cashDrawerOpened)
+            {
+                MessageBox.Show("Cash Drawer Opened");
+            }
+            printDocument.Dispose();
         }
 
         //default windows print functions
-        private void _printAndCut(string printerName)
+        private void _printAndCut(string printerName, String base64Image, string clientId)
         {
             //print and cut using default windows print document
             PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += (o, ev) =>
             {
                 if (ev.Graphics == null) return;
-                ev.Graphics.DrawString(
-                    "Print Test",
-                    new Font("Arial", 10),
-                    Brushes.Black,
-                    ev.MarginBounds.Left,
-                    0,
-                    new StringFormat()
-                );
+                System.Drawing.Point loc = new System.Drawing.Point(100, 100);
+                ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
             };
             printDocument.PrinterSettings.PrinterName = printerName;
             printDocument.EndPrint += (o, ev) =>
             {
                 if (_webSocketServer != null && _webSocketServer.IsListening)
-                    _webSocketServer.WebSocketServices["/"].Sessions.Broadcast("Print Success hahha");
+                    _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
             };
             printDocument.Print();
             printDocument.Dispose();
+        }
+
+        private System.Drawing.Image LoadBase64(string base64)
+        {
+            byte[] bytes = Convert.FromBase64String(base64);
+            System.Drawing.Image image;
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                image = System.Drawing.Image.FromStream(ms);
+            }
+            return image;
         }
 
         private void _printOnly(string printerName)
@@ -537,7 +613,7 @@ namespace WPFPrintingService
             //printDocument.Dispose();
         }
 
-        private void _printAndKickCashDrawer(string printerName)
+        private void _printAndKickCashDrawer(string printerName, string base64Image, string clientId)
         {
             //print and kick out cash drawer using default windows print document
 
@@ -545,14 +621,8 @@ namespace WPFPrintingService
             printDocument.PrintPage += (o, ev) =>
             {
                 if (ev.Graphics == null) return;
-                ev.Graphics.DrawString(
-                    "Print Test",
-                    new Font("Arial", 10),
-                    Brushes.Black,
-                    ev.MarginBounds.Left,
-                    0,
-                    new StringFormat()
-                );
+                System.Drawing.Point loc = new System.Drawing.Point(100, 100);
+                ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
             };
             printDocument.PrinterSettings.PrinterName = printerName;
             printDocument.EndPrint += (o, ev) =>
@@ -565,12 +635,19 @@ namespace WPFPrintingService
                 const string t2 = "\u0250";
                 const string openTillCommand = ESC1 + p + m + t1 + t2;
                 RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+
+                //notify to client
+                printDocument.EndPrint += (o, ev) =>
+                {
+                    if (_webSocketServer != null && _webSocketServer.IsListening)
+                        _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
+                };
             };
             printDocument.Print();
             printDocument.Dispose();
         }
 
-        private void _cutOnly(string printerName)
+        private void _cutOnly(string printerName, string clientId)
         {
             //cut only using default windows print document
 
@@ -586,12 +663,13 @@ namespace WPFPrintingService
             bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, COMMAND);
             if (_cutted)
             {
-                MessageBox.Show("Cut Success");
+                if (_webSocketServer != null && _webSocketServer.IsListening)
+                    _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Cut Success", clientId);
             }
             printDocument.Dispose();
         }
 
-        private void _kickCashDrawer(string printerName)
+        private void _kickCashDrawer(string printerName, string clientId)
         {
             //kick out cash drawer using default windows print document
 
@@ -608,7 +686,8 @@ namespace WPFPrintingService
             bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
             if (_cashDrawerOpened)
             {
-                MessageBox.Show("Cash Drawer Opened");
+                if (_webSocketServer != null && _webSocketServer.IsListening)
+                    _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Cash Drawer Opened", clientId);
             }
             printDocument.Dispose();
         }

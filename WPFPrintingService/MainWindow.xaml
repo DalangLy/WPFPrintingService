@@ -134,7 +134,7 @@
                     Height="40"
                 >
                     <TextBlock
-                    Text="hello world"
+                    Text="Printing Service"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                 />
@@ -152,8 +152,29 @@
                   Height="40">
                     <Button x:Name="btnExitPrintingServiceViaSystemTray"
                     Content="Exit"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center" Click="btnExitPrintingServiceViaSystemTray_Click" />
+                    HorizontalAlignment="Stretch"
+                            Cursor="Hand"
+                    VerticalAlignment="Stretch" Click="btnExitPrintingServiceViaSystemTray_Click">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <!--<Setter Property="Background" Value="Green"/>-->
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border CornerRadius="5" Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Gray"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </Border>
             </tb:TaskbarIcon.TrayPopup>
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,6 +14,10 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using WPFPrintingService.ImageConversion;
 using WPFPrintingService.UICallBackDelegates;
+using System.Text.Json;
+using Newtonsoft.Json;
+using System.Windows.Controls;
+using System.Diagnostics;
 
 namespace WPFPrintingService
 {
@@ -52,8 +55,13 @@ namespace WPFPrintingService
 
         private void _setupWebSocketServer()
         {
-            _webSocketServer = new WebSocketServer(IPAddress.Parse(_getLocalIPAddress()), PORT);
-            _webSocketServer.Realm = "DXPrintService";
+            //_webSocketServer = new WebSocketServer(IPAddress.Parse(_getLocalIPAddress()), PORT);
+
+            //// Not to remove the inactive sessions periodically.
+            //_webSocketServer.KeepClean = true;
+
+
+
         }
 
         private void _loadAllPrintersFromWindowsSystem()
@@ -111,6 +119,7 @@ namespace WPFPrintingService
                 customConfirmDialog.OnConfirmClickCallBack += (sender, e) =>
                 {
                     _stopWebSocketServer();
+                    mainGrid.Children.Remove((UserControl)sender);
                 };
                 mainGrid.Children.Add(customConfirmDialog);
             }
@@ -208,6 +217,13 @@ namespace WPFPrintingService
                 }
                 switch (requestModel.Code)
                 {
+                    case "RequestPrinters":
+                        if(_webSocketServer != null && _webSocketServer.IsListening)
+                        {
+                            var json = System.Text.Json.JsonSerializer.Serialize(_allPrintersFromWindowsSystem);
+                            _webSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
+                        }
+                        break;
                     case "SendToEveryOne":
                         onSendToEveryone(this, EventArgs.Empty, $"{clientName} Said : {requestModel.Data}");
                         break;
@@ -306,6 +322,7 @@ namespace WPFPrintingService
         
         private void btnServerInfo_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine(_webSocketServer.IsListening);
             if (this._isDialogShow) return;
             ServerInfoForm serverInfoForm = new ServerInfoForm(_getLocalIPAddress(), PORT);
             serverInfoForm.OnDialogClosed += (s, e) =>

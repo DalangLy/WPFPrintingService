@@ -14,14 +14,14 @@ namespace WPFPrintingService
         protected override void OnOpen()
         {
             base.OnOpen();
-            //System.Console.WriteLine(Context.QueryString["name"]);
-            //System.Console.WriteLine(Sessions);
-            //System.Console.WriteLine(State);
-            //System.Console.WriteLine(StartTime);
-            //System.Console.WriteLine(Protocol);
-            //System.Console.WriteLine(OriginValidator);
-            //System.Console.WriteLine(ID);
-            //System.Console.WriteLine(EmitOnPing);
+            System.Console.WriteLine(Context.QueryString["name"]);
+            System.Console.WriteLine(Sessions);
+            System.Console.WriteLine(State);
+            System.Console.WriteLine(StartTime);
+            System.Console.WriteLine(Protocol);
+            System.Console.WriteLine(OriginValidator);
+            System.Console.WriteLine(ID);
+            System.Console.WriteLine(EmitOnPing);
             if (OnClientConnected == null) return;
 
             this.OnClientConnected(this, EventArgs.Empty, _getClientId() ,_getClientIP(), _getClientName());
@@ -70,10 +70,9 @@ namespace WPFPrintingService
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
-
             if (OnClientDisconnected == null) return;
 
-            this.OnClientDisconnected(this, EventArgs.Empty, _getClientId());
+            this.OnClientDisconnected(this, e, _getClientId());
 
             Sessions.Broadcast($"{_getClientName()} Has Left");
         }

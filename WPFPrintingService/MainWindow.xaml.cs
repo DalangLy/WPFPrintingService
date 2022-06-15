@@ -16,6 +16,7 @@ using WPFPrintingService.ImageConversion;
 using WPFPrintingService.UICallBackDelegates;
 using Newtonsoft.Json;
 using System.Windows.Controls;
+using System.Printing;
 
 namespace WPFPrintingService
 {
@@ -61,16 +62,17 @@ namespace WPFPrintingService
 
         private void _loadAllPrintersFromWindowsSystem()
         {
-            ManagementObjectSearcher printerQuery = new ManagementObjectSearcher("SELECT * from Win32_Printer");
-            foreach (ManagementBaseObject printer in printerQuery.Get())
+            LocalPrintServer printServer = new LocalPrintServer();
+            PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
+            foreach (PrintQueue printer in printQueuesOnLocalServer)
             {
-                var name = printer.GetPropertyValue("Name");
-                var status = printer.GetPropertyValue("Status");
-                var isDefault = printer.GetPropertyValue("Default");
-                var isNetworkPrinter = printer.GetPropertyValue("Network");
-
-                //Debug.WriteLine("{0} (Status: {1}, Default: {2}, Network: {3}", name, status, isDefault, isNetworkPrinter);
-                _allPrintersFromWindowsSystem.Add(new PrinterFromWindowsSystemModel(name.ToString()));
+                //Debug.WriteLine("\tThe shared printer : " + printer.Name);
+                //Debug.WriteLine("\tHas Tonner: " + printer.HasToner);
+                //Debug.WriteLine("\tIs Busy: " + printer.IsBusy);
+                //Debug.WriteLine("\tIs Door Open: " + printer.IsDoorOpened);
+                //Debug.WriteLine("\tIs Offline: " + printer.IsOffline);
+                //Debug.WriteLine("\tIs Offline: " + printer.IsPrinting);
+                _allPrintersFromWindowsSystem.Add(new PrinterFromWindowsSystemModel(printer.Name));
             }
 
             dgPrinters.ItemsSource = _allPrintersFromWindowsSystem;

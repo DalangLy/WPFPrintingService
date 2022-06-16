@@ -17,6 +17,10 @@ using WPFPrintingService.UICallBackDelegates;
 using Newtonsoft.Json;
 using System.Windows.Controls;
 using System.Printing;
+using System.Linq;
+using WPFPrintingService.Print_Templates;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace WPFPrintingService
 {
@@ -549,21 +553,48 @@ namespace WPFPrintingService
         private void _printAndCut(string printerName, String base64Image, string clientId)
         {
             //print and cut using default windows print document
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.PrintPage += (o, ev) =>
+            //PrintDocument printDocument = new PrintDocument();
+            //printDocument.PrintPage += (o, ev) =>
+            //{
+            //    if (ev.Graphics == null) return;
+            //    System.Drawing.Point loc = new System.Drawing.Point(100, 100);
+            //    ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
+            //};
+            //printDocument.PrinterSettings.PrinterName = printerName;
+            //printDocument.EndPrint += (o, ev) =>
+            //{
+            //    if (_webSocketServer != null && _webSocketServer.IsListening)
+            //        _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
+            //};
+            //printDocument.Print();
+            //printDocument.Dispose();
+
+            //new method
+            LocalPrintServer printServer = new LocalPrintServer();
+            PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
+
+            PrintDialog printDialog = new PrintDialog();
+            printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == "Windows Print to PDF");
+
+
+            Task tk = new Task(() =>
             {
-                if (ev.Graphics == null) return;
-                System.Drawing.Point loc = new System.Drawing.Point(100, 100);
-                ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
-            };
-            printDocument.PrinterSettings.PrinterName = printerName;
-            printDocument.EndPrint += (o, ev) =>
-            {
-                if (_webSocketServer != null && _webSocketServer.IsListening)
-                    _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
-            };
-            printDocument.Print();
-            printDocument.Dispose();
+                try
+                {
+                    this.Dispatcher.Invoke(new Action(() =>
+                    {
+                        BillTemplate billTemplate = new BillTemplate();
+                        printDialog.PrintVisual(billTemplate, "Bill Template");
+                        Debug.WriteLine("Print Finished");
+                    }));
+
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+            });
+            tk.Start();
         }
 
         private System.Drawing.Image LoadBase64(string base64)

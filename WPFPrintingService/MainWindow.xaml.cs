@@ -248,7 +248,8 @@ namespace WPFPrintingService
                                 CashDrawerTemplate c = new CashDrawerTemplate(
                                         new List<GG>()
                                         {
-
+                                            new GG(){ Title = "KHR"},
+                                            new GG(){ Title = "USD"},
                                         },
                                         DateTime.Now.ToShortDateString()
                                     );
@@ -447,7 +448,10 @@ namespace WPFPrintingService
             PrintDialog printDialog = new PrintDialog();
             printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == printer.PrinterName);
             printDialog.PrintVisual(new CashDrawerTemplate(
-                new List<GG>() { },
+                new List<GG>() { 
+                    new GG(){ Title = "KHR"},
+                    new GG(){ Title = "USD"},
+                },
                 DateTime.Now.ToShortDateString()
                 ), "Cash Drawer");
 

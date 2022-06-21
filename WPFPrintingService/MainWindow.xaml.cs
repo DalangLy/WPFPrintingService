@@ -242,7 +242,6 @@ namespace WPFPrintingService
 
 
                         BackgroundWorker worker = new BackgroundWorker();
-                        worker.WorkerReportsProgress = true;
                         worker.DoWork += (s, e) =>
                         {
                             Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -250,6 +249,7 @@ namespace WPFPrintingService
                                 LocalPrintServer printServer = new LocalPrintServer();
                                 PrintQueueCollection printQueues = printServer.GetPrintQueues();
                                 CashDrawerTemplate c = new CashDrawerTemplate();
+                                c.DateOutput = DateTime.Now.ToShortDateString();
                                 PrintDialog dialog = new PrintDialog();
                                 dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
                                 dialog.PrintVisual(c, "Cash Drawer");
@@ -258,10 +258,6 @@ namespace WPFPrintingService
                         worker.RunWorkerCompleted += (s, e) =>
                         {
                             Debug.WriteLine("PrintSuccess");
-                        };
-                        worker.ProgressChanged += (s, e) =>
-                        {
-
                         };
                         worker.RunWorkerAsync();
 

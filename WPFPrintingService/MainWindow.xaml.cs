@@ -18,7 +18,6 @@ using System.Windows.Controls;
 using System.Printing;
 using System.Linq;
 using WPFPrintingService.Print_Templates;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.ComponentModel;
 
@@ -66,7 +65,7 @@ namespace WPFPrintingService
 
         private void _loadAllPrintersFromWindowsSystem()
         {
-            GetAllSystemPrintersSingleton.GetInstance.GetAllPrinters();
+            //GetAllSystemPrintersSingleton.GetInstance.GetAllPrinters();
             LocalPrintServer printServer = new LocalPrintServer();
             PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
             foreach (PrintQueue printer in printQueuesOnLocalServer)
@@ -203,8 +202,6 @@ namespace WPFPrintingService
             }), DispatcherPriority.Background);
         }
 
-        private List<BackgroundWorker> _backgroundWorkers = new List<BackgroundWorker>();
-
         private void _onClientResponseMessage(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone)
         {
             try
@@ -248,8 +245,13 @@ namespace WPFPrintingService
                             {
                                 LocalPrintServer printServer = new LocalPrintServer();
                                 PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                                CashDrawerTemplate c = new CashDrawerTemplate();
-                                c.DateOutput = DateTime.Now.ToShortDateString();
+                                CashDrawerTemplate c = new CashDrawerTemplate(
+                                        new List<GG>()
+                                        {
+
+                                        },
+                                        DateTime.Now.ToShortDateString()
+                                    );
                                 PrintDialog dialog = new PrintDialog();
                                 dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
                                 dialog.PrintVisual(c, "Cash Drawer");
@@ -444,7 +446,10 @@ namespace WPFPrintingService
             PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
             PrintDialog printDialog = new PrintDialog();
             printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == printer.PrinterName);
-            printDialog.PrintVisual(new CashDrawerTemplate(), "Cash Drawer");
+            printDialog.PrintVisual(new CashDrawerTemplate(
+                new List<GG>() { },
+                DateTime.Now.ToShortDateString()
+                ), "Cash Drawer");
 
 
 
@@ -591,24 +596,7 @@ namespace WPFPrintingService
             printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == "Windows Print to PDF");
 
 
-            Task tk = new Task(() =>
-            {
-                try
-                {
-                    this.Dispatcher.Invoke(new Action(() =>
-                    {
-                        BillTemplate billTemplate = new BillTemplate();
-                        printDialog.PrintVisual(billTemplate, "Bill Template");
-                        Debug.WriteLine("Print Finished");
-                    }));
-
-                }
-                catch (Exception ex)
-                {
-                    return;
-                }
-            });
-            tk.Start();
+            
         }
 
         private System.Drawing.Image LoadBase64(string base64)

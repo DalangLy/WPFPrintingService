@@ -5,69 +5,55 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFPrintingService.Print_Templates"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Width="500" Background="White">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="White"
+             Width="500" 
+             Height="400"
+             >
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
 
 
-        <Label Content="{Binding DateOutput}" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="422,65,0,0" VerticalAlignment="Top" FontSize="20" Height="39" Width="378"/>
-        <Label Content="PRINT" HorizontalContentAlignment="Left" FontWeight="Bold" HorizontalAlignment="Left" Margin="0,65,0,0" VerticalAlignment="Top" FontSize="20" Height="39" Width="378"/>
-        <Rectangle HorizontalAlignment="Center" Height="65" Stroke="Black" VerticalAlignment="Top" Width="800" Fill="Black"/>
-        <Label Content="OPEN BALANCE" HorizontalAlignment="Center" Margin="0,4,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" FontSize="36"/>
+        <!--header-->
+        <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Fill="Black"></Rectangle>
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Foreground="White" VerticalAlignment="Center" FontWeight="Bold" FontSize="24" TextAlignment="Center" Text="OPEN BALANCE"></TextBlock>
 
-        <StackPanel Margin="29,124,29,211">
-            <ItemsControl ItemsSource="{Binding FilesOutput}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Vertical" HorizontalAlignment="Stretch"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                <TextBlock Text="KHR"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBlock Text="200000"/>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
+        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" FontSize="20" Text="PRINT" VerticalAlignment="Center"></TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="lblDate" FontSize="20" VerticalAlignment="Center" TextAlignment="Right" Text="4/21/2022 10:59:13 AM"></TextBlock>
 
 
-        <!--<StackPanel Margin="29,124,29,211" >
-            <ItemsControl ItemsSource="{Binding FilesOutput}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Vertical"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="LightBlue" BorderThickness="2" CornerRadius="5" Margin="5">
-                            -->
-        <!--<TextBlock Text="{Binding}"/>-->
-        <!--
-                            <Grid HorizontalAlignment="Stretch" Margin="0, 0, 0, 0">
-                                <Label Content="KHR" HorizontalAlignment="Left"/>
-                                <Label Content="200000" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
-                            </Grid>
-
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>-->
+        <ItemsControl x:Name="priceList" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Title}" />
+                        <TextBlock Grid.Column="1" TextAlignment="Right" Text="{Binding Title}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
 
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="Handed by"/>
 
-        <Label Content="Handed by" HorizontalAlignment="Left" Margin="29,0,0,144" VerticalAlignment="Bottom"/>
-        <Rectangle HorizontalAlignment="Center" Height="100" Margin="0,311,0,40" Stroke="Black" VerticalAlignment="Bottom" Width="742"/>
-        <Label Content="Admin by" HorizontalAlignment="Left" Margin="29,0,0,18" VerticalAlignment="Bottom"/>
+        <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Hello"></TextBox>
 
-
+        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="Admin"></TextBlock>
 
     </Grid>
 </UserControl>

@@ -342,27 +342,6 @@ namespace WPFPrintingService
             this._shutdownThisApplication();
         }
 
-        private void btnQuitApplication_Click(object sender, RoutedEventArgs e)
-        {
-            if(this._isDialogShow) return;
-            CustomConfirmDialog confirmExitDialog = new CustomConfirmDialog("Exit?");
-            confirmExitDialog.OnConfirmClickCallBack += (s, ev) =>
-            {
-                this._shutdownThisApplication();
-                this._isDialogShow = false;
-            };
-            confirmExitDialog.OnOverlayClicked += (s, e) =>
-            {
-                this._isDialogShow = false;
-            };
-            confirmExitDialog.OnCancelClicked += (s, e) =>
-            {
-                this._isDialogShow = false;
-            };
-            this.mainGrid.Children.Add(confirmExitDialog);
-            this._isDialogShow = true;
-        }
-
         private void _shutdownThisApplication()
         {
             Application.Current.Shutdown();
@@ -748,5 +727,13 @@ namespace WPFPrintingService
             { "AAAAF", AttachmentType.Video },
             { "JVBER", AttachmentType.Document }
         };
+
+        private void DialogHost_DialogClosing(object sender, MaterialDesignThemes.Wpf.DialogClosingEventArgs eventArgs)
+        {
+            if (eventArgs.Parameter == null) return;
+            bool isExit = (bool) eventArgs.Parameter;
+            if (isExit)
+                _shutdownThisApplication();
+        }
     }
 }

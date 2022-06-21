@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
-using System.Management;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -21,6 +20,7 @@ using System.Linq;
 using WPFPrintingService.Print_Templates;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace WPFPrintingService
 {
@@ -66,6 +66,7 @@ namespace WPFPrintingService
 
         private void _loadAllPrintersFromWindowsSystem()
         {
+            GetAllSystemPrintersSingleton.GetInstance.GetAllPrinters();
             LocalPrintServer printServer = new LocalPrintServer();
             PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
             foreach (PrintQueue printer in printQueuesOnLocalServer)
@@ -202,6 +203,8 @@ namespace WPFPrintingService
             }), DispatcherPriority.Background);
         }
 
+        private List<BackgroundWorker> _backgroundWorkers = new List<BackgroundWorker>();
+
         private void _onClientResponseMessage(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone)
         {
             try
@@ -237,73 +240,98 @@ namespace WPFPrintingService
                         break;
                     case "Print":
 
+
+                        BackgroundWorker worker = new BackgroundWorker();
+                        worker.WorkerReportsProgress = true;
+                        worker.DoWork += (s, e) =>
+                        {
+                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            {
+                                LocalPrintServer printServer = new LocalPrintServer();
+                                PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                                CashDrawerTemplate c = new CashDrawerTemplate();
+                                PrintDialog dialog = new PrintDialog();
+                                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                                dialog.PrintVisual(c, "Cash Drawer");
+                            }));
+                        };
+                        worker.RunWorkerCompleted += (s, e) =>
+                        {
+                            Debug.WriteLine("PrintSuccess");
+                        };
+                        worker.ProgressChanged += (s, e) =>
+                        {
+
+                        };
+                        worker.RunWorkerAsync();
+
                         //serialize print data model
-                        try
-                        {
-                            PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
-                            if (printDataModel == null)
-                            {
-                                onPrintResponse(this, EventArgs.Empty, "Wrong Data Format");
-                                return;
-                            }
-                            //find printer
+                        //try
+                        //{
+                        //    PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
+                        //    if (printDataModel == null)
+                        //    {
+                        //        onPrintResponse(this, EventArgs.Empty, "Wrong Data Format");
+                        //        return;
+                        //    }
+                        //    //find printer
 
-                            PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
-                            if (_foundPrinterModel == null)
-                            {
-                                onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
-                                return;
-                            }
+                        //    PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                        //    if (_foundPrinterModel == null)
+                        //    {
+                        //        onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
+                        //        return;
+                        //    }
 
-                            //if (!_foundPrinterModel.IsOnline)
-                            //{
-                            //    onPrintResponse("Select Printer is currently Offline");
-                            //    return;
-                            //}
+                        //    //if (!_foundPrinterModel.IsOnline)
+                        //    //{
+                        //    //    onPrintResponse("Select Printer is currently Offline");
+                        //    //    return;
+                        //    //}
 
-                            if (printDataModel.Base64Image == "")
-                            {
-                                onPrintResponse(this, EventArgs.Empty, "Base64 Image Null");
-                                return;
-                            }
+                        //    if (printDataModel.Base64Image == "")
+                        //    {
+                        //        onPrintResponse(this, EventArgs.Empty, "Base64 Image Null");
+                        //        return;
+                        //    }
 
-                            //validate base64 image
-                            IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
-                            if (attachmentType != AttachmentType.Photo)
-                            {
-                                onPrintResponse(this, EventArgs.Empty, "Only Support Image");
-                                return;
-                            }
+                        //    //validate base64 image
+                        //    IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
+                        //    if (attachmentType != AttachmentType.Photo)
+                        //    {
+                        //        onPrintResponse(this, EventArgs.Empty, "Only Support Image");
+                        //        return;
+                        //    }
 
-                            string _path = AppDomain.CurrentDomain.BaseDirectory;
-                            String savedImage = _path + "\\temp_print." + attachmentType.Extension;
-                            File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
+                        //    string _path = AppDomain.CurrentDomain.BaseDirectory;
+                        //    String savedImage = _path + "\\temp_print." + attachmentType.Extension;
+                        //    File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
 
-                            switch (printDataModel.PrintMethod)
-                            {
-                                case "PrintOnly":
-                                    this._printOnly(printDataModel.PrinterName);
-                                    break;
-                                case "CutOnly":
-                                    this._cutOnly(printDataModel.PrinterName, clientId);
-                                    break;
-                                case "OpenCashDrawer":
-                                    this._kickCashDrawer(printDataModel.PrinterName, clientId);
-                                    break;
-                                case "PrintAndKickCashDrawer":
-                                    this._printAndKickCashDrawer(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
-                                    break;
-                                default:
-                                    _printAndCut(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
-                                    break;
-                            }
+                        //    switch (printDataModel.PrintMethod)
+                        //    {
+                        //        case "PrintOnly":
+                        //            this._printOnly(printDataModel.PrinterName);
+                        //            break;
+                        //        case "CutOnly":
+                        //            this._cutOnly(printDataModel.PrinterName, clientId);
+                        //            break;
+                        //        case "OpenCashDrawer":
+                        //            this._kickCashDrawer(printDataModel.PrinterName, clientId);
+                        //            break;
+                        //        case "PrintAndKickCashDrawer":
+                        //            this._printAndKickCashDrawer(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
+                        //            break;
+                        //        default:
+                        //            _printAndCut(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
+                        //            break;
+                        //    }
 
-                            onPrintResponse(this, EventArgs.Empty, "Print Success!");
-                        }
-                        catch (Exception ex)
-                        {
-                            onPrintResponse(this, EventArgs.Empty, $"Wrong Print Format {ex.Message}");
-                        }
+                        //    onPrintResponse(this, EventArgs.Empty, "Print Success!");
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    onPrintResponse(this, EventArgs.Empty, $"Wrong Print Format {ex.Message}");
+                        //}
                         break;
                     default:
                         onPrintResponse(this, EventArgs.Empty, "Wrong Code");

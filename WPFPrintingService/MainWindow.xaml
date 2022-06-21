@@ -18,10 +18,15 @@
         Title="Printing Service" Height="688" Width="1295" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"
 >
     <Grid x:Name="mainGrid">
-        <Button x:Name="btnStartStopServer" Content="Start" HorizontalAlignment="Left" Margin="24,66,0,0" VerticalAlignment="Top" Height="32" Width="238" Click="btnStartStopServer_Click" Cursor="Hand"/>
+        <Button x:Name="btnStartStopServer" HorizontalAlignment="Left" Margin="24,66,0,0" VerticalAlignment="Top" Height="32" Width="238" Click="btnStartStopServer_Click" Cursor="Hand">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Start"/>
+                <materialDesign:PackIcon Kind="Play" Margin="4 .5 0 0"/>
+            </StackPanel>
+        </Button>
 
         <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,278,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" HorizontalAlignment="Left" VerticalAlignment="Top" Height="201" Width="358">
-            <DataGrid.Resources>
+            <!--<DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                     <Setter Property="FontWeight" Value="Bold" />
@@ -40,7 +45,7 @@
                     <Setter Property="BorderBrush" Value="Black"/>
                     <Setter Property="Height" Value="30"/>
                 </Style>
-            </DataGrid.Resources>
+            </DataGrid.Resources>-->
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Client Name" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
@@ -76,7 +81,12 @@
 
         <Label Content="Connected Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBox Padding="5" x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
-        <Button x:Name="btnServerInfo" Content="Info" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" Cursor="Hand" RenderTransformOrigin="0.5,0.5"/>
+        <Button x:Name="btnServerInfo" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" Cursor="Hand" RenderTransformOrigin="0.5,0.5">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Info"/>
+                <materialDesign:PackIcon Kind="Information" Margin="4 .5 0 0"/>
+            </StackPanel>
+        </Button>
 
 
 
@@ -143,26 +153,28 @@
                 </Border>
             </tb:TaskbarIcon.TrayPopup>
 
-
-            <!-- Set a simple context menu  -->
-            <!--<tb:TaskbarIcon.ContextMenu>
-                <ContextMenu Background="LightCoral">
-                    <MenuItem Header="First Menu Item" />
-                    <MenuItem Header="Second Menu Item"/>
-                </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>-->
-
         </tb:TaskbarIcon>
         <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="267,19,0,0" VerticalAlignment="Top" Width="115" Cursor="Hand" Checked="chbAutoRunService_Checked" Unchecked="chbAutoRunService_Unchecked"/>
         <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="1018,602,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked" Cursor="Hand"/>
 
+        <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,510,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="358" Height="70"
+            materialDesign:HintAssist.Hint="Message"
+            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
 
-        <TextBox Padding="5" x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,510,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="358" Height="70"/>
-        <Button x:Name="btnSendToEveryClients" Content="Send To Every Clients" HorizontalAlignment="Left" Margin="26,592,0,0" VerticalAlignment="Top" Height="37" Width="356" Click="btnSendToEveryClients_Click" Cursor="Hand"/>
+
+
+
+
+        <Button x:Name="btnSendToEveryClients" HorizontalAlignment="Left" Margin="26,592,0,0" VerticalAlignment="Top" Height="37" Width="356" Click="btnSendToEveryClients_Click" Cursor="Hand">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Send To Every Clients"/>
+                <materialDesign:PackIcon Kind="Broadcast" Margin="4 .5 0 0"/>
+            </StackPanel>
+        </Button>
 
 
         <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="441,66,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1" CanUserAddRows="False" HorizontalAlignment="Left" VerticalAlignment="Top" Height="514" Width="813">
-            <DataGrid.Resources>
+            <!--<DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                     <Setter Property="FontWeight" Value="Bold" />
@@ -181,7 +193,7 @@
                     <Setter Property="BorderBrush" Value="Black"/>
                     <Setter Property="Height" Value="40"/>
                 </Style>
-            </DataGrid.Resources>
+            </DataGrid.Resources>-->
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Printer Name" Width="250">
                     <DataGridTemplateColumn.CellTemplate>
@@ -212,11 +224,16 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Label Content="Available Printers" HorizontalAlignment="Left" Margin="441,11,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Foreground="Red"/>
-        <Label Content="Service" HorizontalAlignment="Left" Margin="20,11,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Background="Transparent" Foreground="Red"/>
-        <Label Content="Message" HorizontalAlignment="Left" Margin="19,481,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <TextBlock Text="Available Printers" HorizontalAlignment="Left" Margin="441,11,0,0" VerticalAlignment="Top" Foreground="Red" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+        <TextBlock Text="Service" HorizontalAlignment="Left" Margin="20,11,0,0" VerticalAlignment="Top" Foreground="Red" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+        
         <Label Content="Status" HorizontalAlignment="Left" Margin="20,102,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Button x:Name="btnRefreshPrinterList" Content="Refresh" HorizontalAlignment="Left" Margin="1155,11,0,0" VerticalAlignment="Top" Height="32" Width="99" Cursor="Hand" Click="btnRefreshPrinterList_Click"/>
+        <Button x:Name="btnRefreshPrinterList" HorizontalAlignment="Left" Margin="1155,11,0,0" VerticalAlignment="Top" Height="32" Width="99" Cursor="Hand" Click="btnRefreshPrinterList_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Refresh"/>
+                <materialDesign:PackIcon Kind="Refresh" Margin="4 .5 0 0"/>
+            </StackPanel>
+        </Button>
 
 
 
@@ -285,12 +302,7 @@
         
         
         
-        
-        
-        
-        
-        
-        
+
 
     </Grid>
 </Window>

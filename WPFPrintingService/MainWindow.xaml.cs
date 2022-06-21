@@ -414,27 +414,38 @@ namespace WPFPrintingService
             PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
             if (printer == null) return;
 
+
+
+            LocalPrintServer printServer = new LocalPrintServer();
+            PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
+            PrintDialog printDialog = new PrintDialog();
+            printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == printer.PrinterName);
+            printDialog.PrintVisual(new CashDrawerTemplate(), "Cash Drawer");
+
+
+
+
             //print test
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.PrintPage += (o, ev) =>
-            {
-                if (ev.Graphics == null) return;
-                ev.Graphics.DrawString(
-                    "Print Test",
-                    new Font("Arial", 10),
-                    Brushes.Black,
-                    ev.MarginBounds.Left,
-                    0,
-                    new StringFormat()
-                );
-            };
-            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
-            printDocument.EndPrint += (o, ev) =>
-            {
-                MessageBox.Show("Print Success");
-            };
-            printDocument.Print();
-            printDocument.Dispose();
+            //PrintDocument printDocument = new PrintDocument();
+            //printDocument.PrintPage += (o, ev) =>
+            //{
+            //    if (ev.Graphics == null) return;
+            //    ev.Graphics.DrawString(
+            //        "Print Test",
+            //        new Font("Arial", 10),
+            //        Brushes.Black,
+            //        ev.MarginBounds.Left,
+            //        0,
+            //        new StringFormat()
+            //    );
+            //};
+            //printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+            //printDocument.EndPrint += (o, ev) =>
+            //{
+            //    MessageBox.Show("Print Success");
+            //};
+            //printDocument.Print();
+            //printDocument.Dispose();
         }
 
         private void btnPrintAndKickDrawer_Click(object sender, RoutedEventArgs e)

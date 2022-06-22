@@ -18,34 +18,196 @@
         Title="Printing Service" Height="688" Width="1295" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"
 >
     <Grid x:Name="mainGrid">
-        <Button x:Name="btnStartStopServer" HorizontalAlignment="Left" Margin="24,66,0,0" VerticalAlignment="Top" Height="32" Width="238" Click="btnStartStopServer_Click" Cursor="Hand">
+        
+        <!--Design Grid Layout-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="140"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        
+        <!--Label Service-->
+        <TextBlock 
+            Grid.Row="0" 
+            Grid.Column="0"
+            Margin="5"
+            Text="Service"
+            VerticalAlignment="Center" 
+            Foreground="Red" 
+            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+        />
+        
+        <!--Check box to start service on app start-->
+        <CheckBox 
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5"
+            x:Name="chbAutoRunService" 
+            Content="Auto Run Service"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Cursor="Hand" 
+            Checked="chbAutoRunService_Checked" 
+            Unchecked="chbAutoRunService_Unchecked"
+        />
+
+
+        <!--Button Start Stop Server-->
+        <Button
+            Grid.Row="1" 
+            Grid.Column="0"
+            x:Name="btnStartStopServer"
+            VerticalAlignment="Center"
+            Margin="5"
+            Click="btnStartStopServer_Click" 
+            Cursor="Hand">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Start"/>
-                <materialDesign:PackIcon Kind="Play" Margin="4 .5 0 0"/>
+                <materialDesign:PackIcon Kind="Play" Margin="4 0.5 0 0"/>
             </StackPanel>
         </Button>
+        
+        <!--Button Server Info-->
+        <materialDesign:DialogHost
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            DialogClosing="DialogHost_DialogClosing"
+        >
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock Text="Server Info" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+            <Grid>
+                <!--Design Grid Layout-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
 
-        <DataGrid x:Name="lvConnectWebSocketClients" Margin="24,278,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" HorizontalAlignment="Left" VerticalAlignment="Top" Height="201" Width="358">
-            <!--<DataGrid.Resources>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                    <Setter Property="FontWeight" Value="Bold" />
-                    <Setter Property="FontSize" Value="10"/>
-                    <Setter Property="Background" Value="SteelBlue"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Height" Value="40"/>
-                    <Setter Property="SeparatorBrush" Value="Black"/>
-                    <Setter Property="BorderBrush" Value="Black"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="SeparatorVisibility" Value="Visible"/>
-                </Style>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                    <Setter Property="BorderBrush" Value="Black"/>
-                    <Setter Property="Height" Value="30"/>
-                </Style>
-            </DataGrid.Resources>-->
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="5"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                    Cursor="Hand">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Info"/>
+                        <materialDesign:PackIcon Kind="Information" Margin="4 0.5 0 0"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </materialDesign:DialogHost>
+        <!--<materialDesign:DialogHost
+            Grid.Row="5"
+            Grid.Column="4"
+            Margin="5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            DialogClosing="DialogHost_DialogClosing"
+        >
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock Text="Quit" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                IsDefault="True"
+                                Margin="0 8 8 0"
+                                Command="materialDesign:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                    True
+                                </system:Boolean>
+                            </Button.CommandParameter>
+                            Exit
+                        </Button>
+                        <Button
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                IsCancel="True"
+                                Margin="0 8 8 0"
+                                Command="materialDesign:DialogHost.CloseDialogCommand"
+                            >
+                            <Button.CommandParameter>
+                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                    False
+                                </system:Boolean>
+                            </Button.CommandParameter>
+                            CANCEL
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+            <Button
+                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                Cursor="Hand">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Info"/>
+                    <materialDesign:PackIcon Kind="Information" Margin="4 0.5 0 0"/>
+                </StackPanel>
+            </Button>
+        </materialDesign:DialogHost>-->
+        
+        
+        
+        <!--Server Status-->
+        <GroupBox
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5"
+            Header="Status"
+            Style="{DynamicResource MaterialDesignGroupBox}"
+            VerticalAlignment="Stretch" 
+            BorderThickness="0">
+            <TextBlock x:Name="txtServerStatus" Margin="6,6,6,6" TextWrapping="Wrap"/>
+        </GroupBox>
+
+
+
+
+        <!--List of connected websocket clients-->
+        <DataGrid 
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5"
+            x:Name="lvConnectWebSocketClients"
+            SelectionMode="Single" 
+            AutoGenerateColumns="False" 
+            IsReadOnly="True" 
+            HeadersVisibility="Column"
+            VerticalAlignment="Stretch">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Client Name" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
@@ -75,18 +237,208 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-
-
-
-
-        <Label Content="Connected Clients" HorizontalAlignment="Left" Margin="19,250,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <TextBox Padding="5" x:Name="txtServerStatus" HorizontalAlignment="Left" Margin="24,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Height="118"/>
-        <Button x:Name="btnServerInfo" HorizontalAlignment="Left" Margin="283,66,0,0" VerticalAlignment="Top" Height="32" Width="99" Click="btnServerInfo_Click" Cursor="Hand" RenderTransformOrigin="0.5,0.5">
+        
+        
+        <!--Message box to send to client-->
+        <TextBox 
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5"
+            x:Name="txtMessage"
+            TextWrapping="Wrap" 
+            Text="Hello Everyone From Server" 
+            VerticalAlignment="Stretch"
+            materialDesign:HintAssist.Hint="Message"
+            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+        />
+        
+        <!--Button send message to every clients-->
+        <Button
+            Grid.Row="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5"
+            x:Name="btnSendToEveryClients"
+            VerticalAlignment="Center"
+            Click="btnSendToEveryClients_Click" 
+            Cursor="Hand">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Info"/>
-                <materialDesign:PackIcon Kind="Information" Margin="4 .5 0 0"/>
+                <TextBlock Text="Send To Every Clients"/>
+                <materialDesign:PackIcon Kind="Broadcast" Margin="4 .5 0 0"/>
             </StackPanel>
         </Button>
+
+        
+        <!--List printer label-->
+        <TextBlock 
+            Grid.Row="1"
+            Grid.Column="2"
+            Text="Available Printers"
+            HorizontalAlignment="Left"
+            Margin="5" 
+            VerticalAlignment="Center" 
+            Foreground="Red"
+            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+        />
+        
+        <!--Button Refresh Printer-->
+        <Button
+            Grid.Row="1"
+            Grid.Column="6"
+            x:Name="btnRefreshPrinterList"
+            HorizontalAlignment="Right"
+            Margin="5" 
+            VerticalAlignment="Center"
+            Cursor="Hand" 
+            Click="btnRefreshPrinterList_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Refresh"/>
+                <materialDesign:PackIcon Kind="Refresh" Margin="4 .5 0 0"/>
+            </StackPanel>
+        </Button>
+
+
+        <!--List Printers-->
+        <DataGrid 
+            Grid.Row="2"
+            Grid.Column="2"
+            Grid.ColumnSpan="3"
+            Grid.RowSpan="3"
+            Margin="5"
+            x:Name="dgPrinters" 
+            CanUserSortColumns="False" 
+            CanUserResizeRows="false"
+            SelectionMode="Single" 
+            AutoGenerateColumns="False" 
+            IsReadOnly="True" 
+            HeadersVisibility="Column" 
+            RenderTransformOrigin="1,1" 
+            CanUserAddRows="False" 
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Stretch">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Printer Name" Width="250">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding PrinterName}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                                <TextBlock.ToolTip>
+                                    <ToolTip>
+                                        <TextBlock Text="{Binding PrinterName}"/>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Test Actions" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
+                                <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
+                                <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
+                                <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
+                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand" Click="btnKickDrawer_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        
+        
+        <!--Check box to launch app on windows start up-->
+        <CheckBox 
+            Grid.Row="5"
+            Grid.Column="3"
+            x:Name="chbRunOnStartUp" 
+            Content="Run on Startup"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Stretch"
+            Checked="chbRunOnStartUp_Checked" 
+            Unchecked="chbRunOnStartUp_Unchecked" 
+            Cursor="Hand"
+        />
+
+        <!--Button quit-->
+        <materialDesign:DialogHost
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            DialogClosing="DialogHost_DialogClosing"
+        >
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel Margin="16">
+                    <TextBlock Text="Quit" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                IsDefault="True"
+                                Margin="0 8 8 0"
+                                Command="materialDesign:DialogHost.CloseDialogCommand">
+                            <Button.CommandParameter>
+                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                    True
+                                </system:Boolean>
+                            </Button.CommandParameter>
+                            Exit
+                        </Button>
+                        <Button
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                IsCancel="True"
+                                Margin="0 8 8 0"
+                                Command="materialDesign:DialogHost.CloseDialogCommand"
+                            >
+                            <Button.CommandParameter>
+                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                    False
+                                </system:Boolean>
+                            </Button.CommandParameter>
+                            CANCEL
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+            <Grid>
+                <!--Design Grid Layout-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+                <Button
+                    Grid.Row="5"
+                    Grid.Column="4"
+                    Margin="5"
+                    Width="200"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                    Cursor="Hand">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Quit"/>
+                        <materialDesign:PackIcon Kind="ExitToApp" Margin="4 0.5 0 0"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </materialDesign:DialogHost>
+
 
 
 
@@ -155,160 +507,6 @@
             </tb:TaskbarIcon.TrayPopup>
 
         </tb:TaskbarIcon>
-        
-        
-        <CheckBox x:Name="chbAutoRunService" Content="Auto Run Service" HorizontalAlignment="Left" Margin="267,19,0,0" VerticalAlignment="Top" Width="115" Cursor="Hand" Checked="chbAutoRunService_Checked" Unchecked="chbAutoRunService_Unchecked"/>
-        <CheckBox x:Name="chbRunOnStartUp" Content="Run on Startup" HorizontalAlignment="Left" Margin="1018,602,0,0" VerticalAlignment="Top" Checked="chbRunOnStartUp_Checked" Unchecked="chbRunOnStartUp_Unchecked" Cursor="Hand"/>
-
-        <TextBox x:Name="txtMessage" HorizontalAlignment="Left" Margin="24,510,0,0" TextWrapping="Wrap" Text="Hello Everyone From Server" VerticalAlignment="Top" Width="358" Height="70"
-            materialDesign:HintAssist.Hint="Message"
-            Style="{StaticResource MaterialDesignOutlinedTextBox}" />
-
-
-
-
-
-        <Button x:Name="btnSendToEveryClients" HorizontalAlignment="Left" Margin="26,592,0,0" VerticalAlignment="Top" Height="37" Width="356" Click="btnSendToEveryClients_Click" Cursor="Hand">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Send To Every Clients"/>
-                <materialDesign:PackIcon Kind="Broadcast" Margin="4 .5 0 0"/>
-            </StackPanel>
-        </Button>
-
-
-        <DataGrid x:Name="dgPrinters" CanUserSortColumns="False" CanUserResizeRows="false"  Margin="441,66,0,0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" RenderTransformOrigin="1,1" CanUserAddRows="False" HorizontalAlignment="Left" VerticalAlignment="Top" Height="514" Width="813">
-            <!--<DataGrid.Resources>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                    <Setter Property="FontWeight" Value="Bold" />
-                    <Setter Property="FontSize" Value="10"/>
-                    <Setter Property="Background" Value="SteelBlue"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Height" Value="40"/>
-                    <Setter Property="SeparatorBrush" Value="Black"/>
-                    <Setter Property="BorderBrush" Value="Black"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="SeparatorVisibility" Value="Visible"/>
-                </Style>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                    <Setter Property="BorderBrush" Value="Black"/>
-                    <Setter Property="Height" Value="40"/>
-                </Style>
-            </DataGrid.Resources>-->
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Printer Name" Width="250">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding PrinterName}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
-                                <TextBlock.ToolTip>
-                                    <ToolTip>
-                                        <TextBlock Text="{Binding PrinterName}"/>
-                                    </ToolTip>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Test Actions" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
-                                <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
-                                <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
-                                <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
-                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand" Click="btnKickDrawer_Click"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-        <TextBlock Text="Available Printers" HorizontalAlignment="Left" Margin="441,11,0,0" VerticalAlignment="Top" Foreground="Red" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
-        <TextBlock Text="Service" HorizontalAlignment="Left" Margin="20,11,0,0" VerticalAlignment="Top" Foreground="Red" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
-        
-        <Label Content="Status" HorizontalAlignment="Left" Margin="20,102,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Button x:Name="btnRefreshPrinterList" HorizontalAlignment="Left" Margin="1155,11,0,0" VerticalAlignment="Top" Height="32" Width="99" Cursor="Hand" Click="btnRefreshPrinterList_Click">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Refresh"/>
-                <materialDesign:PackIcon Kind="Refresh" Margin="4 .5 0 0"/>
-            </StackPanel>
-        </Button>
-
-        
-        
-
-
-
-
-
-        <materialDesign:DialogHost
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" DialogClosing="DialogHost_DialogClosing"
-        >
-                <materialDesign:DialogHost.DialogContent>
-                    <StackPanel Margin="16">
-                        <TextBlock Text="Quit" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                IsDefault="True"
-                                Margin="0 8 8 0"
-                                Command="materialDesign:DialogHost.CloseDialogCommand">
-                                <Button.CommandParameter>
-                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                        True
-                                    </system:Boolean>
-                                </Button.CommandParameter>
-                                Exit
-                            </Button>
-                            <Button
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                IsCancel="True"
-                                Margin="0 8 8 0"
-                                Command="materialDesign:DialogHost.CloseDialogCommand"
-                            >
-                                <Button.CommandParameter>
-                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                        False
-                                    </system:Boolean>
-                                </Button.CommandParameter>
-                                CANCEL
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
-                </materialDesign:DialogHost.DialogContent>
-                <Button
-                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                    Grid.Row="0"
-                    HorizontalAlignment="Left" Margin="1169,594,0,0" VerticalAlignment="Top" Width="85" Cursor="Hand">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Quti"/>
-                        <materialDesign:PackIcon Kind="ExitToApp" Margin="4 .5 0 0"/> 
-                    </StackPanel>
-                </Button>
-        </materialDesign:DialogHost>
-
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
 
     </Grid>
 </Window>

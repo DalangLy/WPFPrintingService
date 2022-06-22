@@ -261,9 +261,6 @@ namespace WPFPrintingService
                                     this._printAndCut(printTemplateModel?.Data.PrinterName, printTemplateModel?.Data?.PrintModel, clientId);
                                     break;
                             }
-
-                            onPrintResponse(this, EventArgs.Empty, "Print Success!");
-
                         }
                         catch (Exception)
                         {

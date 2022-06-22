@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -12,7 +11,6 @@ using System.Windows.Threading;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using WPFPrintingService.UICallBackDelegates;
-using Newtonsoft.Json;
 using System.Windows.Controls;
 using System.Printing;
 using System.Linq;
@@ -58,9 +56,6 @@ namespace WPFPrintingService
         private void _setupWebSocketServer()
         {
             this._webSocketServer = new WebSocketServer(IPAddress.Parse(this._getLocalIPAddress()), PORT);
-
-            //// Not to remove the inactive sessions periodically.
-            //_webSocketServer.KeepClean = false;
         }
 
         private void _loadAllPrintersFromWindowsSystem()
@@ -109,7 +104,6 @@ namespace WPFPrintingService
             }
             return localIP;
         }
-
         
         private void btnStartStopServer_Click(object sender, RoutedEventArgs e)
         {
@@ -136,17 +130,17 @@ namespace WPFPrintingService
             //add web socket server listeners
             this._webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
                 {
-                    //on open or on client connected
+                    //on client connected
                     this._addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
                 },
                 (sender, args, clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
                 {
-                    //onMessageCallBack
+                    //on message received from client
                     this._onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
                 },
                 (sender, args, disconnectedClientId) =>
                 {
-                    //on close or on client disconnected
+                    //on client disconnected
                     this._removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
                 }
             ));
@@ -206,13 +200,13 @@ namespace WPFPrintingService
         {
             try
             {
-                RequestModel? requestModel = JsonConvert.DeserializeObject<RequestModel>(message);
-                if (requestModel == null)
+                PrintTemplateModel printTemplateModel = PrintTemplateModel.FromJson(message);
+                if (printTemplateModel == null)
                 {
                     onPrintResponse(this, EventArgs.Empty, "Wrong Format");
                     return;
                 }
-                switch (requestModel.Code)
+                switch (printTemplateModel.Code)
                 {
                     case "RequestPrinters":
                         if(_webSocketServer != null && _webSocketServer.IsListening)
@@ -222,83 +216,49 @@ namespace WPFPrintingService
                         }
                         break;
                     case "SendToEveryone":
-                        onSendToEveryone(this, EventArgs.Empty, $"{clientName} Said : {requestModel.Data}");
+                        onSendToEveryone(this, EventArgs.Empty, $"{clientName} Said : {printTemplateModel.Data}");
                         break;
                     case "SendToServer":
 
                         Dispatcher.BeginInvoke(new Action(() =>
                         {
                             //update text status
-                            txtServerStatus.Text += $"\n {clientName} Said : {requestModel.Data}";
+                            txtServerStatus.Text += $"\n {clientName} Said : {printTemplateModel.Data}";
 
                         }), DispatcherPriority.Background);
 
                         onSendToServer(this, EventArgs.Empty);
                         break;
                     case "Print":
-
-
-                        //BackgroundWorker worker = new BackgroundWorker();
-                        //worker.DoWork += (s, e) =>
-                        //{
-                        //    Application.Current.Dispatcher.Invoke(new Action(() =>
-                        //    {
-                        //        LocalPrintServer printServer = new LocalPrintServer();
-                        //        PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                        //        CashDrawerTemplate c = new CashDrawerTemplate(
-                        //                new List<GG>()
-                        //                {
-                        //                    new GG(){ Title = "KHR"},
-                        //                    new GG(){ Title = "USD"},
-                        //                },
-                        //                DateTime.Now.ToShortDateString()
-                        //            );
-                        //        PrintDialog dialog = new PrintDialog();
-                        //        dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
-                        //        dialog.PrintVisual(c, "Cash Drawer");
-                        //    }));
-                        //};
-                        //worker.RunWorkerCompleted += (s, e) =>
-                        //{
-                        //    Debug.WriteLine("PrintSuccess");
-                        //};
-                        //worker.RunWorkerAsync();
-
-
-
                         try
                         {
-                            PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
-                            if (printDataModel == null)
+                            if (printTemplateModel?.Data == null)
                             {
                                 onPrintResponse(this, EventArgs.Empty, "Wrong Data Format");
                                 return;
                             }
 
                             //find printer
-                            PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                            PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printTemplateModel?.Data?.PrinterName));
                             if (_foundPrinterModel == null)
                             {
                                 onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
                                 return;
                             }
 
-                            switch (printDataModel.PrintMethod)
+                            switch (printTemplateModel?.Data?.PrintMethod)
                             {
-                                case "PrintOnly":
-                                    this._printOnly(printDataModel.PrinterName);
-                                    break;
                                 case "CutOnly":
-                                    this._cutOnly(printDataModel.PrinterName, clientId);
+                                    this._cutOnly(printTemplateModel?.Data.PrinterName, clientId);
                                     break;
                                 case "OpenCashDrawer":
-                                    this._kickCashDrawer(printDataModel.PrinterName, clientId);
+                                    this._kickCashDrawer(printTemplateModel?.Data.PrinterName, clientId);
                                     break;
                                 case "PrintAndKickCashDrawer":
-                                    this._printAndKickCashDrawer(printDataModel.PrinterName, printDataModel.PrintModel, clientId);
+                                    this._printAndKickCashDrawer(printTemplateModel?.Data.PrinterName, printTemplateModel?.Data?.PrintModel, clientId);
                                     break;
                                 default:
-                                    _printAndCut(printDataModel.PrinterName, printDataModel.PrintModel, clientId);
+                                    this._printAndCut(printTemplateModel?.Data.PrinterName, printTemplateModel?.Data?.PrintModel, clientId);
                                     break;
                             }
 
@@ -393,6 +353,11 @@ namespace WPFPrintingService
                 MessageBox.Show("Start Service First");
                 return;
             }
+            if(this._allConnectedWebSocketClients.Count < 1)
+            {
+                MessageBox.Show("No Client Connected");
+                return;
+            }
 
 
             this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
@@ -423,17 +388,17 @@ namespace WPFPrintingService
 
 
 
-            LocalPrintServer printServer = new LocalPrintServer();
-            PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
-            PrintDialog printDialog = new PrintDialog();
-            printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == printer.PrinterName);
-            printDialog.PrintVisual(new CashDrawerTemplate(
-                new List<GG>() { 
-                    new GG(){ Title = "KHR"},
-                    new GG(){ Title = "USD"},
-                },
-                DateTime.Now.ToShortDateString()
-                ), "Cash Drawer");
+            //LocalPrintServer printServer = new LocalPrintServer();
+            //PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
+            //PrintDialog printDialog = new PrintDialog();
+            //printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == printer.PrinterName);
+            //printDialog.PrintVisual(new CashDrawerTemplate(
+            //    new List<GG>() { 
+            //        new GG(){ Title = "KHR"},
+            //        new GG(){ Title = "USD"},
+            //    },
+            //    DateTime.Now.ToShortDateString()
+            //    ), "Cash Drawer");
 
 
 
@@ -553,7 +518,7 @@ namespace WPFPrintingService
         }
 
         //default windows print functions
-        private void _printAndCut(string printerName, IPrintModel printModel, string clientId)
+        private void _printAndCut(string printerName, PrintModel printModel, string clientId)
         {
             //print and cut using default windows print document
             //PrintDocument printDocument = new PrintDocument();
@@ -573,75 +538,55 @@ namespace WPFPrintingService
             //printDocument.Dispose();
 
             //new method
-            LocalPrintServer printServer = new LocalPrintServer();
-            PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
+ 
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += (s, e) =>
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    LocalPrintServer printServer = new LocalPrintServer();
+                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                    CashDrawerTemplate c = new CashDrawerTemplate(
+                         printModel.Prices.ToList(),
+                         printModel.Date
+                    );
+                    PrintDialog dialog = new PrintDialog();
+                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                    dialog.PrintVisual(c, "Cash Drawer");
+                }));
+            };
+            worker.RunWorkerCompleted += (s, e) =>
+            {
+                Debug.WriteLine("PrintSuccess");
+            };
+            worker.RunWorkerAsync();
 
-            PrintDialog printDialog = new PrintDialog();
-            printDialog.PrintQueue = printQueuesOnLocalServer.FirstOrDefault(x => x.Name == "Windows Print to PDF");
-
-
-            
         }
 
-
-        private void _printOnly(string printerName)
-        {
-            //print only using default windows print document
-
-            MessageBox.Show("Sorry, This Feature In Progress");
-            //PrintDocument printDocument = new PrintDocument();
-            //printDocument.PrintPage += (o, ev) =>
-            //{
-            //    if (ev.Graphics == null) return;
-            //    ev.Graphics.DrawString(
-            //        "",
-            //        new Font("Arial", 10),
-            //        Brushes.Black,
-            //        ev.MarginBounds.Left,
-            //        0,
-            //        new StringFormat()
-            //    );
-            //    //ev.HasMorePages = true;
-            //    //printDocument.Dispose();
-            //};
-            //printDocument.PrinterSettings.PrinterName = printerName;
-            //printDocument.EndPrint += (o, ev) =>
-            //{
-            //    PrintEventArgs printEventArgs = (PrintEventArgs)ev;
-            //    Debug.WriteLine("Print Success");
-            //    Debug.WriteLine(printEventArgs.PrintAction);
-            //    //if(printEventArgs.PrintAction == PrintAction.PrintToPrinter)
-            //    //{
-            //    //    printEventArgs.Cancel = true;
-            //    //}
-            //    printDocument.Dispose();
-            //};
-            //printDocument.BeginPrint += (o, ev) =>
-            //{
-            //    Debug.WriteLine("Print Start");
-            //};
-            //printDocument.QueryPageSettings += (o, ev) =>
-            //{
-            //    Debug.WriteLine("");
-            //};
-            //printDocument.Print();
-            //printDocument.Dispose();
-        }
-
-        private void _printAndKickCashDrawer(string printerName, IPrintModel printModel, string clientId)
+        private void _printAndKickCashDrawer(string printerName, PrintModel printModel, string clientId)
         {
             //print and kick out cash drawer using default windows print document
-
-            PrintDocument printDocument = new PrintDocument();
-            //printDocument.PrintPage += (o, ev) =>
-            //{
-            //    if (ev.Graphics == null) return;
-            //    System.Drawing.Point loc = new System.Drawing.Point(100, 100);
-            //    ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
-            //};
-            printDocument.PrinterSettings.PrinterName = printerName;
-            printDocument.EndPrint += (o, ev) =>
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += (s, e) =>
             {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    LocalPrintServer printServer = new LocalPrintServer();
+                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                    CashDrawerTemplate c = new CashDrawerTemplate(
+                         printModel.Prices.ToList(),
+                         printModel.Date
+                    );
+                    PrintDialog dialog = new PrintDialog();
+                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                    dialog.PrintVisual(c, "Cash Drawer");
+                }));
+            };
+            worker.RunWorkerCompleted += (s, e) =>
+            {
+                PrintDocument printDocument = new PrintDocument();
+                printDocument.PrinterSettings.PrinterName = printerName;
+
                 //open cash drawer command
                 const string ESC1 = "\u001B";
                 const string p = "\u0070";
@@ -649,17 +594,15 @@ namespace WPFPrintingService
                 const string t1 = "\u0025";
                 const string t2 = "\u0250";
                 const string openTillCommand = ESC1 + p + m + t1 + t2;
-                RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
-
-                //notify to client
-                printDocument.EndPrint += (o, ev) =>
+                bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+                if (_cashDrawerOpened)
                 {
                     if (_webSocketServer != null && _webSocketServer.IsListening)
-                        _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
-                };
+                        _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Cash Drawer Opened", clientId);
+                }
+                printDocument.Dispose();
             };
-            printDocument.Print();
-            printDocument.Dispose();
+            worker.RunWorkerAsync();
         }
 
         private void _cutOnly(string printerName, string clientId)

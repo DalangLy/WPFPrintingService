@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Threading;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using WPFPrintingService.ImageConversion;
 using WPFPrintingService.UICallBackDelegates;
 using Newtonsoft.Json;
 using System.Windows.Controls;
@@ -20,6 +19,7 @@ using System.Linq;
 using WPFPrintingService.Print_Templates;
 using System.Diagnostics;
 using System.ComponentModel;
+using WPFPrintingService.Print_Models;
 
 namespace WPFPrintingService
 {
@@ -238,99 +238,79 @@ namespace WPFPrintingService
                     case "Print":
 
 
-                        BackgroundWorker worker = new BackgroundWorker();
-                        worker.DoWork += (s, e) =>
+                        //BackgroundWorker worker = new BackgroundWorker();
+                        //worker.DoWork += (s, e) =>
+                        //{
+                        //    Application.Current.Dispatcher.Invoke(new Action(() =>
+                        //    {
+                        //        LocalPrintServer printServer = new LocalPrintServer();
+                        //        PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                        //        CashDrawerTemplate c = new CashDrawerTemplate(
+                        //                new List<GG>()
+                        //                {
+                        //                    new GG(){ Title = "KHR"},
+                        //                    new GG(){ Title = "USD"},
+                        //                },
+                        //                DateTime.Now.ToShortDateString()
+                        //            );
+                        //        PrintDialog dialog = new PrintDialog();
+                        //        dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                        //        dialog.PrintVisual(c, "Cash Drawer");
+                        //    }));
+                        //};
+                        //worker.RunWorkerCompleted += (s, e) =>
+                        //{
+                        //    Debug.WriteLine("PrintSuccess");
+                        //};
+                        //worker.RunWorkerAsync();
+
+
+
+                        try
                         {
-                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
+                            if (printDataModel == null)
                             {
-                                LocalPrintServer printServer = new LocalPrintServer();
-                                PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                                CashDrawerTemplate c = new CashDrawerTemplate(
-                                        new List<GG>()
-                                        {
-                                            new GG(){ Title = "KHR"},
-                                            new GG(){ Title = "USD"},
-                                        },
-                                        DateTime.Now.ToShortDateString()
-                                    );
-                                PrintDialog dialog = new PrintDialog();
-                                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
-                                dialog.PrintVisual(c, "Cash Drawer");
-                            }));
-                        };
-                        worker.RunWorkerCompleted += (s, e) =>
+                                onPrintResponse(this, EventArgs.Empty, "Wrong Data Format");
+                                return;
+                            }
+
+                            //find printer
+                            PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
+                            if (_foundPrinterModel == null)
+                            {
+                                onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
+                                return;
+                            }
+
+                            switch (printDataModel.PrintMethod)
+                            {
+                                case "PrintOnly":
+                                    this._printOnly(printDataModel.PrinterName);
+                                    break;
+                                case "CutOnly":
+                                    this._cutOnly(printDataModel.PrinterName, clientId);
+                                    break;
+                                case "OpenCashDrawer":
+                                    this._kickCashDrawer(printDataModel.PrinterName, clientId);
+                                    break;
+                                case "PrintAndKickCashDrawer":
+                                    this._printAndKickCashDrawer(printDataModel.PrinterName, printDataModel.PrintModel, clientId);
+                                    break;
+                                default:
+                                    _printAndCut(printDataModel.PrinterName, printDataModel.PrintModel, clientId);
+                                    break;
+                            }
+
+                            onPrintResponse(this, EventArgs.Empty, "Print Success!");
+
+                        }
+                        catch (Exception)
                         {
-                            Debug.WriteLine("PrintSuccess");
-                        };
-                        worker.RunWorkerAsync();
 
-                        //serialize print data model
-                        //try
-                        //{
-                        //    PrintDataModel? printDataModel = JsonConvert.DeserializeObject<PrintDataModel>(requestModel.Data);
-                        //    if (printDataModel == null)
-                        //    {
-                        //        onPrintResponse(this, EventArgs.Empty, "Wrong Data Format");
-                        //        return;
-                        //    }
-                        //    //find printer
+                            throw;
+                        }
 
-                        //    PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printDataModel.PrinterName));
-                        //    if (_foundPrinterModel == null)
-                        //    {
-                        //        onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
-                        //        return;
-                        //    }
-
-                        //    //if (!_foundPrinterModel.IsOnline)
-                        //    //{
-                        //    //    onPrintResponse("Select Printer is currently Offline");
-                        //    //    return;
-                        //    //}
-
-                        //    if (printDataModel.Base64Image == "")
-                        //    {
-                        //        onPrintResponse(this, EventArgs.Empty, "Base64 Image Null");
-                        //        return;
-                        //    }
-
-                        //    //validate base64 image
-                        //    IAttachmentType attachmentType = GetMimeType(printDataModel.Base64Image);
-                        //    if (attachmentType != AttachmentType.Photo)
-                        //    {
-                        //        onPrintResponse(this, EventArgs.Empty, "Only Support Image");
-                        //        return;
-                        //    }
-
-                        //    string _path = AppDomain.CurrentDomain.BaseDirectory;
-                        //    String savedImage = _path + "\\temp_print." + attachmentType.Extension;
-                        //    File.WriteAllBytes(savedImage, Convert.FromBase64String(printDataModel.Base64Image));
-
-                        //    switch (printDataModel.PrintMethod)
-                        //    {
-                        //        case "PrintOnly":
-                        //            this._printOnly(printDataModel.PrinterName);
-                        //            break;
-                        //        case "CutOnly":
-                        //            this._cutOnly(printDataModel.PrinterName, clientId);
-                        //            break;
-                        //        case "OpenCashDrawer":
-                        //            this._kickCashDrawer(printDataModel.PrinterName, clientId);
-                        //            break;
-                        //        case "PrintAndKickCashDrawer":
-                        //            this._printAndKickCashDrawer(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
-                        //            break;
-                        //        default:
-                        //            _printAndCut(printDataModel.PrinterName, printDataModel.Base64Image, clientId);
-                        //            break;
-                        //    }
-
-                        //    onPrintResponse(this, EventArgs.Empty, "Print Success!");
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    onPrintResponse(this, EventArgs.Empty, $"Wrong Print Format {ex.Message}");
-                        //}
                         break;
                     default:
                         onPrintResponse(this, EventArgs.Empty, "Wrong Code");
@@ -573,7 +553,7 @@ namespace WPFPrintingService
         }
 
         //default windows print functions
-        private void _printAndCut(string printerName, String base64Image, string clientId)
+        private void _printAndCut(string printerName, IPrintModel printModel, string clientId)
         {
             //print and cut using default windows print document
             //PrintDocument printDocument = new PrintDocument();
@@ -603,16 +583,6 @@ namespace WPFPrintingService
             
         }
 
-        private System.Drawing.Image LoadBase64(string base64)
-        {
-            byte[] bytes = Convert.FromBase64String(base64);
-            System.Drawing.Image image;
-            using (MemoryStream ms = new MemoryStream(bytes))
-            {
-                image = System.Drawing.Image.FromStream(ms);
-            }
-            return image;
-        }
 
         private void _printOnly(string printerName)
         {
@@ -658,17 +628,17 @@ namespace WPFPrintingService
             //printDocument.Dispose();
         }
 
-        private void _printAndKickCashDrawer(string printerName, string base64Image, string clientId)
+        private void _printAndKickCashDrawer(string printerName, IPrintModel printModel, string clientId)
         {
             //print and kick out cash drawer using default windows print document
 
             PrintDocument printDocument = new PrintDocument();
-            printDocument.PrintPage += (o, ev) =>
-            {
-                if (ev.Graphics == null) return;
-                System.Drawing.Point loc = new System.Drawing.Point(100, 100);
-                ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
-            };
+            //printDocument.PrintPage += (o, ev) =>
+            //{
+            //    if (ev.Graphics == null) return;
+            //    System.Drawing.Point loc = new System.Drawing.Point(100, 100);
+            //    ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
+            //};
             printDocument.PrinterSettings.PrinterName = printerName;
             printDocument.EndPrint += (o, ev) =>
             {
@@ -736,24 +706,6 @@ namespace WPFPrintingService
             }
             printDocument.Dispose();
         }
-
-        //Image Conversion
-        private IAttachmentType GetMimeType(string value)
-        {
-            IAttachmentType result;
-
-            return string.IsNullOrEmpty(value)
-                ? AttachmentType.UnknownMime
-                : (mimeMap.TryGetValue(value.Substring(0, 5), out result) ? result : AttachmentType.Unknown);
-        }
-        private static readonly IDictionary<string, IAttachmentType> mimeMap =
-        new Dictionary<string, IAttachmentType>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "IVBOR", AttachmentType.Photo },
-            { "/9J/4", AttachmentType.Photo },
-            { "AAAAF", AttachmentType.Video },
-            { "JVBER", AttachmentType.Document }
-        };
 
         private void DialogHost_DialogClosing(object sender, MaterialDesignThemes.Wpf.DialogClosingEventArgs eventArgs)
         {

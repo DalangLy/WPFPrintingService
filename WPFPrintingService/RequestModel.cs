@@ -1,4 +1,6 @@
-﻿namespace WPFPrintingService
+﻿using WPFPrintingService.Print_Models;
+
+namespace WPFPrintingService
 {
     internal class RequestModel
     {
@@ -10,6 +12,7 @@
     {
         public string PrinterName { get; set; } = string.Empty;
         public string PrintMethod { get; set; } = "PrintAndCut";
-        public string Base64Image { get; set; } = string.Empty;
+        public string TemplateName { get; set; } = "CashDrawer";
+        public IPrintModel? PrintModel { get; set; }
     }
 }

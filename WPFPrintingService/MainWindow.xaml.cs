@@ -396,31 +396,6 @@ namespace WPFPrintingService
             //    },
             //    DateTime.Now.ToShortDateString()
             //    ), "Cash Drawer");
-
-
-
-
-            //print test
-            //PrintDocument printDocument = new PrintDocument();
-            //printDocument.PrintPage += (o, ev) =>
-            //{
-            //    if (ev.Graphics == null) return;
-            //    ev.Graphics.DrawString(
-            //        "Print Test",
-            //        new Font("Arial", 10),
-            //        Brushes.Black,
-            //        ev.MarginBounds.Left,
-            //        0,
-            //        new StringFormat()
-            //    );
-            //};
-            //printDocument.PrinterSettings.PrinterName = printer.PrinterName;
-            //printDocument.EndPrint += (o, ev) =>
-            //{
-            //    MessageBox.Show("Print Success");
-            //};
-            //printDocument.Print();
-            //printDocument.Dispose();
         }
 
         private void btnPrintAndKickDrawer_Click(object sender, RoutedEventArgs e)
@@ -463,8 +438,6 @@ namespace WPFPrintingService
         {
             //PrinterFromWindowsSystemModel? printer = ((FrameworkElement)sender).DataContext as PrinterFromWindowsSystemModel;
             //if (printer == null) return;
-
-            //_printOnly(printer.PrinterName);
 
             MessageBox.Show("Sorry this feature is in progress");
         }
@@ -517,25 +490,6 @@ namespace WPFPrintingService
         //default windows print functions
         private void _printAndCut(string printerName, PrintModel printModel, string clientId)
         {
-            //print and cut using default windows print document
-            //PrintDocument printDocument = new PrintDocument();
-            //printDocument.PrintPage += (o, ev) =>
-            //{
-            //    if (ev.Graphics == null) return;
-            //    System.Drawing.Point loc = new System.Drawing.Point(100, 100);
-            //    ev.Graphics.DrawImage(LoadBase64(base64Image), loc);
-            //};
-            //printDocument.PrinterSettings.PrinterName = printerName;
-            //printDocument.EndPrint += (o, ev) =>
-            //{
-            //    if (_webSocketServer != null && _webSocketServer.IsListening)
-            //        _webSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
-            //};
-            //printDocument.Print();
-            //printDocument.Dispose();
-
-            //new method
- 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += (s, e) =>
             {
@@ -557,7 +511,6 @@ namespace WPFPrintingService
                 Debug.WriteLine("PrintSuccess");
             };
             worker.RunWorkerAsync();
-
         }
 
         private void _printAndKickCashDrawer(string printerName, PrintModel printModel, string clientId)

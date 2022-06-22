@@ -25,7 +25,7 @@
             <ColumnDefinition Width="140"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -78,6 +78,20 @@
         </Button>
         
         <!--Button Server Info-->
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" 
+            CommandTarget="{Binding ElementName=serverInfoDialog}"
+            Cursor="Hand">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Info"/>
+                <materialDesign:PackIcon Kind="Information" Margin="4 0.5 0 0"/>
+            </StackPanel>
+        </Button>
         <materialDesign:DialogHost
             Grid.Row="0"
             Grid.Column="0"
@@ -86,100 +100,21 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             DialogClosing="DialogHost_DialogClosing"
-        >
+            x:Name="serverInfoDialog"
+            Panel.ZIndex="100"
+            CloseOnClickAway="True">
             <materialDesign:DialogHost.DialogContent>
                 <StackPanel Margin="16">
-                    <TextBlock Text="Server Info" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        
-                    </StackPanel>
+                    <TextBlock Text="Server Info" TextAlignment="Left" Margin="0 8 0 0" HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="Server : http://127.0.0.1:8000" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                    <TextBlock Text="Version : 1.1.0" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                    <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                    </StackPanel>-->
                 </StackPanel>
             </materialDesign:DialogHost.DialogContent>
-            <Grid>
-                <!--Design Grid Layout-->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition Width="140"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="200"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="150"/>
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
-
-                <Button
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="5"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                    Cursor="Hand">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Info"/>
-                        <materialDesign:PackIcon Kind="Information" Margin="4 0.5 0 0"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
         </materialDesign:DialogHost>
-        <!--<materialDesign:DialogHost
-            Grid.Row="5"
-            Grid.Column="4"
-            Margin="5"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            DialogClosing="DialogHost_DialogClosing"
-        >
-            <materialDesign:DialogHost.DialogContent>
-                <StackPanel Margin="16">
-                    <TextBlock Text="Quit" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                IsDefault="True"
-                                Margin="0 8 8 0"
-                                Command="materialDesign:DialogHost.CloseDialogCommand">
-                            <Button.CommandParameter>
-                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                    True
-                                </system:Boolean>
-                            </Button.CommandParameter>
-                            Exit
-                        </Button>
-                        <Button
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                IsCancel="True"
-                                Margin="0 8 8 0"
-                                Command="materialDesign:DialogHost.CloseDialogCommand"
-                            >
-                            <Button.CommandParameter>
-                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                    False
-                                </system:Boolean>
-                            </Button.CommandParameter>
-                            CANCEL
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </materialDesign:DialogHost.DialogContent>
-            <Button
-                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                Cursor="Hand">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Info"/>
-                    <materialDesign:PackIcon Kind="Information" Margin="4 0.5 0 0"/>
-                </StackPanel>
-            </Button>
-        </materialDesign:DialogHost>-->
-        
-        
-        
+
+
         <!--Server Status-->
         <GroupBox
             Grid.Row="2"
@@ -262,14 +197,29 @@
             x:Name="btnSendToEveryClients"
             VerticalAlignment="Center"
             Click="btnSendToEveryClients_Click" 
-            Cursor="Hand">
+            Cursor="Hand"
+            >
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Send To Every Clients"/>
                 <materialDesign:PackIcon Kind="Broadcast" Margin="4 .5 0 0"/>
             </StackPanel>
         </Button>
+        <materialDesign:Snackbar
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="5"
+            Grid.RowSpan="6"
+            Panel.ZIndex="100"
+            HorizontalAlignment="Stretch"
+            x:Name="SnackbarFive">
+            <materialDesign:SnackbarMessage
+                Content="Sent to clients success"
+                ActionContent="OK"
+            />
+        </materialDesign:Snackbar>
 
-        
+
+
         <!--List printer label-->
         <TextBlock 
             Grid.Row="1"
@@ -281,7 +231,8 @@
             Foreground="Red"
             Style="{StaticResource MaterialDesignHeadline6TextBlock}"
         />
-        
+
+
         <!--Button Refresh Printer-->
         <Button
             Grid.Row="1"
@@ -363,6 +314,20 @@
         />
 
         <!--Button quit-->
+        <Button
+            Grid.Row="5"
+            Grid.Column="4"
+            Margin="5"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Right"
+            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" 
+            CommandTarget="{Binding ElementName=confirmExitDialog}"
+            Cursor="Hand">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Quit"/>
+                <materialDesign:PackIcon Kind="ExitToApp" Margin="4 0.5 0 0"/>
+            </StackPanel>
+        </Button>
         <materialDesign:DialogHost
             Grid.Row="0"
             Grid.Column="0"
@@ -371,72 +336,64 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             DialogClosing="DialogHost_DialogClosing"
-        >
+            Panel.ZIndex="100"
+            x:Name="confirmExitDialog">
             <materialDesign:DialogHost.DialogContent>
-                <StackPanel Margin="16">
-                    <TextBlock Text="Quit" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                IsDefault="True"
-                                Margin="0 8 8 0"
-                                Command="materialDesign:DialogHost.CloseDialogCommand">
-                            <Button.CommandParameter>
-                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                    True
-                                </system:Boolean>
-                            </Button.CommandParameter>
-                            Exit
-                        </Button>
-                        <Button
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                IsCancel="True"
-                                Margin="0 8 8 0"
-                                Command="materialDesign:DialogHost.CloseDialogCommand"
-                            >
-                            <Button.CommandParameter>
-                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                    False
-                                </system:Boolean>
-                            </Button.CommandParameter>
-                            CANCEL
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </materialDesign:DialogHost.DialogContent>
-            <Grid>
-                <!--Design Grid Layout-->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition Width="140"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="200"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="150"/>
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
 
-                <Button
-                    Grid.Row="5"
-                    Grid.Column="4"
-                    Margin="5"
-                    Width="200"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Right"
-                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                    Cursor="Hand">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Quit"/>
-                        <materialDesign:PackIcon Kind="ExitToApp" Margin="4 0.5 0 0"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Text="Quit"
+                        Margin="5 20" 
+                        HorizontalAlignment="Center" 
+                        TextAlignment="Center"
+                    />
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        IsDefault="True"
+                        Margin="5"
+                        Command="materialDesign:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                True
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                        Exit
+                    </Button>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        IsCancel="True"
+                        Margin="5"
+                        Command="materialDesign:DialogHost.CloseDialogCommand"
+                    >
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                False
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                        CANCEL
+                    </Button>
+                    
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
         </materialDesign:DialogHost>
 
 

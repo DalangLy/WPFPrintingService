@@ -18,6 +18,7 @@ using WPFPrintingService.Print_Templates;
 using System.Diagnostics;
 using System.ComponentModel;
 using WPFPrintingService.Print_Models;
+using MaterialDesignThemes.Wpf;
 
 namespace WPFPrintingService
 {
@@ -280,19 +281,6 @@ namespace WPFPrintingService
             }
         }
 
-        
-        private void btnServerInfo_Click(object sender, RoutedEventArgs e)
-        {
-            if (this._isDialogShow) return;
-            ServerInfoForm serverInfoForm = new ServerInfoForm(_getLocalIPAddress(), PORT);
-            serverInfoForm.OnDialogClosed += (s, e) =>
-            {
-                this._isDialogShow = false;
-            };
-            this.mainGrid.Children.Add(serverInfoForm);
-            this._isDialogShow = true;
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //hide windows to system tray
@@ -358,7 +346,9 @@ namespace WPFPrintingService
 
 
             this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
-            this.mainGrid.Children.Add(new CustomMessageDialog());
+            
+            SnackbarFive.IsActive = true;
+            //this.mainGrid.Children.Add(new CustomMessageDialog());
         }
 
         private void btnRefreshPrinterList_Click(object sender, RoutedEventArgs e)

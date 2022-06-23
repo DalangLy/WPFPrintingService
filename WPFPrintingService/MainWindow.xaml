@@ -33,6 +33,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="140"/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition Width="150"/>
@@ -266,12 +267,20 @@
             />
         </materialDesign:Snackbar>
 
+        <Border
+            Grid.Column="2"
+            Grid.Row="0"
+            Grid.RowSpan="6"
+            Background="{DynamicResource MaterialDesignDivider}"
+            Width="1"
+            VerticalAlignment="Stretch"
+            SnapsToDevicePixels="True" />
 
 
         <!--List printer label-->
         <TextBlock 
             Grid.Row="1"
-            Grid.Column="2"
+            Grid.Column="3"
             Text="Available Printers"
             HorizontalAlignment="Left"
             Margin="5" 
@@ -301,7 +310,7 @@
         <!--List Printers-->
         <DataGrid 
             Grid.Row="2"
-            Grid.Column="2"
+            Grid.Column="3"
             Grid.ColumnSpan="3"
             Grid.RowSpan="3"
             Margin="5"
@@ -351,7 +360,7 @@
         <!--Check box to launch app on windows start up-->
         <CheckBox 
             Grid.Row="5"
-            Grid.Column="3"
+            Grid.Column="4"
             x:Name="chbRunOnStartUp" 
             Content="Run on Startup"
             HorizontalAlignment="Right"
@@ -364,7 +373,7 @@
         <!--Button quit-->
         <Button
             Grid.Row="5"
-            Grid.Column="4"
+            Grid.Column="5"
             Margin="5"
             VerticalAlignment="Center"
             HorizontalAlignment="Right"

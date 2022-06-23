@@ -18,7 +18,6 @@ using WPFPrintingService.Print_Templates;
 using System.Diagnostics;
 using System.ComponentModel;
 using WPFPrintingService.Print_Models;
-using MaterialDesignThemes.Wpf;
 
 namespace WPFPrintingService
 {
@@ -29,11 +28,14 @@ namespace WPFPrintingService
         private const int PORT = 1100;
         private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
         private bool _isWebSocketSeverRunning = false;
-        private bool _isDialogShow = false;
+        public BorderViewModel ViewModel { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel = new BorderViewModel();
+
+            this.DataContext = ViewModel;
         }
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -597,5 +599,41 @@ namespace WPFPrintingService
             if (isExit)
                 _shutdownThisApplication();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var vis = (this.DataContext as BorderViewModel).BorderVisible;
+
+            (this.DataContext as BorderViewModel).BorderVisible = !vis;
+        }
+    }
+
+    public class BorderViewModel : INotifyPropertyChanged
+    {
+        private bool borderVisible = true;
+
+        public bool BorderVisible
+        {
+            get
+            {
+                return borderVisible;
+            }
+
+            set
+            {
+                borderVisible = value;
+                NotifyPropertyChanged("BorderVisible");
+            }
+        }
+
+        private void NotifyPropertyChanged(string info)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

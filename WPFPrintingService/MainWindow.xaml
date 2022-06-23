@@ -1,22 +1,32 @@
 ﻿<Window x:Class="WPFPrintingService.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WPFPrintingService"
-        mc:Ignorable="d"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
-        ResizeMode="CanMinimize"
-        Title="Printing Service" Height="688" Width="1295" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing"
->
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:WPFPrintingService"
+    mc:Ignorable="d"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextElement.FontWeight="Regular"
+    TextElement.FontSize="13"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    Background="{DynamicResource MaterialDesignPaper}"
+    FontFamily="{DynamicResource MaterialDesignFont}"
+    ResizeMode="CanMinimize"
+    Title="Printing Service"
+    Height="750" 
+    Width="1295"
+    WindowStartupLocation="CenterScreen" 
+    Loaded="Window_Loaded" 
+    Closing="Window_Closing">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+    </Window.Resources>
+
+
     <Grid x:Name="mainGrid">
         
         <!--Design Grid Layout-->
@@ -33,7 +43,7 @@
             <RowDefinition Height="200"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="150"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
         
         <!--Label Service-->
@@ -104,13 +114,44 @@
             Panel.ZIndex="100"
             CloseOnClickAway="True">
             <materialDesign:DialogHost.DialogContent>
-                <StackPanel Margin="16">
-                    <TextBlock Text="Server Info" TextAlignment="Left" Margin="0 8 0 0" HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
-                    <TextBlock Text="Server : http://127.0.0.1:8000" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
-                    <TextBlock Text="Version : 1.1.0" Margin="0 8 0 0" HorizontalAlignment="Stretch" TextAlignment="Center"/>
-                    <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-                    </StackPanel>-->
-                </StackPanel>
+                <Grid Width="300" Height="130" Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition Height="20"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Text="Server Info" 
+                        Margin="5" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <StackPanel 
+                        Grid.Row="1"
+                        Margin="5"
+                        VerticalAlignment="Stretch"
+                        >
+                        <TextBlock 
+                            Text="Server IP : 192.168.0.137"
+                            HorizontalAlignment="Stretch"/>
+                        <TextBlock
+                            Text="Server PORT : 1100"  
+                            HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <TextBlock
+                        Grid.Row="3"
+                        Text="version : 2.1.0"
+                        Margin="0 8 0 0"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Bottom" 
+                        TextAlignment="Center"/>
+                </Grid>
             </materialDesign:DialogHost.DialogContent>
         </materialDesign:DialogHost>
 
@@ -123,12 +164,19 @@
             Margin="5"
             Header="Status"
             Style="{DynamicResource MaterialDesignGroupBox}"
+            materialDesign:ShadowAssist.ShadowDepth="Depth3"
             VerticalAlignment="Stretch" 
-            BorderThickness="0">
+            BorderThickness="1">
+            <GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Cloud" Height="32" Width="32" VerticalAlignment="Center"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6,6,6,6" Text="{Binding}" TextWrapping="Wrap" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </GroupBox.HeaderTemplate>
             <TextBlock x:Name="txtServerStatus" Margin="6,6,6,6" TextWrapping="Wrap"/>
         </GroupBox>
-
-
 
 
         <!--List of connected websocket clients-->
@@ -198,7 +246,7 @@
             VerticalAlignment="Center"
             Click="btnSendToEveryClients_Click" 
             Cursor="Hand"
-            >
+            Height="48">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Send To Every Clients"/>
                 <materialDesign:PackIcon Kind="Broadcast" Margin="4 .5 0 0"/>
@@ -322,6 +370,8 @@
             HorizontalAlignment="Right"
             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" 
             CommandTarget="{Binding ElementName=confirmExitDialog}"
+            ToolTip="Quit"
+            Height="45"
             Cursor="Hand">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Quit"/>
@@ -348,7 +398,6 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
-
 
                     <TextBlock
                         Grid.Row="0"
@@ -397,16 +446,40 @@
         </materialDesign:DialogHost>
 
 
+        <!--<DockPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="6"
+            Grid.RowSpan="6">
+            <materialDesign:ColorZone
+                Mode="PrimaryDark"
+                Padding="16"
+                CornerRadius="0"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                Margin="0">
+                <StackPanel
+                    Orientation="Horizontal">
+                    <ToggleButton
+                        Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Margin="16 0 0 0"
+                        Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                        Printing Service
+                    </TextBlock>
+                </StackPanel>
+            </materialDesign:ColorZone>
+        </DockPanel>-->
 
 
 
-        <tb:TaskbarIcon x:Name="myNotifyIcon"
+        <tb:TaskbarIcon 
+            x:Name="myNotifyIcon"
             Visibility="Hidden"
             ToolTipText="Printing Servcie"
-            IconSource="/Icons/cherry.ico"
+            IconSource="/Icons/print.ico"
             PopupActivation="RightClick"
-            TrayMouseDoubleClick="myNotifyIcon_TrayMouseDoubleClick"
-        >
+            TrayMouseDoubleClick="myNotifyIcon_TrayMouseDoubleClick">
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
                     Background="White"
@@ -415,33 +488,30 @@
                     CornerRadius="4"
                     Opacity="0.8"
                     Width="160"
-                    Height="40"
-                >
+                    Height="40">
                 <TextBlock
                     Text="Printing Service"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                />
+                    VerticalAlignment="Center"/>
                 </Border>
             </tb:TaskbarIcon.TrayToolTip>
 
-
             <tb:TaskbarIcon.TrayPopup>
                 <Border
-                  Background="White"
-                  BorderBrush="Orange"
-                  BorderThickness="2"
-                  CornerRadius="4"
-                  Width="160"
-                  Height="40">
+                    Background="White"
+                    BorderBrush="Orange"
+                    BorderThickness="2"
+                    CornerRadius="4"
+                    Width="160"
+                    Height="40">
                     <Button x:Name="btnExitPrintingServiceViaSystemTray"
-                    Content="Exit"
-                    HorizontalAlignment="Stretch"
-                            Cursor="Hand"
-                    VerticalAlignment="Stretch" Click="btnExitPrintingServiceViaSystemTray_Click">
+                        Content="Exit"
+                        HorizontalAlignment="Stretch"
+                        Cursor="Hand"
+                        VerticalAlignment="Stretch" 
+                        Click="btnExitPrintingServiceViaSystemTray_Click">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <!--<Setter Property="Background" Value="Green"/>-->
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -462,8 +532,8 @@
                     </Button>
                 </Border>
             </tb:TaskbarIcon.TrayPopup>
-
         </tb:TaskbarIcon>
+
 
     </Grid>
 </Window>

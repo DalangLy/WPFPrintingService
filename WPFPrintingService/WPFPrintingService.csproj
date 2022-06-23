@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>cherry.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\print.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="cherry.ico" />
+    <Resource Include="Icons\print.ico" />
   </ItemGroup>
 
   <ItemGroup>

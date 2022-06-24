@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -25,7 +24,6 @@ namespace WPFPrintingService
     {
         private List<ClientWebSocketModel> _allConnectedWebSocketClients = new List<ClientWebSocketModel>();
         private WebSocketServer? _webSocketServer;
-        private const int PORT = 1100;
         private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
         private bool _isWebSocketSeverRunning = false;
         public BorderViewModel ViewModel { get; set; }
@@ -58,15 +56,12 @@ namespace WPFPrintingService
 
         private void _setupWebSocketServer()
         {
-            this._webSocketServer = new WebSocketServer(IPAddress.Parse(this._getLocalIPAddress()), PORT);
+            this._webSocketServer = new WebSocketServer(IPAddress.Parse(AppSingleton.GetInstance.SystemIP), AppSingleton.GetInstance.Port);
         }
 
         private void _loadAllPrintersFromWindowsSystem()
         {
-            //GetAllSystemPrintersSingleton.GetInstance.GetAllPrinters();
-            LocalPrintServer printServer = new LocalPrintServer();
-            PrintQueueCollection printQueuesOnLocalServer = printServer.GetPrintQueues();
-            foreach (PrintQueue printer in printQueuesOnLocalServer)
+            foreach (PrintQueue printer in GetAllSystemPrintersSingleton.GetInstance.Printers)
             {
                 //Debug.WriteLine("\tThe shared printer : " + printer.Name);
                 //Debug.WriteLine("\tHas Tonner: " + printer.HasToner);
@@ -94,18 +89,6 @@ namespace WPFPrintingService
             {
                 _startWebSocketServer();
             }
-        }
-
-        private string _getLocalIPAddress()
-        {
-            string localIP = string.Empty;
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-            {
-                socket.Connect("8.8.8.8", 65530);
-                IPEndPoint? endPoint = socket.LocalEndPoint as IPEndPoint;
-                localIP = endPoint!.Address.ToString();
-            }
-            return localIP;
         }
         
         private void btnStartStopServer_Click(object sender, RoutedEventArgs e)
@@ -151,7 +134,7 @@ namespace WPFPrintingService
             this._webSocketServer.Start();
 
             this.btnStartStopServer.Content = "Stop";
-            this.txtServerStatus.Text = $"Service on ws://{this._getLocalIPAddress()}:{PORT}";
+            this.txtServerStatus.Text = $"Service on ws://{AppSingleton.GetInstance.SystemIP}:{AppSingleton.GetInstance.Port}";
             this._isWebSocketSeverRunning = true;
         }
 
@@ -170,7 +153,7 @@ namespace WPFPrintingService
 
         private void _addConnectedWebSocketClientToListView(string id, string ip, string name)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            lvConnectWebSocketClients.Dispatcher.BeginInvoke(new Action(() =>
             {
                 this._allConnectedWebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
                 this.lvConnectWebSocketClients.ItemsSource = this._allConnectedWebSocketClients;
@@ -183,7 +166,7 @@ namespace WPFPrintingService
 
         private void _removeDisconnectedWebSocketClientFromListView(string disconnectedClientId)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            lvConnectWebSocketClients.Dispatcher.BeginInvoke(new Action(() =>
             {
                 //find disconnected client from list
                 ClientWebSocketModel? _disconnectedWebSocketClient = _allConnectedWebSocketClients.Find(webSocketClient => webSocketClient.Id == disconnectedClientId);
@@ -355,7 +338,7 @@ namespace WPFPrintingService
 
         private void btnRefreshPrinterList_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Not Implement");
+            GetAllSystemPrintersSingleton.GetInstance.RefreshPrinters();
         }
 
         private void chbAutoRunService_Checked(object sender, RoutedEventArgs e)
@@ -598,13 +581,6 @@ namespace WPFPrintingService
             bool isExit = (bool) eventArgs.Parameter;
             if (isExit)
                 _shutdownThisApplication();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var vis = (this.DataContext as BorderViewModel).BorderVisible;
-
-            (this.DataContext as BorderViewModel).BorderVisible = !vis;
         }
     }
 

@@ -4,27 +4,32 @@ namespace WPFPrintingService
 {
     internal sealed class GetAllSystemPrintersSingleton
     {
-        private static GetAllSystemPrintersSingleton? instance = null;
+        private static GetAllSystemPrintersSingleton instance = new GetAllSystemPrintersSingleton();
         public static GetAllSystemPrintersSingleton GetInstance
         {
             get
             {
-                if (instance == null)
-                    instance = new GetAllSystemPrintersSingleton();
                 return instance;
             }
         }
 
-        private static PrintQueueCollection? _printers;
-        public PrintQueueCollection? Printers
-        {
-            get { return _printers; }
+        private PrintQueueCollection? _printers;
+        public PrintQueueCollection Printers { 
+            get { 
+                if(_printers == null)
+                {
+                    LocalPrintServer printServer = new LocalPrintServer();
+                    _printers = printServer.GetPrintQueues();
+                }
+                return _printers; 
+            } 
         }
 
-        public void GetAllPrinters()
+        public PrintQueueCollection RefreshPrinters()
         {
             LocalPrintServer printServer = new LocalPrintServer();
             _printers = printServer.GetPrintQueues();
+            return _printers;
         }
     }
 }

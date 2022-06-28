@@ -46,6 +46,7 @@ namespace WPFPrintingService
             if (parameter == null) return;
             bool isChecked = (bool)parameter;
             Properties.Settings.Default.is_run_at_start_up = isChecked;
+            Properties.Settings.Default.Save();
             this._autoLaunchAppAtWindowsStartUpViewModel.IsLaunchAppAtWindowsStartUp = isChecked;
         }
     }

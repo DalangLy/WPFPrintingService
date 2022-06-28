@@ -29,6 +29,11 @@ namespace WPFPrintingService
         {
             LocalPrintServer printServer = new LocalPrintServer();
             _printers = printServer.GetPrintQueues();
+
+            //foreach (var item in _printers)
+            //{
+            //    item.Refresh();
+            //}
             return _printers;
         }
     }

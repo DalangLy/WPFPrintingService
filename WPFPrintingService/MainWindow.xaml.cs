@@ -1,12 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Net;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Threading;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using WPFPrintingService.UICallBackDelegates;
@@ -17,126 +14,45 @@ using WPFPrintingService.Print_Templates;
 using System.Diagnostics;
 using System.ComponentModel;
 using WPFPrintingService.Print_Models;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace WPFPrintingService
 {
     public partial class MainWindow : Window
     {
-        private List<ClientWebSocketModel> _allConnectedWebSocketClients = new List<ClientWebSocketModel>();
         private WebSocketServer? _webSocketServer;
-        private List<PrinterFromWindowsSystemModel> _allPrintersFromWindowsSystem = new List<PrinterFromWindowsSystemModel>();
-        private bool _isWebSocketSeverRunning = false;
-        public BorderViewModel ViewModel { get; set; }
-
         public MainWindow()
         {
             InitializeComponent();
-            ViewModel = new BorderViewModel();
-
-            this.DataContext = ViewModel;
         }
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //initialize websocket server
-            this._setupWebSocketServer();
-
-            //load all printer from windows system
-            this._loadAllPrintersFromWindowsSystem();
-
-            //bind list of all connected websocket clients to list view
-            this.lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
-
-            //check if run on start up button is enable
-            this._checkIfRunAtStartUpEnable();
-
-            //check if start service on start up
-            this._checkIfStartServiceAtStartUpIsEnable();
         }
 
-        private void _setupWebSocketServer()
-        {
-            this._webSocketServer = new WebSocketServer(IPAddress.Parse(AppSingleton.GetInstance.SystemIP), AppSingleton.GetInstance.Port);
-        }
-
-        private void _loadAllPrintersFromWindowsSystem()
-        {
-            foreach (PrintQueue printer in GetAllSystemPrintersSingleton.GetInstance.Printers)
-            {
-                //Debug.WriteLine("\tThe shared printer : " + printer.Name);
-                //Debug.WriteLine("\tHas Tonner: " + printer.HasToner);
-                //Debug.WriteLine("\tIs Busy: " + printer.IsBusy);
-                //Debug.WriteLine("\tIs Door Open: " + printer.IsDoorOpened);
-                //Debug.WriteLine("\tIs Offline: " + printer.IsOffline);
-                //Debug.WriteLine("\tIs Offline: " + printer.IsPrinting);
-                _allPrintersFromWindowsSystem.Add(new PrinterFromWindowsSystemModel(printer.Name));
-            }
-
-            dgPrinters.ItemsSource = _allPrintersFromWindowsSystem;
-        }
 
         private void _checkIfRunAtStartUpEnable()
         {
             bool _isRunAtStartUp = Properties.Settings.Default.is_run_at_start_up;
-            chbRunOnStartUp.IsChecked = _isRunAtStartUp;
+            //_startServiceViewModel.IsStartOnStartUp = _isRunAtStartUp;
         }
 
         private void _checkIfStartServiceAtStartUpIsEnable()
         {
             bool _isStartServiceAtStartUp = Properties.Settings.Default.is_start_server_on_start_up;
-            chbAutoRunService.IsChecked = _isStartServiceAtStartUp;
+            //_startServiceViewModel.IsStartOnStartUp = _isStartServiceAtStartUp;
             if (_isStartServiceAtStartUp)
             {
-                _startWebSocketServer();
+                //_startWebSocketServer();
             }
         }
         
         private void btnStartStopServer_Click(object sender, RoutedEventArgs e)
         {
-            if (_isWebSocketSeverRunning)
-            {
-                CustomConfirmDialog customConfirmDialog = new CustomConfirmDialog("Stop The Service?");
-                customConfirmDialog.OnConfirmClickCallBack += (sender, e) =>
-                {
-                    this._stopWebSocketServer();
-                    this.mainGrid.Children.Remove((UserControl)sender);
-                };
-                this.mainGrid.Children.Add(customConfirmDialog);
-            }
-            else
-            {
-                this._startWebSocketServer();
-            }
+            
         }
 
-        private void _startWebSocketServer()
-        {
-            if (this._webSocketServer == null) return;
-
-            //add web socket server listeners
-            this._webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
-                {
-                    //on client connected
-                    this._addConnectedWebSocketClientToListView(connectedClientId, connectedClientIp, connectedClientName);
-                },
-                (sender, args, clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
-                {
-                    //on message received from client
-                    this._onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
-                },
-                (sender, args, disconnectedClientId) =>
-                {
-                    //on client disconnected
-                    this._removeDisconnectedWebSocketClientFromListView(disconnectedClientId);
-                }
-            ));
-
-            this._webSocketServer.Start();
-
-            this.btnStartStopServer.Content = "Stop";
-            this.txtServerStatus.Text = $"Service on ws://{AppSingleton.GetInstance.SystemIP}:{AppSingleton.GetInstance.Port}";
-            this._isWebSocketSeverRunning = true;
-        }
 
         private void _stopWebSocketServer()
         {
@@ -146,40 +62,36 @@ namespace WPFPrintingService
 
             this._webSocketServer.Stop(CloseStatusCode.Away, "Server Stop");
 
-            this.btnStartStopServer.Content = "Start";
-            this.txtServerStatus.Text = "Server Stopped";
-            this._isWebSocketSeverRunning = false;
+            //this.btnStartStopServer.Content = "Start";
+            //this._webSocketStatusViewModel.Status = "Server Stopped";
+
         }
 
         private void _addConnectedWebSocketClientToListView(string id, string ip, string name)
         {
-            lvConnectWebSocketClients.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                this._allConnectedWebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
-                this.lvConnectWebSocketClients.ItemsSource = this._allConnectedWebSocketClients;
-                this.lvConnectWebSocketClients.Items.Refresh();
-
-                //update text status
-                this.txtServerStatus.Text += $"\n{name} has joined";
-            }), DispatcherPriority.Background);
+            //this._allConnectedWebSocketClients.Add();
+            //this._webSocketClientViewModel.WebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
+            Debug.WriteLine("Hello");
+            //update text status
+            //this._webSocketStatusViewModel.Status += $"\n{name} has joined";
         }
 
         private void _removeDisconnectedWebSocketClientFromListView(string disconnectedClientId)
         {
-            lvConnectWebSocketClients.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                //find disconnected client from list
-                ClientWebSocketModel? _disconnectedWebSocketClient = _allConnectedWebSocketClients.Find(webSocketClient => webSocketClient.Id == disconnectedClientId);
-                if (_disconnectedWebSocketClient == null) return;
+            //lvConnectWebSocketClients.Dispatcher.BeginInvoke(new Action(() =>
+            //{
+            //    //find disconnected client from list
+            //    ClientWebSocketModel? _disconnectedWebSocketClient = _allConnectedWebSocketClients.Find(webSocketClient => webSocketClient.Id == disconnectedClientId);
+            //    if (_disconnectedWebSocketClient == null) return;
 
-                //remove disconnected client from list and listview
-                this._allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
-                this.lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
-                this.lvConnectWebSocketClients.Items.Refresh();
+            //    //remove disconnected client from list and listview
+            //    this._allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
+            //    this.lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
+            //    this.lvConnectWebSocketClients.Items.Refresh();
 
-                //update text status
-                this.txtServerStatus.Text += $"\n{_disconnectedWebSocketClient.Name} has Left";
-            }), DispatcherPriority.Background);
+            //    //update text status
+            //    this.txtServerStatus.Text += $"\n{_disconnectedWebSocketClient.Name} has Left";
+            //}), DispatcherPriority.Background);
         }
 
         private void _onClientResponseMessage(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone)
@@ -197,8 +109,8 @@ namespace WPFPrintingService
                     case "RequestPrinters":
                         if(_webSocketServer != null && _webSocketServer.IsListening)
                         {
-                            var json = System.Text.Json.JsonSerializer.Serialize(_allPrintersFromWindowsSystem);
-                            _webSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
+                            //var json = System.Text.Json.JsonSerializer.Serialize(_allPrintersFromWindowsSystem);
+                            //_webSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
                         }
                         break;
                     case "SendToEveryone":
@@ -206,12 +118,9 @@ namespace WPFPrintingService
                         break;
                     case "SendToServer":
 
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            //update text status
-                            txtServerStatus.Text += $"\n {clientName} Said : {printTemplateModel.Data}";
+                        //update text status
+                        //this._webSocketStatusViewModel.Status += $"\n {clientName} Said : {printTemplateModel.Data}";
 
-                        }), DispatcherPriority.Background);
 
                         onSendToServer(this, EventArgs.Empty);
                         break;
@@ -225,12 +134,12 @@ namespace WPFPrintingService
                             }
 
                             //find printer
-                            PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printTemplateModel?.Data?.PrinterName));
-                            if (_foundPrinterModel == null)
-                            {
-                                onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
-                                return;
-                            }
+                            //PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printTemplateModel?.Data?.PrinterName));
+                            //if (_foundPrinterModel == null)
+                            //{
+                            //    onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
+                            //    return;
+                            //}
 
                             switch (printTemplateModel?.Data?.PrintMethod)
                             {
@@ -323,11 +232,11 @@ namespace WPFPrintingService
                 MessageBox.Show("Start Service First");
                 return;
             }
-            if(this._allConnectedWebSocketClients.Count < 1)
-            {
-                MessageBox.Show("No Client Connected");
-                return;
-            }
+            //if(this._allConnectedWebSocketClients.Count < 1)
+            //{
+            //    MessageBox.Show("No Client Connected");
+            //    return;
+            //}
 
 
             this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
@@ -391,7 +300,7 @@ namespace WPFPrintingService
                     new StringFormat()
                 );
             };
-            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+            printDocument.PrinterSettings.PrinterName = printer.Name;
             printDocument.EndPrint += (o, ev) =>
             {
                 //open cash drawer command
@@ -423,7 +332,7 @@ namespace WPFPrintingService
             if (printer == null) return;
 
             PrintDocument printDocument = new PrintDocument();
-            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+            printDocument.PrinterSettings.PrinterName = printer.Name;
 
             //cut command
             string GS = Convert.ToString((char)29);
@@ -445,7 +354,7 @@ namespace WPFPrintingService
             if (printer == null) return;
 
             PrintDocument printDocument = new PrintDocument();
-            printDocument.PrinterSettings.PrinterName = printer.PrinterName;
+            printDocument.PrinterSettings.PrinterName = printer.Name;
 
             //open cash drawer command
             const string ESC1 = "\u001B";
@@ -582,34 +491,49 @@ namespace WPFPrintingService
             if (isExit)
                 _shutdownThisApplication();
         }
+
+        private void ConfirmStopServiceDialogClosing(object sender, MaterialDesignThemes.Wpf.DialogClosingEventArgs eventArgs)
+        {
+        }
     }
 
-    public class BorderViewModel : INotifyPropertyChanged
+    public sealed class ParametrizedBooleanToVisibilityConverter : IValueConverter
     {
-        private bool borderVisible = true;
-
-        public bool BorderVisible
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            get
+            bool flag = false;
+
+            if (value is bool)
+                flag = (bool)value;
+            else
             {
-                return borderVisible;
+                if (value is bool?)
+                {
+                    bool? flag2 = (bool?)value;
+                    flag = (flag2.HasValue && flag2.Value);
+                }
             }
 
-            set
+            //If false is passed as a converter parameter then reverse the value of input value
+            if (parameter != null)
             {
-                borderVisible = value;
-                NotifyPropertyChanged("BorderVisible");
+                bool par = true;
+                if ((bool.TryParse(parameter.ToString(), out par)) && (!par)) flag = !flag;
             }
+
+            return flag ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void NotifyPropertyChanged(string info)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
+            if (value is Visibility)
+                return (Visibility)value == Visibility.Visible;
+
+            return false;
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public ParametrizedBooleanToVisibilityConverter()
+        {
+        }
     }
 }

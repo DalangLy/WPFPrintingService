@@ -18,12 +18,15 @@
     Title="Printing Service"
     Height="750" 
     Width="1295"
-    WindowStartupLocation="CenterScreen" 
+    WindowStartupLocation="CenterScreen"
     Loaded="Window_Loaded" 
-    Closing="Window_Closing">
+    Closing="Window_Closing"
+    DataContext="{x:Static local:WebSocketClientViewModel.Instance}">
+
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <local:ParametrizedBooleanToVisibilityConverter x:Key="InvertBoolToVisConverter"/>
     </Window.Resources>
 
 
@@ -63,7 +66,7 @@
             Grid.Row="0"
             Grid.Column="1"
             Margin="5"
-            x:Name="chbAutoRunService" 
+            IsChecked="{Binding IsStartServiceOnAppLauch}"
             Content="Auto Run Service"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
@@ -73,14 +76,14 @@
         />
 
 
-        <!--Button Start Stop Server-->
+        <!--Button Start Server-->
         <Button
             Grid.Row="1" 
             Grid.Column="0"
-            x:Name="btnStartStopServer"
             VerticalAlignment="Center"
             Margin="5"
-            Click="btnStartStopServer_Click" 
+            Command="{Binding StartWebSocketServer}"
+            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource InvertBoolToVisConverter}, ConverterParameter=false }"
             Cursor="Hand">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Start"/>
@@ -88,6 +91,83 @@
             </StackPanel>
         </Button>
         
+        <!--Button stop server-->
+        <Button
+            Grid.Row="1" 
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Margin="5"
+            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource BoolToVisConverter} }"
+            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+            CommandTarget="{Binding ElementName=confirmStopServiceDialog}"
+            Cursor="Hand">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Stop"/>
+                <materialDesign:PackIcon Kind="Stop" Margin="4 0.5 0 0"/>
+            </StackPanel>
+        </Button>
+        <materialDesign:DialogHost
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="6"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Panel.ZIndex="100"
+            IsOpen="{Binding LoadingService}"
+            x:Name="confirmStopServiceDialog">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Text="Stop Service?"
+                        Margin="5 20" 
+                        HorizontalAlignment="Center" 
+                        TextAlignment="Center"
+                    />
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        IsDefault="True"
+                        Margin="5"
+                        Command="{Binding StopCommand}">
+                        STOP
+                    </Button>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        IsCancel="True"
+                        Margin="5"
+                        Command="materialDesign:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                False
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                        CANCEL
+                    </Button>
+
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+
         <!--Button Server Info-->
         <Button
             Grid.Row="1"
@@ -176,7 +256,7 @@
                     </StackPanel>
                 </DataTemplate>
             </GroupBox.HeaderTemplate>
-            <TextBlock x:Name="txtServerStatus" Margin="6,6,6,6" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding ServerStatus}" Margin="6,6,6,6" TextWrapping="Wrap"/>
         </GroupBox>
 
 
@@ -186,7 +266,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="5"
-            x:Name="lvConnectWebSocketClients"
+            ItemsSource="{Binding WebSocketClients}"
             SelectionMode="Single" 
             AutoGenerateColumns="False" 
             IsReadOnly="True" 
@@ -292,14 +372,14 @@
 
         <!--Button Refresh Printer-->
         <Button
+            DataContext="{x:Static local:PrintersViewModel.Instance}"
             Grid.Row="1"
             Grid.Column="6"
-            x:Name="btnRefreshPrinterList"
             HorizontalAlignment="Right"
             Margin="5" 
             VerticalAlignment="Center"
             Cursor="Hand" 
-            Click="btnRefreshPrinterList_Click">
+            Command="{Binding RefreshPrintersListCommand}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Refresh"/>
                 <materialDesign:PackIcon Kind="Refresh" Margin="4 .5 0 0"/>
@@ -308,63 +388,24 @@
 
 
         <!--List Printers-->
-        <DataGrid 
+        <local:ListPrintersView
             Grid.Row="2"
             Grid.Column="3"
             Grid.ColumnSpan="3"
             Grid.RowSpan="3"
             Margin="5"
-            x:Name="dgPrinters" 
-            CanUserSortColumns="False" 
-            CanUserResizeRows="false"
-            SelectionMode="Single" 
-            AutoGenerateColumns="False" 
-            IsReadOnly="True" 
-            HeadersVisibility="Column" 
-            RenderTransformOrigin="1,1" 
-            CanUserAddRows="False" 
-            HorizontalAlignment="Left" 
-            VerticalAlignment="Stretch">
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Printer Name" Width="250">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding PrinterName}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
-                                <TextBlock.ToolTip>
-                                    <ToolTip>
-                                        <TextBlock Text="{Binding PrinterName}"/>
-                                    </ToolTip>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Test Actions" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
-                                <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
-                                <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
-                                <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
-                                <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand" Click="btnKickDrawer_Click"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-        
-        
-        
+            DataContext="{x:Static local:PrintersViewModel.Instance}"/>
+
+
+
         <!--Check box to launch app on windows start up-->
         <CheckBox 
             Grid.Row="5"
             Grid.Column="4"
-            x:Name="chbRunOnStartUp" 
             Content="Run on Startup"
             HorizontalAlignment="Right"
             VerticalAlignment="Stretch"
+            IsChecked="{Binding IsLaunchAppAtStartUp}"
             Checked="chbRunOnStartUp_Checked" 
             Unchecked="chbRunOnStartUp_Unchecked" 
             Cursor="Hand"
@@ -391,7 +432,7 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.RowSpan="6"
-            Grid.ColumnSpan="5"
+            Grid.ColumnSpan="6"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             DialogClosing="DialogHost_DialogClosing"

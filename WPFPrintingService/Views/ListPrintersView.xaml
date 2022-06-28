@@ -4,9 +4,54 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFPrintingService"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+
     <DataGrid
+        Margin="0 8 0 0"
+        ItemsSource="{Binding Printers}"
+        CanUserSortColumns="True"
+        CanUserAddRows="False"
+        AutoGenerateColumns="False"
+        materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+        materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+        <DataGrid.Columns>
+            <materialDesign:DataGridTextColumn/>
+            <materialDesign:DataGridTextColumn
+                Binding="{Binding Name}"
+                Header="Name"
+                IsReadOnly="true"
+                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
+            <materialDesign:DataGridTextColumn
+                Binding="{Binding IsOnline}"
+                Header="Offline"
+                IsReadOnly="true"
+                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
+            <materialDesign:DataGridTextColumn
+                Binding="{Binding IsPrinting}"
+                Header="Printing"
+                IsReadOnly="true"
+                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
+            <materialDesign:DataGridTextColumn
+                Binding="{Binding IsBusy}"
+                Header="Busy"
+                IsReadOnly="true"
+                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
+            <materialDesign:DataGridTextColumn
+                Binding="{Binding IsDoorOpened}"
+                Header="Door Opened"
+                IsReadOnly="true"
+                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
+        </DataGrid.Columns>
+    </DataGrid>
+
+
+
+
+
+    <!--<DataGrid
             ItemsSource="{Binding Printers}"
             CanUserSortColumns="False" 
             CanUserResizeRows="false"
@@ -28,11 +73,63 @@
                                     <TextBlock Text="{Binding Name}"/>
                                 </ToolTip>
                             </TextBlock.ToolTip>
-                            </TextBlock>
+                        </TextBlock>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <!--<DataGridTemplateColumn Header="Test Actions" Width="*">
+            <DataGridTemplateColumn Header="Online" Width="250">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding IsOnline}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock Text="{Binding IsOnline}"/>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Is Printing" Width="250">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding IsPrinting}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock Text="{Binding IsPrinting}"/>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Door Opened" Width="250">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding IsDoorOpened}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock Text="{Binding IsDoorOpened}"/>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Is Busy" Width="250">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding IsBusy}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock Text="{Binding IsBusy}"/>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            --><!--<DataGridTemplateColumn Header="Test Actions" Width="*">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -44,7 +141,7 @@
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>-->
+            </DataGridTemplateColumn>--><!--
         </DataGrid.Columns>
-    </DataGrid>
+    </DataGrid>-->
 </UserControl>

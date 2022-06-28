@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace WPFPrintingService
@@ -20,12 +22,26 @@ namespace WPFPrintingService
 
 
         public ICommand StopCommand { get; set; }
+        public ICommand SendToAllClientsCommand { get; set; }
+        public ICommand ToggleRunServiceOnStartUp { get; set; }
 
-        private List<ClientWebSocketModel>? _webSocketClients;
+        private bool _isRunServiceOnStartUp;
+
+        public bool IsRunServiceOnStartUp
+        {
+            get { return _isRunServiceOnStartUp; }
+            set { 
+                _isRunServiceOnStartUp = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private List<ClientWebSocketModel> _webSocketClients = new List<ClientWebSocketModel>();
 
         public List<ClientWebSocketModel> WebSocketClients
         {
-            get { return _webSocketClients ?? new List<ClientWebSocketModel>(); }
+            get { return _webSocketClients; }
             set
             {
                 _webSocketClients = value;
@@ -44,17 +60,6 @@ namespace WPFPrintingService
             }
         }
 
-        private bool _isLaunchAppAtStartUp = false;
-
-        public bool IsLaunchAppAtStartUp
-        {
-            get { return _isLaunchAppAtStartUp; }
-            set { 
-                _isLaunchAppAtStartUp = value; 
-                OnPropertyChanged(nameof(IsLaunchAppAtStartUp));
-            }
-        }
-
 
         private WebSocketServer _webSocketServer;
         private WebSocketClientViewModel()
@@ -64,23 +69,34 @@ namespace WPFPrintingService
 
 
             IsStartServiceOnAppLauch = Properties.Settings.Default.is_start_server_on_start_up;
-            IsLaunchAppAtStartUp = Properties.Settings.Default.is_run_at_start_up;
-
-            //if (_isWebSocketSeverRunning)
-            //{
-            //    CustomConfirmDialog customConfirmDialog = new CustomConfirmDialog("Stop The Service?");
-            //    customConfirmDialog.OnConfirmClickCallBack += (sender, e) =>
-            //    {
-            //        this._stopWebSocketServer();
-            //        this.mainGrid.Children.Remove((UserControl)sender);
-            //    };
-            //    this.mainGrid.Children.Add(customConfirmDialog);
-            //}
-            //else
-            //{
-            //    this._startWebSocketServer();
-            //}
+            this.IsRunServiceOnStartUp = Properties.Settings.Default.is_run_at_start_up;
+            if (this.IsRunServiceOnStartUp)
+            {
+                this.StartService();
+            }
             this.StopCommand = new PCommand(async (p) => await InvokeStopService(p));
+            this.SendToAllClientsCommand = new SendToAllClientCommand(async (p) => await InvokeSendToAllClient(p));
+            this.ToggleRunServiceOnStartUp = new ToggleAutoRunServiceOnStartUp();
+        }
+
+        private bool _isSendingMessageToAllClients = false;
+
+        public bool IsSendingMessageToAllClients
+        {
+            get { return _isSendingMessageToAllClients; }
+            set { 
+                _isSendingMessageToAllClients = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private async Task InvokeSendToAllClient(object p)
+        {
+            
+            await Task.Delay(1000*5);
+            Debug.WriteLine("hello");
+            this.IsSendingMessageToAllClients=true;
         }
 
         private async Task InvokeStopService(object p)
@@ -89,8 +105,12 @@ namespace WPFPrintingService
             {
 
                 LoadingService = true;
-                _webSocketServer.RemoveWebSocketService("/");
-                _webSocketServer.Stop();
+                if (!this._webSocketServer.IsListening) return;
+
+                this._webSocketServer.RemoveWebSocketService("/");
+
+                this._webSocketServer.Stop(CloseStatusCode.Away, "Server Stop");
+
                 LoadingService = false;
             }
             finally
@@ -128,9 +148,6 @@ namespace WPFPrintingService
             this._webSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
                 {
                     //on client connected
-                    if (this.WebSocketClients is null)
-                        this.WebSocketClients = new List<ClientWebSocketModel>();
-
                     var temp = this.WebSocketClients;
                     this.WebSocketClients = new List<ClientWebSocketModel>();
 
@@ -163,6 +180,47 @@ namespace WPFPrintingService
         public ICommand StartWebSocketServer
         {
             get { return _startWebSocketServer ?? new RelayCommand1(this); }
+        }
+    }
+
+    internal class ToggleAutoRunServiceOnStartUp : ICommand
+    {
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => true;
+
+        public void Execute(object? parameter)
+        {
+            if (parameter == null) return;
+            bool isChecked = (bool)parameter;
+            Properties.Settings.Default.is_run_at_start_up = isChecked;
+        }
+    }
+
+    internal class SendToAllClientCommand : ICommand
+    {
+        private Action? mAction;
+
+        private Action<object?>? pAction;
+
+        public SendToAllClientCommand(Action<object> pAction)
+        {
+            this.pAction = pAction;
+        }
+
+        public SendToAllClientCommand(Action mAction)
+        {
+            this.mAction = mAction;
+        }
+
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => true;
+
+        public void Execute(object? parameter)
+        {
+            mAction?.Invoke();
+            pAction?.Invoke(parameter);
         }
     }
 

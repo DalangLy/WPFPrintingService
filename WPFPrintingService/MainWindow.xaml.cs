@@ -31,69 +31,6 @@ namespace WPFPrintingService
         {
         }
 
-
-        private void _checkIfRunAtStartUpEnable()
-        {
-            bool _isRunAtStartUp = Properties.Settings.Default.is_run_at_start_up;
-            //_startServiceViewModel.IsStartOnStartUp = _isRunAtStartUp;
-        }
-
-        private void _checkIfStartServiceAtStartUpIsEnable()
-        {
-            bool _isStartServiceAtStartUp = Properties.Settings.Default.is_start_server_on_start_up;
-            //_startServiceViewModel.IsStartOnStartUp = _isStartServiceAtStartUp;
-            if (_isStartServiceAtStartUp)
-            {
-                //_startWebSocketServer();
-            }
-        }
-        
-        private void btnStartStopServer_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-
-        private void _stopWebSocketServer()
-        {
-            if (this._webSocketServer == null) return;
-
-            this._webSocketServer.RemoveWebSocketService("/");
-
-            this._webSocketServer.Stop(CloseStatusCode.Away, "Server Stop");
-
-            //this.btnStartStopServer.Content = "Start";
-            //this._webSocketStatusViewModel.Status = "Server Stopped";
-
-        }
-
-        private void _addConnectedWebSocketClientToListView(string id, string ip, string name)
-        {
-            //this._allConnectedWebSocketClients.Add();
-            //this._webSocketClientViewModel.WebSocketClients.Add(new ClientWebSocketModel(id, ip, name));
-            Debug.WriteLine("Hello");
-            //update text status
-            //this._webSocketStatusViewModel.Status += $"\n{name} has joined";
-        }
-
-        private void _removeDisconnectedWebSocketClientFromListView(string disconnectedClientId)
-        {
-            //lvConnectWebSocketClients.Dispatcher.BeginInvoke(new Action(() =>
-            //{
-            //    //find disconnected client from list
-            //    ClientWebSocketModel? _disconnectedWebSocketClient = _allConnectedWebSocketClients.Find(webSocketClient => webSocketClient.Id == disconnectedClientId);
-            //    if (_disconnectedWebSocketClient == null) return;
-
-            //    //remove disconnected client from list and listview
-            //    this._allConnectedWebSocketClients.Remove(_disconnectedWebSocketClient);
-            //    this.lvConnectWebSocketClients.ItemsSource = _allConnectedWebSocketClients;
-            //    this.lvConnectWebSocketClients.Items.Refresh();
-
-            //    //update text status
-            //    this.txtServerStatus.Text += $"\n{_disconnectedWebSocketClient.Name} has Left";
-            //}), DispatcherPriority.Background);
-        }
-
         private void _onClientResponseMessage(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone)
         {
             try
@@ -241,7 +178,6 @@ namespace WPFPrintingService
 
             this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(txtMessage.Text);
             
-            SnackbarFive.IsActive = true;
             //this.mainGrid.Children.Add(new CustomMessageDialog());
         }
 
@@ -534,6 +470,38 @@ namespace WPFPrintingService
 
         public ParametrizedBooleanToVisibilityConverter()
         {
+        }
+    }
+
+    public class AgeRangeRule : ValidationRule
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+
+        public AgeRangeRule()
+        {
+        }
+
+        public override System.Windows.Controls.ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            int age = 0;
+
+            try
+            {
+                if (((string)value).Length > 0)
+                    age = Int32.Parse((String)value);
+            }
+            catch (Exception e)
+            {
+                return new System.Windows.Controls.ValidationResult(false, $"Illegal characters or {e.Message}");
+            }
+
+            if ((age < Min) || (age > Max))
+            {
+                return new System.Windows.Controls.ValidationResult(false,
+                  $"Please enter an age in the range: {Min}-{Max}.");
+            }
+            return System.Windows.Controls.ValidationResult.ValidResult;
         }
     }
 }

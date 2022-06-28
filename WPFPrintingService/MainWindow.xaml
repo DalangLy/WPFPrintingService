@@ -66,13 +66,13 @@
             Grid.Row="0"
             Grid.Column="1"
             Margin="5"
-            IsChecked="{Binding IsStartServiceOnAppLauch}"
             Content="Auto Run Service"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             Cursor="Hand" 
-            Checked="chbAutoRunService_Checked" 
-            Unchecked="chbAutoRunService_Unchecked"
+            IsChecked="{Binding IsRunServiceOnStartUp}"
+            Command="{Binding ToggleRunServiceOnStartUp}"
+            CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}, Mode=OneWay}"
         />
 
 
@@ -90,7 +90,7 @@
                 <materialDesign:PackIcon Kind="Play" Margin="4 0.5 0 0"/>
             </StackPanel>
         </Button>
-        
+
         <!--Button stop server-->
         <Button
             Grid.Row="1" 
@@ -187,7 +187,7 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.RowSpan="6"
-            Grid.ColumnSpan="5"
+            Grid.ColumnSpan="6"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             DialogClosing="DialogHost_DialogClosing"
@@ -316,16 +316,31 @@
             materialDesign:HintAssist.Hint="Message"
             Style="{StaticResource MaterialDesignOutlinedTextBox}"
         />
-        
+
+
+        <!--<TextBox
+            x:Name="NameTextBox"
+            materialDesign:HintAssist.Hint="Name">
+            <TextBox.Text>
+                <Binding
+                    Path="Name"
+                    UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <domain1:NotEmptyValidationRule
+                            ValidatesOnTargetUpdated="True" xmlns:domain1="clr-namespace:MaterialDesignDemo.Domain" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>-->
+
         <!--Button send message to every clients-->
         <Button
             Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="5"
-            x:Name="btnSendToEveryClients"
             VerticalAlignment="Center"
-            Click="btnSendToEveryClients_Click" 
+            Command="{Binding SendToAllClientsCommand}"
             Cursor="Hand"
             Height="48">
             <StackPanel Orientation="Horizontal">
@@ -335,12 +350,12 @@
         </Button>
         <materialDesign:Snackbar
             Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="5"
+            Grid.Column="2"
+            Grid.ColumnSpan="2"
             Grid.RowSpan="6"
             Panel.ZIndex="100"
             HorizontalAlignment="Stretch"
-            x:Name="SnackbarFive">
+            IsActive="{Binding IsSendingMessageToAllClients}">
             <materialDesign:SnackbarMessage
                 Content="Sent to clients success"
                 ActionContent="OK"

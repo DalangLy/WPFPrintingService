@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Printing;
 using System.Windows.Input;
+using WPFPrintingService.Models;
 
 namespace WPFPrintingService
 {
     internal class PrintersViewModel : BaseViewModel
     {
-        private List<PrinterFromWindowsSystemModel> _printers = new List<PrinterFromWindowsSystemModel>();
+        private ObservableCollection<PrinterModel> _printers = new ObservableCollection<PrinterModel>();
 
-        public List<PrinterFromWindowsSystemModel> Printers
+        public ObservableCollection<PrinterModel> Printers
         {
             get { return _printers; }
             set
@@ -23,17 +25,16 @@ namespace WPFPrintingService
         private static PrintersViewModel _instance = new PrintersViewModel();
 
         private PrintersViewModel() {
-            Debug.WriteLine("hahha");
-            Printers.Add(new PrinterFromWindowsSystemModel() { Name = "Printer 1" });
             foreach (PrintQueue printer in GetAllSystemPrintersSingleton.GetInstance.Printers)
             {
-                //Debug.WriteLine("\tThe shared printer : " + printer.Name);
-                //Debug.WriteLine("\tHas Tonner: " + printer.HasToner);
-                //Debug.WriteLine("\tIs Busy: " + printer.IsBusy);
-                //Debug.WriteLine("\tIs Door Open: " + printer.IsDoorOpened);
-                //Debug.WriteLine("\tIs Offline: " + printer.IsOffline);
-                //Debug.WriteLine("\tIs Offline: " + printer.IsPrinting);
-                Printers.Add(new PrinterFromWindowsSystemModel() { Name = printer.Name });
+                Printers.Add(new PrinterModel() { 
+                    Name = printer.Name, 
+                    IsOnline = printer.IsOffline,
+                    IsBusy = printer.IsBusy,
+                    IsDoorOpened = printer.IsDoorOpened,
+                    HasToner = printer.HasToner,
+                    IsPrinting = printer.IsPrinting,
+                });
             }
         }
 
@@ -73,18 +74,11 @@ namespace WPFPrintingService
 
         public void Execute(object? parameter)
         {
-            Debug.WriteLine("Hello");
-            if (_printerViewModel.Printers is null)
-                _printerViewModel.Printers = new List<PrinterFromWindowsSystemModel>();
-
-            var temp = _printerViewModel.Printers;
-            _printerViewModel.Printers = new List<PrinterFromWindowsSystemModel>();
-
-            temp.Add(new PrinterFromWindowsSystemModel
+            _printerViewModel.Printers.Add(new PrinterModel
             {
-                Name = "ABC_"
+                Name = "ABC_",
+                IsOnline = true
             });
-            _printerViewModel.Printers = temp;
         }
     }
 }

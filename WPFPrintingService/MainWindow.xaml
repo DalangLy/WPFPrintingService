@@ -420,9 +420,9 @@
             Content="Run on Startup"
             HorizontalAlignment="Right"
             VerticalAlignment="Stretch"
-            IsChecked="{Binding IsLaunchAppAtStartUp}"
-            Checked="chbRunOnStartUp_Checked" 
-            Unchecked="chbRunOnStartUp_Unchecked" 
+            DataContext="{x:Static local:AutoLaunchAppAtWindowsStartUpViewModel.Instance}"
+            IsChecked="{Binding IsLaunchAppAtWindowsStartUp}"
+            Command="{Binding ToggleAutoLaunchAppCheckBox}"
             Cursor="Hand"
         />
 

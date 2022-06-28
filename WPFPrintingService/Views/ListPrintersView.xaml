@@ -9,7 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
 
-    <DataGrid
+    <!--<DataGrid
         Margin="0 8 0 0"
         ItemsSource="{Binding Printers}"
         CanUserSortColumns="True"
@@ -45,13 +45,13 @@
                 IsReadOnly="true"
                 ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
         </DataGrid.Columns>
-    </DataGrid>
+    </DataGrid>-->
 
 
 
 
 
-    <!--<DataGrid
+    <DataGrid
             ItemsSource="{Binding Printers}"
             CanUserSortColumns="False" 
             CanUserResizeRows="false"
@@ -129,19 +129,19 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            --><!--<DataGridTemplateColumn Header="Test Actions" Width="*">
+            <DataGridTemplateColumn Header="Test Actions" Width="*">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="btnPrintAndCut" Content="Print And Cut" Click="btnPrintAndCut_Click" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
-                            <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Click="btnPrintAndKickDrawer_Click" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
-                            <Button x:Name="btnPrintOnly" Content="Print Only" Click="btnPrintOnly_Click" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
-                            <Button x:Name="btnCutOnly" Content="Cut Only" Click="btnCutOnly_Click" Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
-                            <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand" Click="btnKickDrawer_Click"/>
+                            <Button x:Name="btnPrintAndCut" Content="Print And Cut" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
+                            <Button x:Name="btnPrintAndKickDrawer" Content="Print &amp; Kich Cash Drawer" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
+                            <Button x:Name="btnPrintOnly" Content="Print Only" Margin="2.5,5,2.5,5" Width="80" Cursor="Hand"/>
+                            <Button x:Name="btnCutOnly" Content="Cut Only"  Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
+                            <Button x:Name="btnKickDrawer" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand"/>
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>--><!--
+            </DataGridTemplateColumn>
         </DataGrid.Columns>
-    </DataGrid>-->
+    </DataGrid>
 </UserControl>

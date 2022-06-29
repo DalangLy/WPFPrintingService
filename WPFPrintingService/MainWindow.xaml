@@ -311,7 +311,8 @@
             Grid.ColumnSpan="2"
             Margin="5"
             TextWrapping="Wrap" 
-            Text="{Binding Message}" 
+            Name="myTextBox"
+            Text="Hello From Server"
             VerticalAlignment="Stretch"
             materialDesign:HintAssist.Hint="Message"
             Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -340,7 +341,8 @@
             Grid.ColumnSpan="2"
             Margin="5"
             VerticalAlignment="Center"
-            Command="{Binding SendToAllClientsCommand}"
+            Command="{Binding SendMessageToAllClientsCommand}"
+            CommandParameter="{Binding Text, ElementName=myTextBox}"
             Cursor="Hand"
             Height="48">
             <StackPanel Orientation="Horizontal">
@@ -348,19 +350,52 @@
                 <materialDesign:PackIcon Kind="Broadcast" Margin="4 .5 0 0"/>
             </StackPanel>
         </Button>
-        <materialDesign:Snackbar
+        <materialDesign:DialogHost
             Grid.Row="0"
-            Grid.Column="2"
-            Grid.ColumnSpan="2"
+            Grid.Column="0"
             Grid.RowSpan="6"
-            Panel.ZIndex="100"
+            Grid.ColumnSpan="6"
             HorizontalAlignment="Stretch"
-            IsActive="{Binding IsSendingMessageToAllClients}">
-            <materialDesign:SnackbarMessage
-                Content="Sent to clients success"
-                ActionContent="OK"
-            />
-        </materialDesign:Snackbar>
+            VerticalAlignment="Stretch"
+            Panel.ZIndex="100"
+            IsOpen="{Binding IsSendingMessageToAllClients}">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel
+                    Margin="16">
+                    <ProgressBar
+                        Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                        HorizontalAlignment="Center"
+                        Margin="16"
+                        IsIndeterminate="True"
+                        Value="0"/>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+        <materialDesign:DialogHost
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="6"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Panel.ZIndex="100"
+            IsOpen="{Binding IsSentMessageToAllClientsSuccess}">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel
+                    Margin="16">
+                    <TextBlock Text="Sent"/>
+                    <Button
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        IsCancel="True"
+                        Command="{Binding CloseSentMessageDialogCommand}"
+                        HorizontalAlignment="Center">
+                        OK
+                    </Button>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+
+
 
         <Border
             Grid.Column="2"

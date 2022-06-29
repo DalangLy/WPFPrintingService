@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace WPFPrintingService
         public ICommand StartWebSocketServerCommand { get; set; }
         public ICommand StopWebSocketServerCommand { get; set; }
         public ICommand SendMessageToAllClientsCommand { get; set; }
+        public ICommand CloseSentMessageDialogCommand { get; set; }
         public ICommand ToggleRunWebSocketServerOnAppLaunched { get; set; }
         public ICommand ShowConfirmStopServiceCommand { get; set; }
 
@@ -45,6 +47,51 @@ namespace WPFPrintingService
             }
         }
 
+        private bool _isSendingMessageToAllClients;
+
+        public bool IsSendingMessageToAllClients
+        {
+            get { return _isSendingMessageToAllClients; }
+            set { 
+                _isSendingMessageToAllClients = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isSentMessageToAllClientsSuccess;
+
+        public bool IsSentMessageToAllClientsSuccess
+        {
+            get { return _isSentMessageToAllClientsSuccess; }
+            set { 
+                _isSentMessageToAllClientsSuccess = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _serverStatus = string.Empty;
+
+        public string ServerStatus
+        {
+            get { return _serverStatus; }
+            set
+            {
+                _serverStatus = value;
+                OnPropertyChanged(nameof(ServerStatus));
+            }
+        }
+
+        private bool _isServiceRunning = false;
+
+        public bool IsServiceRunning
+        {
+            get { return _isServiceRunning; }
+            set
+            {
+                _isServiceRunning = value;
+                OnPropertyChanged(nameof(IsServiceRunning));
+            }
+        }
 
 
         private WebSocketServer _webSocketServer;
@@ -64,36 +111,21 @@ namespace WPFPrintingService
             //set up command
             this.StartWebSocketServerCommand = new StartServiceCommand(this);
             this.StopWebSocketServerCommand = new StopServiceCommand(async (p) => await InvokeStopService(p));
-            this.SendMessageToAllClientsCommand = new SendToAllClientCommand(async (p) => await InvokeSendToAllClient(p));
+            this.SendMessageToAllClientsCommand = new SendMessageToAllClientCommand(async (p) => await InvokeSendMessageToAllClient(p));
+            this.CloseSentMessageDialogCommand = new CloseSentMessageDialogCommand(this);
             this.ToggleRunWebSocketServerOnAppLaunched = new ToggleAutoRunServiceOnStartUp();
             this.ShowConfirmStopServiceCommand = new ShowCofirmStopServiceCommand(this);
         }
 
-        private bool _isSendingMessageToAllClients = false;
-
-        public bool IsSendingMessageToAllClients
+        private async Task InvokeSendMessageToAllClient(object p)
         {
-            get { return _isSendingMessageToAllClients; }
-            set { 
-                _isSendingMessageToAllClients = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _message = string.Empty;
-
-        public string Message
-        {
-            get { return _message; }
-            set { _message = value; }
-        }
-
-
-        private async Task InvokeSendToAllClient(object p)
-        {
-            await Task.Delay(1000*5);
-            this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(this.Message);
-            this.IsSendingMessageToAllClients=true;
+            if (p == null) return;
+            string message = (string)p;
+            this.IsSendingMessageToAllClients = true; //show sending progress dialog
+            await Task.Delay(1000*5);//delay 5 seconds
+            this._webSocketServer.WebSocketServices["/"].Sessions.Broadcast(message);
+            this.IsSendingMessageToAllClients = false; //remove sending progress dialog
+            this.IsSentMessageToAllClientsSuccess = true;//show sent dialog
         }
 
         private async Task InvokeStopService(object p)
@@ -118,27 +150,7 @@ namespace WPFPrintingService
             }
         }
 
-        private string _serverStatus = string.Empty;
-
-        public string ServerStatus
-        {
-            get { return _serverStatus; }
-            set { 
-                _serverStatus = value; 
-                OnPropertyChanged(nameof(ServerStatus));
-            }
-        }
-
-        private bool _isServiceRunning = false;
-
-        public bool IsServiceRunning
-        {
-            get { return _isServiceRunning; }
-            set { 
-                _isServiceRunning = value;
-                OnPropertyChanged(nameof(IsServiceRunning));
-            }
-        }
+        
 
       
         public void StartService()
@@ -272,6 +284,25 @@ namespace WPFPrintingService
         
     }
 
+    internal class CloseSentMessageDialogCommand : ICommand
+    {
+        private WebSocketClientViewModel _webSocketClientViewModel;
+
+        public CloseSentMessageDialogCommand(WebSocketClientViewModel webSocketClientViewModel)
+        {
+            _webSocketClientViewModel = webSocketClientViewModel;
+        }
+
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => true;
+
+        public void Execute(object? parameter)
+        {
+            this._webSocketClientViewModel.IsSentMessageToAllClientsSuccess = false;
+        }
+    }
+
     internal class ShowCofirmStopServiceCommand : ICommand
     {
         private WebSocketClientViewModel webSocketClientViewModel;
@@ -306,18 +337,18 @@ namespace WPFPrintingService
         }
     }
 
-    internal class SendToAllClientCommand : ICommand
+    internal class SendMessageToAllClientCommand : ICommand
     {
         private Action? mAction;
 
         private Action<object?>? pAction;
 
-        public SendToAllClientCommand(Action<object> pAction)
+        public SendMessageToAllClientCommand(Action<object> pAction)
         {
             this.pAction = pAction;
         }
 
-        public SendToAllClientCommand(Action mAction)
+        public SendMessageToAllClientCommand(Action mAction)
         {
             this.mAction = mAction;
         }

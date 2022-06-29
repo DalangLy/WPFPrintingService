@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Printing;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -32,10 +31,21 @@ namespace WPFPrintingService
 
         public PrintersViewModel() {
             //load all printers
+            this._loadAllPrinters();
+
+            //setup command
+            this.RefreshPrintersListCommand = new RefreshPrintersListCommandClass(async () => await InvokeRefreshPrinterList());
+        }
+
+        private void _loadAllPrinters()
+        {
+            if(Printers.Count > 0) Printers.Clear();
+
             foreach (PrintQueue printer in GetAllSystemPrintersSingleton.GetInstance.Printers)
             {
-                Printers.Add(new PrinterModel() { 
-                    Name = printer.Name, 
+                Printers.Add(new PrinterModel()
+                {
+                    Name = printer.Name,
                     IsOnline = printer.IsOffline,
                     IsBusy = printer.IsBusy,
                     IsDoorOpened = printer.IsDoorOpened,
@@ -43,15 +53,13 @@ namespace WPFPrintingService
                     IsPrinting = printer.IsPrinting,
                 });
             }
-
-            //setup command
-            this.RefreshPrintersListCommand = new RefreshPrintersListCommandClass(async () => await InvokeRefreshPrinterList());
         }
 
         private async Task InvokeRefreshPrinterList()
         {
             this.IsRefreshingPrinters = true;
             await Task.Delay(1000);
+            this._loadAllPrinters();
             this.IsRefreshingPrinters = false;
         }
 

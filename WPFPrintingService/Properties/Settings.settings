@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WPFPrintingService.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="is_run_at_start_up" Type="System.Boolean" Scope="User">
+    <Setting Name="LaunchAppAtWindowsStartUp" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="is_start_server_on_start_up" Type="System.Boolean" Scope="User">
+    <Setting Name="RunServiceOnAppLaunched" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

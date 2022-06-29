@@ -26,24 +26,24 @@ namespace WPFPrintingService.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool is_run_at_start_up {
+        public bool LaunchAppAtWindowsStartUp {
             get {
-                return ((bool)(this["is_run_at_start_up"]));
+                return ((bool)(this["LaunchAppAtWindowsStartUp"]));
             }
             set {
-                this["is_run_at_start_up"] = value;
+                this["LaunchAppAtWindowsStartUp"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool is_start_server_on_start_up {
+        public bool RunServiceOnAppLaunched {
             get {
-                return ((bool)(this["is_start_server_on_start_up"]));
+                return ((bool)(this["RunServiceOnAppLaunched"]));
             }
             set {
-                this["is_start_server_on_start_up"] = value;
+                this["RunServiceOnAppLaunched"] = value;
             }
         }
     }

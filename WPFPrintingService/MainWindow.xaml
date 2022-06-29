@@ -14,7 +14,7 @@
     TextOptions.TextRenderingMode="Auto"
     Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="{DynamicResource MaterialDesignFont}"
-    ResizeMode="CanMinimize"
+    
     Title="Printing Service"
     Height="750" 
     Width="1295"
@@ -43,7 +43,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="70"/>
             <RowDefinition Height="200"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="150"/>
@@ -69,12 +69,11 @@
             Content="Auto Run Service"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
-            Cursor="Hand" 
-            IsChecked="{Binding IsRunServiceOnStartUp}"
+            Cursor="Hand"
+            IsChecked="{Binding IsStartServiceOnAppLauched}"
             Command="{Binding ToggleRunServiceOnStartUp}"
             CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}, Mode=OneWay}"
         />
-
 
         <!--Button Start Server-->
         <Button
@@ -82,9 +81,10 @@
             Grid.Column="0"
             VerticalAlignment="Center"
             Margin="5"
-            Command="{Binding StartWebSocketServer}"
+            Command="{Binding StartWebSocketServerCommand}"
             Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource InvertBoolToVisConverter}, ConverterParameter=false }"
-            Cursor="Hand">
+            Cursor="Hand"
+            Height="48">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Start"/>
                 <materialDesign:PackIcon Kind="Play" Margin="4 0.5 0 0"/>
@@ -98,9 +98,10 @@
             VerticalAlignment="Center"
             Margin="5"
             Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource BoolToVisConverter} }"
-            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+            Command="{Binding ShowConfirmStopServiceCommand}"
             CommandTarget="{Binding ElementName=confirmStopServiceDialog}"
-            Cursor="Hand">
+            Cursor="Hand"
+            Height="48">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Stop"/>
                 <materialDesign:PackIcon Kind="Stop" Margin="4 0.5 0 0"/>
@@ -114,8 +115,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Panel.ZIndex="100"
-            IsOpen="{Binding LoadingService}"
-            x:Name="confirmStopServiceDialog">
+            IsOpen="{Binding IsConfirmStopServiceShowUp}">
             <materialDesign:DialogHost.DialogContent>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -144,7 +144,7 @@
                         Style="{StaticResource MaterialDesignFlatButton}"
                         IsDefault="True"
                         Margin="5"
-                        Command="{Binding StopCommand}">
+                        Command="{Binding StopWebSocketServerCommand}">
                         STOP
                     </Button>
                     <Button
@@ -177,7 +177,8 @@
             HorizontalAlignment="Stretch"
             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" 
             CommandTarget="{Binding ElementName=serverInfoDialog}"
-            Cursor="Hand">
+            Cursor="Hand"
+            Height="48">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Info"/>
                 <materialDesign:PackIcon Kind="Information" Margin="4 0.5 0 0"/>
@@ -245,7 +246,7 @@
             Margin="5"
             Header="Status"
             Style="{DynamicResource MaterialDesignGroupBox}"
-            materialDesign:ShadowAssist.ShadowDepth="Depth3"
+            materialDesign:ShadowAssist.ShadowDepth="Depth0"
             VerticalAlignment="Stretch" 
             BorderThickness="1">
             <GroupBox.HeaderTemplate>
@@ -289,10 +290,10 @@
                 <DataGridTemplateColumn Header="IP" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Ip}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                            <TextBlock Text="{Binding IP}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                                 <TextBlock.ToolTip>
                                     <ToolTip>
-                                        <TextBlock Text="{Binding Ip}"/>
+                                        <TextBlock Text="{Binding IP}"/>
                                     </ToolTip>
                                 </TextBlock.ToolTip>
                             </TextBlock>
@@ -309,9 +310,8 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="5"
-            x:Name="txtMessage"
             TextWrapping="Wrap" 
-            Text="Hello Everyone From Server" 
+            Text="{Binding Message}" 
             VerticalAlignment="Stretch"
             materialDesign:HintAssist.Hint="Message"
             Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -394,13 +394,35 @@
             Margin="5" 
             VerticalAlignment="Center"
             Cursor="Hand" 
+            Height="48"
             Command="{Binding RefreshPrintersListCommand}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Refresh"/>
                 <materialDesign:PackIcon Kind="Refresh" Margin="4 .5 0 0"/>
             </StackPanel>
         </Button>
-
+        <materialDesign:DialogHost
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="6"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Panel.ZIndex="100"
+            DataContext="{x:Static local:PrintersViewModel.Instance}"
+            IsOpen="{Binding IsRefreshingPrinters}">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel
+                    Margin="16">
+                    <ProgressBar
+                        Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                        HorizontalAlignment="Center"
+                        Margin="16"
+                        IsIndeterminate="True"
+                        Value="0"/>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
 
         <!--List Printers-->
         <local:ListPrintersView
@@ -408,10 +430,7 @@
             Grid.Column="3"
             Grid.ColumnSpan="3"
             Grid.RowSpan="3"
-            Margin="5"
-            DataContext="{x:Static local:PrintersViewModel.Instance}"/>
-
-
+            Margin="5"/>
 
         <!--Check box to launch app on windows start up-->
         <CheckBox 
@@ -420,10 +439,11 @@
             Content="Run on Startup"
             HorizontalAlignment="Right"
             VerticalAlignment="Stretch"
+            Cursor="Hand"
             DataContext="{x:Static local:AutoLaunchAppAtWindowsStartUpViewModel.Instance}"
             IsChecked="{Binding IsLaunchAppAtWindowsStartUp}"
             Command="{Binding ToggleAutoLaunchAppCheckBox}"
-            Cursor="Hand"
+            CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}, Mode=OneWay}"
         />
 
         <!--Button quit-->
@@ -510,34 +530,7 @@
             </materialDesign:DialogHost.DialogContent>
         </materialDesign:DialogHost>
 
-
-        <!--<DockPanel
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="6"
-            Grid.RowSpan="6">
-            <materialDesign:ColorZone
-                Mode="PrimaryDark"
-                Padding="16"
-                CornerRadius="0"
-                materialDesign:ShadowAssist.ShadowDepth="Depth3"
-                Margin="0">
-                <StackPanel
-                    Orientation="Horizontal">
-                    <ToggleButton
-                        Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Margin="16 0 0 0"
-                        Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-                        Printing Service
-                    </TextBlock>
-                </StackPanel>
-            </materialDesign:ColorZone>
-        </DockPanel>-->
-
-
-
+        <!--System Tray Icon-->
         <tb:TaskbarIcon 
             x:Name="myNotifyIcon"
             Visibility="Hidden"
@@ -554,7 +547,7 @@
                     Opacity="0.8"
                     Width="160"
                     Height="40">
-                <TextBlock
+                    <TextBlock
                     Text="Printing Service"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"/>
@@ -598,7 +591,6 @@
                 </Border>
             </tb:TaskbarIcon.TrayPopup>
         </tb:TaskbarIcon>
-
 
     </Grid>
 </Window>

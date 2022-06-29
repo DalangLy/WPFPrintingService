@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
+using System.Reflection;
 using System.Windows.Input;
 
 namespace WPFPrintingService
@@ -24,7 +26,7 @@ namespace WPFPrintingService
         {
             this.ToggleAutoLaunchAppCheckBox = new ToggleAutoLaunchAppAtWindowsStartUpCommand(this);
 
-            this.IsLaunchAppAtWindowsStartUp = Properties.Settings.Default.is_start_server_on_start_up;
+            this.IsLaunchAppAtWindowsStartUp = Properties.Settings.Default.LaunchAppAtWindowsStartUp;
         }
     }
 
@@ -45,8 +47,27 @@ namespace WPFPrintingService
         {
             if (parameter == null) return;
             bool isChecked = (bool)parameter;
-            Properties.Settings.Default.is_run_at_start_up = isChecked;
+            
+            if (isChecked)
+            {
+                //set run on start up
+                RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                Assembly curAssembly = Assembly.GetExecutingAssembly();
+                //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
+                key!.SetValue("DX Printing Service", curAssembly.Location);
+            }
+            else
+            {
+                //remove run on start up
+                RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                Assembly curAssembly = Assembly.GetExecutingAssembly();
+                //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
+                key!.DeleteValue("DX Printing Service");
+            }
+            Properties.Settings.Default.LaunchAppAtWindowsStartUp = isChecked;
             Properties.Settings.Default.Save();
+
+            //update ui
             this._autoLaunchAppAtWindowsStartUpViewModel.IsLaunchAppAtWindowsStartUp = isChecked;
         }
     }

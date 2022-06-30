@@ -14,23 +14,23 @@
     TextOptions.TextRenderingMode="Auto"
     Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="{DynamicResource MaterialDesignFont}"
-    
     Title="Printing Service"
     Height="750" 
     Width="1295"
     WindowStartupLocation="CenterScreen"
     Loaded="Window_Loaded" 
     Closing="Window_Closing"
-    DataContext="{x:Static local:WebSocketClientViewModel.Instance}">
+    DataContext="{x:Static local:WebSocketServerViewModel.Instance}">
 
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
         <local:ParametrizedBooleanToVisibilityConverter x:Key="InvertBoolToVisConverter"/>
+        <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
 
 
-    <Grid x:Name="mainGrid">
+    <Grid>
         
         <!--Design Grid Layout-->
         <Grid.ColumnDefinitions>
@@ -70,43 +70,53 @@
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             Cursor="Hand"
+            DataContext="{x:Static local:ToggleAutoRunServiceOnAppLaunchedViewModel.Instance}"
             IsChecked="{Binding IsStartServiceOnAppLauched}"
-            Command="{Binding ToggleRunServiceOnStartUp}"
+            Command="{Binding ToggleRunWebSocketServerOnAppLaunched}"
             CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}, Mode=OneWay}"
         />
 
         <!--Button Start Server-->
-        <Button
-            Grid.Row="1" 
+        <Border
+             Grid.Row="1" 
             Grid.Column="0"
             VerticalAlignment="Center"
             Margin="5"
-            Command="{Binding StartWebSocketServerCommand}"
-            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource InvertBoolToVisConverter}, ConverterParameter=false }"
+            DataContext="{x:Static local:WebSocketServerViewModel.Instance}"
+            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource InvertBoolToVisConverter} }">
+            <Button
+            DataContext="{x:Static local:StartServiceViewModel.Instance}"
+            Command="{Binding StartServiceCommand}"
             Cursor="Hand"
             Height="48">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Start"/>
-                <materialDesign:PackIcon Kind="Play" Margin="4 0.5 0 0"/>
-            </StackPanel>
-        </Button>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Start"/>
+                    <materialDesign:PackIcon Kind="Play" Margin="4 0.5 0 0"/>
+                </StackPanel>
+            </Button>
+        </Border>
+        
 
         <!--Button stop server-->
-        <Button
+        <Border
             Grid.Row="1" 
             Grid.Column="0"
             VerticalAlignment="Center"
             Margin="5"
-            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource BoolToVisConverter} }"
-            Command="{Binding ShowConfirmStopServiceCommand}"
-            CommandTarget="{Binding ElementName=confirmStopServiceDialog}"
+            DataContext="{x:Static local:WebSocketServerViewModel.Instance}"
+            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource BoolToVisConverter} }">
+            <Button
+            
+            DataContext="{x:Static local:StopServiceViewModel.Instance}"
+            Command="{Binding ConfirmStopServiceCommand}"
             Cursor="Hand"
             Height="48">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Stop"/>
-                <materialDesign:PackIcon Kind="Stop" Margin="4 0.5 0 0"/>
-            </StackPanel>
-        </Button>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Stop"/>
+                    <materialDesign:PackIcon Kind="Stop" Margin="4 0.5 0 0"/>
+                </StackPanel>
+            </Button>
+        </Border>
         <materialDesign:DialogHost
             Grid.Row="0"
             Grid.Column="0"
@@ -115,6 +125,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Panel.ZIndex="100"
+            DataContext="{x:Static local:StopServiceViewModel.Instance}"
             IsOpen="{Binding IsConfirmStopServiceShowUp}">
             <materialDesign:DialogHost.DialogContent>
                 <Grid>
@@ -142,9 +153,16 @@
                         Grid.Column="0"
                         HorizontalAlignment="Stretch"
                         Style="{StaticResource MaterialDesignFlatButton}"
-                        IsDefault="True"
+                        IsCancel="True"
                         Margin="5"
-                        Command="{Binding StopWebSocketServerCommand}">
+                        DataContext="{x:Static local:StopServiceViewModel.Instance}"
+                        Command="{Binding StopServiceCommand}"
+                        IsEnabled="{Binding Path=StopServiceInProgress, Converter={StaticResource InverseBooleanConverter}}">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                True
+                            </system:Boolean>
+                        </Button.CommandParameter>
                         STOP
                     </Button>
                     <Button
@@ -154,7 +172,8 @@
                         Style="{StaticResource MaterialDesignFlatButton}"
                         IsCancel="True"
                         Margin="5"
-                        Command="materialDesign:DialogHost.CloseDialogCommand">
+                        Command="materialDesign:DialogHost.CloseDialogCommand"
+                        IsEnabled="{Binding Path=StopServiceInProgress, Converter={StaticResource InverseBooleanConverter}}">
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                                 False
@@ -341,6 +360,7 @@
             Grid.ColumnSpan="2"
             Margin="5"
             VerticalAlignment="Center"
+            DataContext="{x:Static local:SendMessageToAllClientsViewModel.Instance}"
             Command="{Binding SendMessageToAllClientsCommand}"
             CommandParameter="{Binding Text, ElementName=myTextBox}"
             Cursor="Hand"
@@ -358,6 +378,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Panel.ZIndex="100"
+            DataContext="{x:Static local:SendMessageToAllClientsViewModel.Instance}"
             IsOpen="{Binding IsSendingMessageToAllClients}">
             <materialDesign:DialogHost.DialogContent>
                 <StackPanel
@@ -379,6 +400,8 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Panel.ZIndex="100"
+            CloseOnClickAway="True"
+            DataContext="{x:Static local:SendMessageToAllClientsViewModel.Instance}"
             IsOpen="{Binding IsSentMessageToAllClientsSuccess}">
             <materialDesign:DialogHost.DialogContent>
                 <StackPanel

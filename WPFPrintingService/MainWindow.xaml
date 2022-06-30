@@ -331,7 +331,7 @@
         
         
         <!--Message box to send to client-->
-        <!--<TextBox 
+        <TextBox 
             Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="2"
@@ -342,7 +342,7 @@
             VerticalAlignment="Stretch"
             materialDesign:HintAssist.Hint="Message"
             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-        />-->
+        />
 
         <!--Button send message to every clients-->
         <Button

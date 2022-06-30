@@ -18,41 +18,12 @@ namespace WPFPrintingService
 
         public void KickDrawer(string printerName)
         {
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.PrinterSettings.PrinterName = printerName;
-
-            //open cash drawer command
-            const string ESC1 = "\u001B";
-            const string p = "\u0070";
-            const string m = "\u0000";
-            const string t1 = "\u0025";
-            const string t2 = "\u0250";
-            const string openTillCommand = ESC1 + p + m + t1 + t2;
-            bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
-            if (_cashDrawerOpened)
-            {
-                Debug.WriteLine("Cash Drawer Opened");
-            }
-            printDocument.Dispose();
+            
         }
 
         public void CutPaper(string printerName)
         {
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.PrinterSettings.PrinterName = printerName;
-
-            //cut command
-            string GS = Convert.ToString((char)29);
-            string ESC = Convert.ToString((char)27);
-            string COMMAND = "";
-            COMMAND = ESC + "@";
-            COMMAND += GS + "V" + (char)1;
-            bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, COMMAND);
-            if (_cutted)
-            {
-                Debug.WriteLine("Cut Success");
-            }
-            printDocument.Dispose();
+            
         }
 
         public void PrintAndKickCashDrawer(string printerName, UserControl printTemplate)

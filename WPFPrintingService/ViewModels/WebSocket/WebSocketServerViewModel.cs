@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Net;
 using System.Printing;
@@ -163,7 +164,7 @@ namespace WPFPrintingService
                         break;
                     case "print":
                         //process print
-                        gg(message, clientId);
+                        ProcessPrint(message, clientId);
                         break;
                 }
             }
@@ -173,7 +174,7 @@ namespace WPFPrintingService
             }
         }
 
-        private void gg(string message, string clientId)
+        private void ProcessPrint(string message, string clientId)
         {
             //deserialize request print
             RequestPrint requestPrint = RequestPrint.FromJson(message);
@@ -222,10 +223,41 @@ namespace WPFPrintingService
 
                     break;
                 case "cut":
+                    PrintDocument printDocumentForCut = new PrintDocument();
+                    printDocumentForCut.PrinterSettings.PrinterName = "Printer Name";
+
+                    //cut command
+                    string GS = Convert.ToString((char)29);
+                    string ESC = Convert.ToString((char)27);
+                    string COMMAND = "";
+                    COMMAND = ESC + "@";
+                    COMMAND += GS + "V" + (char)1;
+                    bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocumentForCut.PrinterSettings.PrinterName, COMMAND);
+                    if (_cutted)
+                    {
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Cut Success", clientId);
+                    }
+                    printDocumentForCut.Dispose();
                     break;
                 case "printandkickcashdrawer":
                     break;
                 case "kickcashdrawer":
+                    PrintDocument printDocument = new PrintDocument();
+                    printDocument.PrinterSettings.PrinterName = "Printer Name";
+
+                    //open cash drawer command
+                    const string ESC1 = "\u001B";
+                    const string p = "\u0070";
+                    const string m = "\u0000";
+                    const string t1 = "\u0025";
+                    const string t2 = "\u0250";
+                    const string openTillCommand = ESC1 + p + m + t1 + t2;
+                    bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+                    if (_cashDrawerOpened)
+                    {
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Cash Drawer Opened", clientId);
+                    }
+                    printDocument.Dispose();
                     break;
             }
         }

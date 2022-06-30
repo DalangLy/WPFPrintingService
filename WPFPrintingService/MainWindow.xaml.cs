@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Globalization;
 using System.Windows.Markup;
+using System.Windows.Input;
+using System.Linq;
 
 namespace WPFPrintingService
 {

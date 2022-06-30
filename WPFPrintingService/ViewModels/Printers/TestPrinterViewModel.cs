@@ -41,7 +41,7 @@ namespace WPFPrintingService
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += (s, e) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                App.Current.Dispatcher.Invoke((Action)delegate
                 {
                     LocalPrintServer printServer = new LocalPrintServer();
                     PrintQueueCollection printQueues = printServer.GetPrintQueues();

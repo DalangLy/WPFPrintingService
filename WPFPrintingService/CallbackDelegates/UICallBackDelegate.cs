@@ -9,6 +9,6 @@ namespace WPFPrintingService.UICallBackDelegates
     internal delegate void OnSendToServer(object source, EventArgs args);
 
     internal delegate void OnOpenCallBack(object source, EventArgs args, string clientId, string clientIp, string clientName);
-    internal delegate void onMessageCallBack(object source, EventArgs args, string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone);
+    internal delegate void onMessageCallBack(object source, EventArgs args, string clientId, string clientName, string message);
     internal delegate void OnCloseCallBack(object source, EventArgs args, string clientIp);
 }

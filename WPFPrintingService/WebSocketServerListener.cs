@@ -46,23 +46,7 @@ namespace WPFPrintingService
                 EventArgs.Empty,
                 _getClientId(),
                 _getClientName(), 
-                e.Data,
-                (s, ev, status) =>
-                {
-                    //on print response
-                    Send(status);
-                },
-                (s, ev) =>
-                {
-                    //on send to server
-                    Send("Sent");
-                },
-                (s, ev, message) =>
-                {
-                    //on send to everyone
-                    Sessions.Broadcast(message);
-                    Send("Sent");
-                }
+                e.Data
             );
         }
 

@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using WebSocketSharp;
+using System.Printing;
+using System.Windows.Controls;
 using WebSocketSharp.Server;
-using WPFPrintingService.Print_Models;
-using WPFPrintingService.UICallBackDelegates;
+using WPFPrintingService.Models;
 
 namespace WPFPrintingService
 {
@@ -22,7 +23,6 @@ namespace WPFPrintingService
         public ObservableCollection<ClientWebSocketModel> ConnectedWebSocketClients { get; set; } = new ObservableCollection<ClientWebSocketModel>();
 
         private string _serverStatus = string.Empty;
-
         public string ServerStatus
         {
             get { return _serverStatus; }
@@ -33,8 +33,7 @@ namespace WPFPrintingService
             }
         }
 
-        private bool _isServiceRunning = true;
-
+        private bool _isServiceRunning;
         public bool IsServiceRunning
         {
             get { return true; }
@@ -45,16 +44,14 @@ namespace WPFPrintingService
             }
         }
 
-
         public WebSocketServer WebSocketServer;
 
         private WebSocketServerViewModel()
         {
             //initial websocket server
             this.WebSocketServer = new WebSocketServer(IPAddress.Parse(AppSingleton.GetInstance.SystemIP), AppSingleton.GetInstance.Port);
+            this.WebSocketServer.KeepClean = false;
         }
-
-        
 
         public void stopService()
         {
@@ -66,7 +63,6 @@ namespace WPFPrintingService
                 this.ServerStatus = "Service Stopped";
             }
         }
-
       
         public void StartService()
         {
@@ -74,23 +70,28 @@ namespace WPFPrintingService
             this.WebSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
                 {
                     //on client connected
-                    App.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                    App.Current.Dispatcher.Invoke((Action)delegate
                     {
+                        //add client to list
+                        Debug.WriteLine("Add");
                         this.ConnectedWebSocketClients.Add(new ClientWebSocketModel() { Name = connectedClientName, ID = connectedClientId, IP = connectedClientIp });
+                        this.ServerStatus += $"\n{connectedClientName} has joined";
                     });
                 },
-                (sender, args, clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone) =>
+                (sender, args, clientId, clientName, message) =>
                 {
                     //on message received from client
-                    this._onClientResponseMessage(clientId, clientName, message, onPrintResponse, onSendToServer, onSendToEveryone);
+                    this._onClientResponseMessage(clientId, clientName, message);
                 },
                 (sender, args, disconnectedClientId) =>
                 {
                     //on client disconnected
-                    ClientWebSocketModel foundClient = this.ConnectedWebSocketClients.Where(x => x.ID == disconnectedClientId).First();
                     App.Current.Dispatcher?.Invoke((Action)delegate
                     {
+                        //remove client from list
+                        ClientWebSocketModel foundClient = this.ConnectedWebSocketClients.Where(x => x.ID == disconnectedClientId).First();
                         this.ConnectedWebSocketClients.Remove(foundClient);
+                        this.ServerStatus += $"\n{foundClient.Name} has left";
                     });
                 }
             ));
@@ -103,99 +104,130 @@ namespace WPFPrintingService
             }
         }
 
-        private void _onClientResponseMessage(string clientId, string clientName, string message, OnPrintResponse onPrintResponse, OnSendToServer onSendToServer, OnSendToEveryone onSendToEveryone)
+        private void _onClientResponseMessage(string clientId, string clientName, string message)
         {
             try
             {
-                PrintTemplateModel printTemplateModel = PrintTemplateModel.FromJson(message);
-                if (printTemplateModel == null)
+                RequestCode requestCode = RequestCode.FromJson(message);
+
+                if (requestCode.Code == null) return;
+
+                switch (requestCode.Code.ToLower())
                 {
-                    onPrintResponse(this, EventArgs.Empty, "Wrong Format");
-                    return;
-                }
-                switch (printTemplateModel.Code)
-                {
-                    case "RequestPrinters":
+                    case "requestprinterslist":
                         if (WebSocketServer != null && WebSocketServer.IsListening)
                         {
-                            //var json = System.Text.Json.JsonSerializer.Serialize();
-                            //_webSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
+                            List<PrinterModel> printers = new List<PrinterModel>();
+                            LocalPrintServer printServer = new LocalPrintServer();
+                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                            foreach (PrintQueue printer in printQueues)
+                            {
+                                printers.Add(new PrinterModel()
+                                {
+                                    Name = printer.Name,
+                                    HasToner = printer.HasToner,
+                                    IsBusy = printer.IsBusy,
+                                    IsDoorOpened = printer.IsDoorOpened,
+                                    IsOnline = !printer.IsOffline,
+                                    IsPrinting = printer.IsPrinting,
+                                });
+                            }
+                            Debug.WriteLine("Hllll");
+                            var json = System.Text.Json.JsonSerializer.Serialize(printers);
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
+
+                            //update status
+                            this.ServerStatus += $"\nClient Request Printers List";
                         }
                         break;
-                    case "SendToEveryone":
-                        onSendToEveryone(this, EventArgs.Empty, $"{clientName} Said : {printTemplateModel.Data}");
+                    case "sendtoeveryone":
+                        //deserialize message
+                        RequestMessage requestMessage = RequestMessage.FromJson(message);
+
+                        //broadcast to everyone
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(requestMessage.Message);
+
+                        //notify back tosender
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
                         break;
-                    case "SendToServer":
+                    case "sendtoserver":
+                        
+                        //deserialize message
+                        RequestMessage requestMessageForServer = RequestMessage.FromJson(message);
 
                         //update text status
-                        this.ServerStatus += $"\n {clientName} Said : {printTemplateModel.Data}";
+                        this.ServerStatus += $"\n{clientName} Said : {requestMessageForServer.Message}";
 
-
-                        onSendToServer(this, EventArgs.Empty);
+                        //notify back to sender
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
                         break;
-                    case "Print":
-                        try
-                        {
-                            if (printTemplateModel?.Data == null)
-                            {
-                                onPrintResponse(this, EventArgs.Empty, "Wrong Data Format");
-                                return;
-                            }
-
-                            //find printer
-                            //PrinterFromWindowsSystemModel? _foundPrinterModel = _allPrintersFromWindowsSystem.Find(printerModel => printerModel.PrinterName.Equals(printTemplateModel?.Data?.PrinterName));
-                            //if (_foundPrinterModel == null)
-                            //{
-                            //    onPrintResponse(this, EventArgs.Empty, "Can't Find Printer");
-                            //    return;
-                            //}
-
-                            switch (printTemplateModel?.Data?.PrintMethod)
-                            {
-                                case "CutOnly":
-                                    PrinterClass printerClass1 = new PrinterClass();
-                                    printerClass1.CutPaper("Hello");
-                                    break;
-                                case "OpenCashDrawer":
-                                    PrinterClass printerClass = new PrinterClass();
-                                    printerClass.KickDrawer("Hello");
-                                    break;
-                                case "PrintAndKickCashDrawer":
-                                    App.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                                    {
-                                        PrinterClass printerClass = new PrinterClass();
-                                        TestPrintTemplate testPrintTemplate = new TestPrintTemplate();
-                                        printerClass.PrintAndKickCashDrawer("Hello", testPrintTemplate);
-                                    });
-                                    break;
-                                default:
-                                    App.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                                    {
-                                        PrinterClass printerClass = new PrinterClass();
-                                        TestPrintTemplate testPrintTemplate = new TestPrintTemplate();
-                                        printerClass.PrintAndCutPaper("Hello", testPrintTemplate);
-                                    });
-                                    break;
-                            }
-                        }
-                        catch (Exception)
-                        {
-
-                            throw;
-                        }
-
-                        break;
-                    default:
-                        onPrintResponse(this, EventArgs.Empty, "Wrong Code");
+                    case "print":
+                        //process print
+                        gg(message, clientId);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                onPrintResponse(this, EventArgs.Empty, $"Wrong Format : {ex.Message}");
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"Wrong Format : {ex.Message}", clientId);
             }
         }
 
-        
+        private void gg(string message, string clientId)
+        {
+            //deserialize request print
+            RequestPrint requestPrint = RequestPrint.FromJson(message);
+
+            //deserialize request print data
+            RequestPrintData requestPrintData = RequestPrintData.FromJson(requestPrint.Data.ToString());
+
+            //check print template
+            //switch (requestPrintData.TemplateName.ToLower())
+            //{
+            //    case "bill":
+            //        //deserialize print data
+            //        //RequestBillPrintData requestBillPrintData = RequestBillPrintData.FromJson(message);
+
+            //        //create instance of bill print template from user control
+
+
+            //        break;
+            //}
+
+            //check print method
+            switch (requestPrintData.PrintMethod.ToLower())
+            {
+                case "printandcut":
+                    //do print and cut process
+
+                    BackgroundWorker worker = new BackgroundWorker();
+                    worker.DoWork += (s, e) =>
+                    {
+                        App.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            LocalPrintServer printServer = new LocalPrintServer();
+                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                            PrintDialog dialog = new PrintDialog();
+                            dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                            TestPrintTemplate printTemplate = new TestPrintTemplate();
+                            dialog.PrintVisual(printTemplate, "Test Print Template");
+                        });
+                    };
+                    worker.RunWorkerCompleted += (s, e) =>
+                    {
+                        //Notify Back to sender
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
+                    };
+                    worker.RunWorkerAsync();
+
+                    break;
+                case "cut":
+                    break;
+                case "printandkickcashdrawer":
+                    break;
+                case "kickcashdrawer":
+                    break;
+            }
+        }
     }
 }

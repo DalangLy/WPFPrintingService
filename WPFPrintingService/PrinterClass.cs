@@ -13,20 +13,7 @@ namespace WPFPrintingService
     {
         public void PrintAndCutPaper(string printerName, UserControl printTemplate)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (s, e) =>
-            {
-                LocalPrintServer printServer = new LocalPrintServer();
-                PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                PrintDialog dialog = new PrintDialog();
-                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
-                dialog.PrintVisual(printTemplate, "Test Print Template");
-            };
-            worker.RunWorkerCompleted += (s, e) =>
-            {
-                Debug.WriteLine("PrintSuccess");
-            };
-            worker.RunWorkerAsync();
+            
         }
 
         public void KickDrawer(string printerName)

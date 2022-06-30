@@ -286,7 +286,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="5"
-            ItemsSource="{Binding WebSocketClients}"
+            ItemsSource="{Binding ConnectedWebSocketClients}"
             SelectionMode="Single" 
             AutoGenerateColumns="False" 
             IsReadOnly="True" 
@@ -319,12 +319,19 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Ping" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Ping"></Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         
         
         <!--Message box to send to client-->
-        <TextBox 
+        <!--<TextBox 
             Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="2"
@@ -335,23 +342,7 @@
             VerticalAlignment="Stretch"
             materialDesign:HintAssist.Hint="Message"
             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-        />
-
-
-        <!--<TextBox
-            x:Name="NameTextBox"
-            materialDesign:HintAssist.Hint="Name">
-            <TextBox.Text>
-                <Binding
-                    Path="Name"
-                    UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <domain1:NotEmptyValidationRule
-                            ValidatesOnTargetUpdated="True" xmlns:domain1="clr-namespace:MaterialDesignDemo.Domain" />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>-->
+        />-->
 
         <!--Button send message to every clients-->
         <Button

@@ -81,10 +81,10 @@
             <DataGridTemplateColumn Header="Online" Width="80">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding IsOnline}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                        <TextBlock Text="{Binding IsOnline,Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <ToolTip>
-                                    <TextBlock Text="{Binding IsOnline}"/>
+                                    <TextBlock Text="{Binding IsOnline,Converter={local:ConvertBooleanToYesNo}}"/>
                                 </ToolTip>
                             </TextBlock.ToolTip>
                         </TextBlock>
@@ -94,7 +94,7 @@
             <DataGridTemplateColumn Header="Is Printing" Width="80">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding IsPrinting}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                        <TextBlock Text="{Binding IsPrinting,Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <ToolTip>
                                     <TextBlock Text="{Binding IsPrinting}"/>

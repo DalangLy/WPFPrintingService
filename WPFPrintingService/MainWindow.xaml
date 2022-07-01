@@ -17,8 +17,7 @@
     Title="Printing Service"
     Height="750" 
     Width="1295"
-    WindowStartupLocation="CenterScreen"
-    Loaded="Window_Loaded" 
+    WindowStartupLocation="CenterScreen" 
     Closing="Window_Closing"
     DataContext="{x:Static local:WebSocketServerViewModel.Instance}">
 
@@ -210,7 +209,6 @@
             Grid.ColumnSpan="6"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            DialogClosing="DialogHost_DialogClosing"
             x:Name="serverInfoDialog"
             Panel.ZIndex="100"
             CloseOnClickAway="True">
@@ -541,7 +539,7 @@
             Grid.ColumnSpan="6"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            DialogClosing="DialogHost_DialogClosing"
+            DialogClosing="ConfirmExitDialogClosing"
             Panel.ZIndex="100"
             x:Name="confirmExitDialog">
             <materialDesign:DialogHost.DialogContent>
@@ -587,8 +585,7 @@
                         Style="{StaticResource MaterialDesignFlatButton}"
                         IsCancel="True"
                         Margin="5"
-                        Command="materialDesign:DialogHost.CloseDialogCommand"
-                    >
+                        Command="materialDesign:DialogHost.CloseDialogCommand">
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                                 False
@@ -603,12 +600,12 @@
 
         <!--System Tray Icon-->
         <tb:TaskbarIcon 
-            x:Name="myNotifyIcon"
+            x:Name="printingServiceSystemTrayNotifyIcon"
             Visibility="Hidden"
             ToolTipText="Printing Servcie"
             IconSource="/Icons/print.ico"
             PopupActivation="RightClick"
-            TrayMouseDoubleClick="myNotifyIcon_TrayMouseDoubleClick">
+            TrayMouseDoubleClick="printingServiceSystemTrayNotifyIcon_TrayMouseDoubleClick">
             <tb:TaskbarIcon.TrayToolTip>
                 <Border
                     Background="White"
@@ -624,7 +621,6 @@
                     VerticalAlignment="Center"/>
                 </Border>
             </tb:TaskbarIcon.TrayToolTip>
-
             <tb:TaskbarIcon.TrayPopup>
                 <Border
                     Background="White"

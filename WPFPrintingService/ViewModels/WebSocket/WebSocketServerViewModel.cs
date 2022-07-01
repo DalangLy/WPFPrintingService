@@ -206,12 +206,20 @@ namespace WPFPrintingService
                     {
                         App.Current.Dispatcher.Invoke((Action)delegate
                         {
-                            LocalPrintServer printServer = new LocalPrintServer();
-                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                            PrintDialog dialog = new PrintDialog();
-                            dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
-                            TestPrintTemplate printTemplate = new TestPrintTemplate();
-                            dialog.PrintVisual(printTemplate, "Test Print Template");
+                            //find print template
+                            switch (requestPrintData.TemplateName)
+                            {
+                                case "bill":
+                                    LocalPrintServer printServer = new LocalPrintServer();
+                                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                                    PrintDialog dialog = new PrintDialog();
+                                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                                    TestPrintTemplate printTemplate = new TestPrintTemplate();
+                                    dialog.PrintVisual(printTemplate, "Test Print Template");
+                                    break;
+                            }
+
+                            
                         });
                     };
                     worker.RunWorkerCompleted += (s, e) =>

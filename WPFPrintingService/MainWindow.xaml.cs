@@ -3,9 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Globalization;
-using System.Windows.Markup;
-using System.Windows.Input;
-using System.Linq;
+using MaterialDesignThemes.Wpf;
 
 namespace WPFPrintingService
 {
@@ -15,17 +13,12 @@ namespace WPFPrintingService
         {
             InitializeComponent();
         }
-        
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
-
        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //hide windows to system tray
             Hide();
-            myNotifyIcon.Visibility = Visibility.Visible;
+            printingServiceSystemTrayNotifyIcon.Visibility = Visibility.Visible;
             e.Cancel = true;
         }
 
@@ -39,14 +32,14 @@ namespace WPFPrintingService
             Application.Current.Shutdown();
         }
 
-        private void myNotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        private void printingServiceSystemTrayNotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
             //hide windows to system tray
             Show();
-            myNotifyIcon.Visibility = Visibility.Collapsed;
+            printingServiceSystemTrayNotifyIcon.Visibility = Visibility.Collapsed;
         }
 
-        private void DialogHost_DialogClosing(object sender, MaterialDesignThemes.Wpf.DialogClosingEventArgs eventArgs)
+        private void ConfirmExitDialogClosing(object sender, DialogClosingEventArgs eventArgs)
         {
             if (eventArgs.Parameter == null) return;
             bool isExit = (bool) eventArgs.Parameter;

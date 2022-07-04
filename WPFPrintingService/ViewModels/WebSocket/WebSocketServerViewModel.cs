@@ -214,8 +214,8 @@ namespace WPFPrintingService
                                     PrintQueueCollection printQueues = printServer.GetPrintQueues();
                                     PrintDialog dialog = new PrintDialog();
                                     dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
-                                    TestPrintTemplate printTemplate = new TestPrintTemplate();
-                                    dialog.PrintVisual(printTemplate, "Test Print Template");
+                                    //TestPrintTemplate printTemplate = new TestPrintTemplate();
+                                    //dialog.PrintVisual(printTemplate, "Test Print Template");
                                     break;
                             }
 

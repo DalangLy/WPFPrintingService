@@ -48,8 +48,8 @@ namespace WPFPrintingService
                     PrintDialog dialog = new PrintDialog();
                     dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == printer.Name);
                     //get print instance
-                    UserControl printTemplate = new TestPrintTemplate();
-                    dialog.PrintVisual(printTemplate, "Test Print Template");
+                    //UserControl printTemplate = new TestPrintTemplate();
+                    //dialog.PrintVisual(printTemplate, "Test Print Template");
                 });
             };
             worker.RunWorkerCompleted += (s, e) =>
@@ -80,8 +80,8 @@ namespace WPFPrintingService
                     PrintQueueCollection printQueues = printServer.GetPrintQueues();
                     PrintDialog dialog = new PrintDialog();
                     dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == printer.Name);
-                    UserControl printTemplate = new TestPrintTemplate();
-                    dialog.PrintVisual(printTemplate, "Print Tempalte");
+                    //UserControl printTemplate = new TestPrintTemplate();
+                    //dialog.PrintVisual(printTemplate, "Print Tempalte");
                 });
             };
             worker.RunWorkerCompleted += (s, e) =>

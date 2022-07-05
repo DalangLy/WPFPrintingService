@@ -1,7 +1,6 @@
 ﻿using System;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using WPFPrintingService.UICallBackDelegates;
 
 namespace WPFPrintingService
 {

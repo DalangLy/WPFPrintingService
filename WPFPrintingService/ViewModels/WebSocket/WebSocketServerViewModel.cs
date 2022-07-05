@@ -10,7 +10,6 @@ using System.Net;
 using System.Printing;
 using System.Windows.Controls;
 using WebSocketSharp.Server;
-using WPFPrintingService.Models;
 
 namespace WPFPrintingService
 {

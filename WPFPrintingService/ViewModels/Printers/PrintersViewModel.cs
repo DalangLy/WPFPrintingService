@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Printing;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using WPFPrintingService.Models;
 
 namespace WPFPrintingService
 {

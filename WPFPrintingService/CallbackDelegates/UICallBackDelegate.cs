@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WPFPrintingService.UICallBackDelegates
+namespace WPFPrintingService
 {
     public delegate void VoidCallBack(object source, EventArgs args);
 

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Printing;
 using System.Windows.Controls;
 using System.Windows.Input;
-using WPFPrintingService.Models;
 
 namespace WPFPrintingService
 {

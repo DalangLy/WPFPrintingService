@@ -134,10 +134,10 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" DataContext="{x:Static local:TestPrinterViewModel.Instance}">
-                            <Button Command="{Binding PrintAndCutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print And Cut" Margin="5,5,2.5,5" Width="100" Cursor="Hand"/>
-                            <Button Command="{Binding PrintAndKickOutCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print &amp; Kich Cash Drawer" Margin="2.5,5,2.5,5" Width="160" Cursor="Hand"/>
-                            <Button Command="{Binding CutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Cut Only"  Margin="2.5,5,2.5,5" Width="60" Cursor="Hand"/>
-                            <Button Command="{Binding KickCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Width="130" Cursor="Hand"/>
+                            <Button Command="{Binding PrintAndCutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print And Cut" Margin="5,5,2.5,5" Cursor="Hand"/>
+                            <Button Command="{Binding PrintAndKickOutCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print &amp; Kich Cash Drawer" Margin="2.5,5,2.5,5" Cursor="Hand"/>
+                            <Button Command="{Binding CutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Cut Only"  Margin="2.5,5,2.5,5" Cursor="Hand"/>
+                            <Button Command="{Binding KickCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Cursor="Hand"/>
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

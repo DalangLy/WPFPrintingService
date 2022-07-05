@@ -1,4 +1,4 @@
-﻿namespace WPFPrintingService.Models
+﻿namespace WPFPrintingService
 {
     internal class PrinterModel
     {

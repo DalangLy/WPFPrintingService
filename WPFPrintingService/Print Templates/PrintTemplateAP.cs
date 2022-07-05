@@ -30,8 +30,6 @@ namespace WPFPrintingService
 
             List<PrintTemplateModel> models = (List<PrintTemplateModel>)baseValue;
 
-            stackPanel.Loaded += (s, e) =>
-            {
                 for (int i = 0; i < models.Count; i++)
                 {
 
@@ -94,7 +92,6 @@ namespace WPFPrintingService
                         stackPanel.Children.Add(bodyGrid);
                     }
                 }
-            };
 
             return baseValue;
         }

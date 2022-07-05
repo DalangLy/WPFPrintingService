@@ -177,7 +177,7 @@ namespace WPFPrintingService
                         break;
                     case "print":
                         //process print
-                        //ProcessPrint(message, clientId);
+                        ProcessPrint(message, clientId);
                         break;
                     default:
                         if (WebSocketServer != null && WebSocketServer.IsListening)
@@ -213,590 +213,591 @@ namespace WPFPrintingService
             }
         }
 
-        //private void ProcessPrint(string message, string clientId)
-        //{
-        //    //deserialize request print
-        //    RequestPrint requestPrint = RequestPrint.FromJson(message);
+        private void ProcessPrint(string message, string clientId)
+        {
+            Debug.WriteLine(message);
+            //deserialize request print
+            //    RequestPrint requestPrint = RequestPrint.FromJson(message);
 
-        //    //deserialize request print data
-        //    RequestPrintData requestPrintData = RequestPrintData.FromJson(requestPrint.Data.ToString());
+            //    //deserialize request print data
+            //    RequestPrintData requestPrintData = RequestPrintData.FromJson(requestPrint.Data.ToString());
 
-        //    //check print method
-        //    switch (requestPrintData.PrintMethod.ToLower())
-        //    {
-        //        case "printandcut":
-        //            //do print and cut process
+            //    //check print method
+            //    switch (requestPrintData.PrintMethod.ToLower())
+            //    {
+            //        case "printandcut":
+            //            //do print and cut process
 
-        //            BackgroundWorker worker = new BackgroundWorker();
-        //            worker.DoWork += (s, e) =>
-        //            {
-        //                App.Current.Dispatcher.Invoke((Action)delegate
-        //                {
-        //                    LocalPrintServer printServer = new LocalPrintServer();
-        //                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
-        //                    PrintDialog dialog = new PrintDialog();
-        //                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+            //            BackgroundWorker worker = new BackgroundWorker();
+            //            worker.DoWork += (s, e) =>
+            //            {
+            //                App.Current.Dispatcher.Invoke((Action)delegate
+            //                {
+            //                    LocalPrintServer printServer = new LocalPrintServer();
+            //                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
+            //                    PrintDialog dialog = new PrintDialog();
+            //                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
 
-        //                    try
-        //                    {
-        //                        List<PrintTemplateModel> templateModel = PrintTemplateModel.FromJson(requestPrintData.PrintData.ToString());
-        //                        PrintTemplate printTemplate = new PrintTemplate(templateModel);
-        //                        dialog.PrintVisual(printTemplate, "Test Print Template");
-        //                    }
-        //                    catch (Exception)
-        //                    {
-        //                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Wrong Print format", clientId);
-        //                        return;
-        //                    }
-                            
-
-
-        //                    //create template
-        //                    //create template
-        //                    //create template
-        //                    //create summary shift
-        //        //            PrintTemplateModel summaryShift = new PrintTemplateModel();
-        //        //            summaryShift.Header = new Header()
-        //        //            {
-        //        //                Text = "Summary Shift",
-        //        //                Background = "black",
-        //        //                Foreground = "white",
-        //        //                Align = "center",
-        //        //            };
-
-        //        //            //build summary shift body
-        //        //            summaryShift.Body = new Body()
-        //        //            {
-        //        //                BodyRows = new List<BodyRow>()
-        //        //{
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Batch ID"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "CH-1495, CH1496",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Outlet Name"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "FPTP",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    }
-        //        //}
-        //        //            };
-
-        //        //            //create handle by
-        //        //            PrintTemplateModel handleBy = new PrintTemplateModel();
-        //        //            handleBy.Header = new Header()
-        //        //            {
-        //        //                Text = "Handle By",
-        //        //                Foreground = "white",
-        //        //                Background = "black",
-        //        //                Align = "center",
-        //        //            };
-
-        //        //            //create admin, admin
-        //        //            PrintTemplateModel adminadmin = new PrintTemplateModel();
-        //        //            adminadmin.Header = new Header()
-        //        //            {
-        //        //                Text = "Admin, Admin",
-        //        //                Foreground = "black",
-        //        //                Background = "gray",
-        //        //                Align = "center",
-        //        //            };
-        //        //            //build admin admin body
-        //        //            adminadmin.Body = new Body()
-        //        //            {
-        //        //                BodyRows = new List<BodyRow>()
-        //        //{
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Phone Number"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Email"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Print Date"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "4/21/2022 11:00:11 AM",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Batch Period",
-        //        //                Bold = true,
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "4/18/2022 4:52:19 PM",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = ""
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "4/21/2022 10:59:56 AM",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    }
-        //        //}
-        //        //            };
-
-
-        //        //            //create cash collection status
-        //        //            PrintTemplateModel cashCollectionStatus = new PrintTemplateModel();
-        //        //            cashCollectionStatus.Header = new Header()
-        //        //            {
-        //        //                Text = "Cash Collection Status",
-        //        //                Foreground = "black",
-        //        //                Background = "gray",
-        //        //                Align = "center",
-        //        //            };
-        //        //            //build cash collection status body
-        //        //            cashCollectionStatus.Body = new Body()
-        //        //            {
-        //        //                BodyRows = new List<BodyRow>()
-        //        //{
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total System Cash Collection"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 59.53",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Actual Cash Collection"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 0.00",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Cash Collection Variance[Short]"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "-$ 59.53",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //}
-        //        //            };
-
-
-        //        //            //create Payment Collection Summary
-        //        //            PrintTemplateModel paymentCollectionSummary = new PrintTemplateModel();
-        //        //            paymentCollectionSummary.Header = new Header()
-        //        //            {
-        //        //                Text = "Payment Collection Summary",
-        //        //                Foreground = "black",
-        //        //                Background = "gray",
-        //        //                Align = "center",
-        //        //            };
-        //        //            //build Payment collection summary body
-        //        //            paymentCollectionSummary.Body = new Body()
-        //        //            {
-        //        //                BodyRows = new List<BodyRow>()
-        //        //{
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Cash"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "USD",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "2",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 4.65",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "E-Payment"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Voucher"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "1"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 2.39",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = ""
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Payment",
-        //        //                Bold = true,
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 7.04",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //}
-        //        //            };
-
-
-        //        //            //create Sale Transaction Summary
-        //        //            PrintTemplateModel saleTransactionSummary = new PrintTemplateModel();
-        //        //            saleTransactionSummary.Header = new Header()
-        //        //            {
-        //        //                Text = "Sale Transaction Summary",
-        //        //                Foreground = "black",
-        //        //                Background = "gray",
-        //        //                Align = "center",
-        //        //            };
-        //        //            //build sale transaction summary body
-        //        //            saleTransactionSummary.Body = new Body()
-        //        //            {
-        //        //                BodyRows = new List<BodyRow>()
-        //        //{
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Sale Before VAT"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "2",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 6.40",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Discount"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = ""
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = ""
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 0.00",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Sale After Discount"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "2",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 6.40",
-        //        //                Align = "Right"
-        //        //            }
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total VAT"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "2",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 0.64",
-        //        //                Align = "Right"
-        //        //            },
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Sale After VAT"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 7.04",
-        //        //                Align = "Right"
-        //        //            },
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Repayment"
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 0.00",
-        //        //                Align = "Right"
-        //        //            },
-        //        //        }
-        //        //    },
-        //        //    new BodyRow()
-        //        //    {
-        //        //        BodyColumns = new List<BodyColumn>()
-        //        //        {
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "Total Sale Transaction Summary Total Sale Transaction Summary Total Sale Transaction Summary Total Sale Transaction Summary",
-        //        //                Bold = true,
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "",
-        //        //            },
-        //        //            new BodyColumn()
-        //        //            {
-        //        //                Text = "$ 7.04",
-        //        //                Align = "Right"
-        //        //            },
-        //        //        }
-        //        //    },
-        //        //}
-        //        //            };
-
-
-        //        //            List<PrintTemplateModel> ff = new List<PrintTemplateModel>();
-        //        //            ff.Add(summaryShift);
-        //        //            ff.Add(handleBy);
-        //        //            ff.Add(adminadmin);
-        //        //            ff.Add(cashCollectionStatus);
-        //        //            ff.Add(paymentCollectionSummary);
-        //        //            ff.Add(saleTransactionSummary);
+            //                    try
+            //                    {
+            //                        List<PrintTemplateModel> templateModel = PrintTemplateModel.FromJson(requestPrintData.PrintData.ToString());
+            //                        PrintTemplate printTemplate = new PrintTemplate(templateModel);
+            //                        dialog.PrintVisual(printTemplate, "Test Print Template");
+            //                    }
+            //                    catch (Exception)
+            //                    {
+            //                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Wrong Print format", clientId);
+            //                        return;
+            //                    }
 
 
 
-        //                    //PrintTemplate printTemplate = new PrintTemplate(PrintTemplate);
-        //                    //dialog.PrintVisual(printTemplate, "Test Print Template");
-        //                });
-        //            };
-        //            worker.RunWorkerCompleted += (s, e) =>
-        //            {
-        //                //Notify Back to sender
-        //                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
-        //            };
-        //            worker.RunWorkerAsync();
+            //                    //create template
+            //                    //create template
+            //                    //create template
+            //                    //create summary shift
+            //                    //            PrintTemplateModel summaryShift = new PrintTemplateModel();
+            //                    //            summaryShift.Header = new Header()
+            //                    //            {
+            //                    //                Text = "Summary Shift",
+            //                    //                Background = "black",
+            //                    //                Foreground = "white",
+            //                    //                Align = "center",
+            //                    //            };
 
-        //            break;
-        //        case "cut":
-        //            PrintDocument printDocumentForCut = new PrintDocument();
-        //            printDocumentForCut.PrinterSettings.PrinterName = "Printer Name";
+            //                    //            //build summary shift body
+            //                    //            summaryShift.Body = new Body()
+            //                    //            {
+            //                    //                BodyRows = new List<BodyRow>()
+            //                    //{
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Batch ID"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "CH-1495, CH1496",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Outlet Name"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "FPTP",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    }
+            //                    //}
+            //                    //            };
 
-        //            //cut command
-        //            string GS = Convert.ToString((char)29);
-        //            string ESC = Convert.ToString((char)27);
-        //            string COMMAND = "";
-        //            COMMAND = ESC + "@";
-        //            COMMAND += GS + "V" + (char)1;
-        //            bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocumentForCut.PrinterSettings.PrinterName, COMMAND);
-        //            if (_cutted)
-        //            {
-        //                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Cut Success", clientId);
-        //            }
-        //            printDocumentForCut.Dispose();
-        //            break;
-        //        case "printandkickcashdrawer":
-        //            break;
-        //        case "kickcashdrawer":
-        //            PrintDocument printDocument = new PrintDocument();
-        //            printDocument.PrinterSettings.PrinterName = "Printer Name";
+            //                    //            //create handle by
+            //                    //            PrintTemplateModel handleBy = new PrintTemplateModel();
+            //                    //            handleBy.Header = new Header()
+            //                    //            {
+            //                    //                Text = "Handle By",
+            //                    //                Foreground = "white",
+            //                    //                Background = "black",
+            //                    //                Align = "center",
+            //                    //            };
 
-        //            //open cash drawer command
-        //            const string ESC1 = "\u001B";
-        //            const string p = "\u0070";
-        //            const string m = "\u0000";
-        //            const string t1 = "\u0025";
-        //            const string t2 = "\u0250";
-        //            const string openTillCommand = ESC1 + p + m + t1 + t2;
-        //            bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
-        //            if (_cashDrawerOpened)
-        //            {
-        //                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Cash Drawer Opened", clientId);
-        //            }
-        //            printDocument.Dispose();
-        //            break;
-        //    }
-        //}
+            //                    //            //create admin, admin
+            //                    //            PrintTemplateModel adminadmin = new PrintTemplateModel();
+            //                    //            adminadmin.Header = new Header()
+            //                    //            {
+            //                    //                Text = "Admin, Admin",
+            //                    //                Foreground = "black",
+            //                    //                Background = "gray",
+            //                    //                Align = "center",
+            //                    //            };
+            //                    //            //build admin admin body
+            //                    //            adminadmin.Body = new Body()
+            //                    //            {
+            //                    //                BodyRows = new List<BodyRow>()
+            //                    //{
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Phone Number"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Email"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Print Date"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "4/21/2022 11:00:11 AM",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Batch Period",
+            //                    //                Bold = true,
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "4/18/2022 4:52:19 PM",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = ""
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "4/21/2022 10:59:56 AM",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    }
+            //                    //}
+            //                    //            };
+
+
+            //                    //            //create cash collection status
+            //                    //            PrintTemplateModel cashCollectionStatus = new PrintTemplateModel();
+            //                    //            cashCollectionStatus.Header = new Header()
+            //                    //            {
+            //                    //                Text = "Cash Collection Status",
+            //                    //                Foreground = "black",
+            //                    //                Background = "gray",
+            //                    //                Align = "center",
+            //                    //            };
+            //                    //            //build cash collection status body
+            //                    //            cashCollectionStatus.Body = new Body()
+            //                    //            {
+            //                    //                BodyRows = new List<BodyRow>()
+            //                    //{
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total System Cash Collection"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 59.53",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Actual Cash Collection"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 0.00",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Cash Collection Variance[Short]"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "-$ 59.53",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //}
+            //                    //            };
+
+
+            //                    //            //create Payment Collection Summary
+            //                    //            PrintTemplateModel paymentCollectionSummary = new PrintTemplateModel();
+            //                    //            paymentCollectionSummary.Header = new Header()
+            //                    //            {
+            //                    //                Text = "Payment Collection Summary",
+            //                    //                Foreground = "black",
+            //                    //                Background = "gray",
+            //                    //                Align = "center",
+            //                    //            };
+            //                    //            //build Payment collection summary body
+            //                    //            paymentCollectionSummary.Body = new Body()
+            //                    //            {
+            //                    //                BodyRows = new List<BodyRow>()
+            //                    //{
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Cash"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "USD",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "2",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 4.65",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "E-Payment"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Voucher"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "1"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 2.39",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = ""
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Payment",
+            //                    //                Bold = true,
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 7.04",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //}
+            //                    //            };
+
+
+            //                    //            //create Sale Transaction Summary
+            //                    //            PrintTemplateModel saleTransactionSummary = new PrintTemplateModel();
+            //                    //            saleTransactionSummary.Header = new Header()
+            //                    //            {
+            //                    //                Text = "Sale Transaction Summary",
+            //                    //                Foreground = "black",
+            //                    //                Background = "gray",
+            //                    //                Align = "center",
+            //                    //            };
+            //                    //            //build sale transaction summary body
+            //                    //            saleTransactionSummary.Body = new Body()
+            //                    //            {
+            //                    //                BodyRows = new List<BodyRow>()
+            //                    //{
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Sale Before VAT"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "2",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 6.40",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Discount"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = ""
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = ""
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 0.00",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Sale After Discount"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "2",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 6.40",
+            //                    //                Align = "Right"
+            //                    //            }
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total VAT"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "2",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 0.64",
+            //                    //                Align = "Right"
+            //                    //            },
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Sale After VAT"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 7.04",
+            //                    //                Align = "Right"
+            //                    //            },
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Repayment"
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 0.00",
+            //                    //                Align = "Right"
+            //                    //            },
+            //                    //        }
+            //                    //    },
+            //                    //    new BodyRow()
+            //                    //    {
+            //                    //        BodyColumns = new List<BodyColumn>()
+            //                    //        {
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "Total Sale Transaction Summary Total Sale Transaction Summary Total Sale Transaction Summary Total Sale Transaction Summary",
+            //                    //                Bold = true,
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "",
+            //                    //            },
+            //                    //            new BodyColumn()
+            //                    //            {
+            //                    //                Text = "$ 7.04",
+            //                    //                Align = "Right"
+            //                    //            },
+            //                    //        }
+            //                    //    },
+            //                    //}
+            //                    //            };
+
+
+            //                    //            List<PrintTemplateModel> ff = new List<PrintTemplateModel>();
+            //                    //            ff.Add(summaryShift);
+            //                    //            ff.Add(handleBy);
+            //                    //            ff.Add(adminadmin);
+            //                    //            ff.Add(cashCollectionStatus);
+            //                    //            ff.Add(paymentCollectionSummary);
+            //                    //            ff.Add(saleTransactionSummary);
+
+
+
+            //                    //PrintTemplate printTemplate = new PrintTemplate(PrintTemplate);
+            //                    //dialog.PrintVisual(printTemplate, "Test Print Template");
+            //                });
+            //            };
+            //            worker.RunWorkerCompleted += (s, e) =>
+            //            {
+            //                //Notify Back to sender
+            //                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
+            //            };
+            //            worker.RunWorkerAsync();
+
+            //            break;
+            //        case "cut":
+            //            PrintDocument printDocumentForCut = new PrintDocument();
+            //            printDocumentForCut.PrinterSettings.PrinterName = "Printer Name";
+
+            //            //cut command
+            //            string GS = Convert.ToString((char)29);
+            //            string ESC = Convert.ToString((char)27);
+            //            string COMMAND = "";
+            //            COMMAND = ESC + "@";
+            //            COMMAND += GS + "V" + (char)1;
+            //            bool _cutted = RawPrinterHelper.SendStringToPrinter(printDocumentForCut.PrinterSettings.PrinterName, COMMAND);
+            //            if (_cutted)
+            //            {
+            //                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Cut Success", clientId);
+            //            }
+            //            printDocumentForCut.Dispose();
+            //            break;
+            //        case "printandkickcashdrawer":
+            //            break;
+            //        case "kickcashdrawer":
+            //            PrintDocument printDocument = new PrintDocument();
+            //            printDocument.PrinterSettings.PrinterName = "Printer Name";
+
+            //            //open cash drawer command
+            //            const string ESC1 = "\u001B";
+            //            const string p = "\u0070";
+            //            const string m = "\u0000";
+            //            const string t1 = "\u0025";
+            //            const string t2 = "\u0250";
+            //            const string openTillCommand = ESC1 + p + m + t1 + t2;
+            //            bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+            //            if (_cashDrawerOpened)
+            //            {
+            //                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Cash Drawer Opened", clientId);
+            //            }
+            //            printDocument.Dispose();
+            //            break;
+            //    }
+        }
     }
 }

@@ -35,10 +35,10 @@ namespace WPFPrintingService
 
                     //create header
                     TextBlock headerText = new TextBlock();
-                    headerText.Background = getColor(models[i].Header.Background);
+                    headerText.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(models[i].Header.Background));
                     headerText.Text = models[i].Header.Text;
                     headerText.TextAlignment = getTextAlign(models[i].Header.Align);
-                    headerText.Foreground = getColor(models[i].Header.Foreground);
+                    headerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(models[i].Header.Foreground));
                     headerText.VerticalAlignment = VerticalAlignment.Center;
                     headerText.FontSize = 22;
                     headerText.Padding = new Thickness(10);
@@ -101,21 +101,6 @@ namespace WPFPrintingService
 
         }
 
-        private static Brush getColor(string color)
-        {
-            switch (color.ToLower())
-            {
-                case "black":
-                    return Brushes.Black;
-                case "white":
-                    return Brushes.White;
-                case "gray":
-                    return Brushes.Gray;
-                default:
-                    return Brushes.Transparent;
-            }
-        }
-
         private static TextAlignment getTextAlign(string align)
         {
             switch (align.ToLower())
@@ -124,6 +109,8 @@ namespace WPFPrintingService
                     return TextAlignment.Center;
                 case "right":
                     return TextAlignment.Right;
+                    case "left":
+                    return TextAlignment.Left;
                 default:
                     return TextAlignment.Left;
             }

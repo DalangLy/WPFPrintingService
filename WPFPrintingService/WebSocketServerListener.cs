@@ -21,14 +21,14 @@ namespace WPFPrintingService
         protected override void OnOpen()
         {
             base.OnOpen();
-            System.Console.WriteLine(Context.QueryString["name"]);
-            System.Console.WriteLine(Sessions);
-            System.Console.WriteLine(State);
-            System.Console.WriteLine(StartTime);
-            System.Console.WriteLine(Protocol);
-            System.Console.WriteLine(OriginValidator);
-            System.Console.WriteLine(ID);
-            System.Console.WriteLine(EmitOnPing);
+            //System.Console.WriteLine(Context.QueryString["name"]);
+            //System.Console.WriteLine(Sessions);
+            //System.Console.WriteLine(State);
+            //System.Console.WriteLine(StartTime);
+            //System.Console.WriteLine(Protocol);
+            //System.Console.WriteLine(OriginValidator);
+            //System.Console.WriteLine(ID);
+            //System.Console.WriteLine(EmitOnPing);
             
 
             this._onClientConnected(this, EventArgs.Empty, _getClientId() ,_getClientIP(), _getClientName());

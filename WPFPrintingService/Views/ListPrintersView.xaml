@@ -81,7 +81,7 @@
             <DataGridTemplateColumn Header="Online" Width="80">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding IsOnline,Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                        <TextBlock Text="{Binding IsOnline, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <ToolTip>
                                     <TextBlock Text="{Binding IsOnline,Converter={local:ConvertBooleanToYesNo}}"/>
@@ -94,10 +94,10 @@
             <DataGridTemplateColumn Header="Is Printing" Width="80">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding IsPrinting,Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                        <TextBlock Text="{Binding IsPrinting, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <ToolTip>
-                                    <TextBlock Text="{Binding IsPrinting}"/>
+                                    <TextBlock Text="{Binding IsPrinting, Converter={local:ConvertBooleanToYesNo}}"/>
                                 </ToolTip>
                             </TextBlock.ToolTip>
                         </TextBlock>
@@ -107,10 +107,10 @@
             <DataGridTemplateColumn Header="Door Opened" Width="80">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding IsDoorOpened}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                        <TextBlock Text="{Binding IsDoorOpened, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <ToolTip>
-                                    <TextBlock Text="{Binding IsDoorOpened}"/>
+                                    <TextBlock Text="{Binding IsDoorOpened, Converter={local:ConvertBooleanToYesNo}}"/>
                                 </ToolTip>
                             </TextBlock.ToolTip>
                         </TextBlock>
@@ -120,10 +120,10 @@
             <DataGridTemplateColumn Header="Is Busy" Width="80">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding IsBusy}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
+                        <TextBlock Text="{Binding IsBusy, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <ToolTip>
-                                    <TextBlock Text="{Binding IsBusy}"/>
+                                    <TextBlock Text="{Binding IsBusy, Converter={local:ConvertBooleanToYesNo}}"/>
                                 </ToolTip>
                             </TextBlock.ToolTip>
                         </TextBlock>

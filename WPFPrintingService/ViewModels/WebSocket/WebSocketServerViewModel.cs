@@ -114,57 +114,97 @@ namespace WPFPrintingService
 
                 switch (requestCode.Code.ToLower())
                 {
-                    //case "requestprinterslist":
-                    //    if (WebSocketServer != null && WebSocketServer.IsListening)
-                    //    {
-                    //        List<PrinterModel> printers = new List<PrinterModel>();
-                    //        LocalPrintServer printServer = new LocalPrintServer();
-                    //        PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                    //        foreach (PrintQueue printer in printQueues)
-                    //        {
-                    //            printers.Add(new PrinterModel()
-                    //            {
-                    //                Name = printer.Name,
-                    //                HasToner = printer.HasToner,
-                    //                IsBusy = printer.IsBusy,
-                    //                IsDoorOpened = printer.IsDoorOpened,
-                    //                IsOnline = !printer.IsOffline,
-                    //                IsPrinting = printer.IsPrinting,
-                    //            });
-                    //        }
-                    //        Debug.WriteLine("Hllll");
-                    //        var json = System.Text.Json.JsonSerializer.Serialize(printers);
-                    //        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
+                    case "requestprinterslist":
+                        if (WebSocketServer != null && WebSocketServer.IsListening)
+                        {
+                            List<PrinterModel> printers = new List<PrinterModel>();
+                            LocalPrintServer printServer = new LocalPrintServer();
+                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                            foreach (PrintQueue printer in printQueues)
+                            {
+                                printers.Add(new PrinterModel()
+                                {
+                                    Name = printer.Name,
+                                    HasToner = printer.HasToner,
+                                    IsBusy = printer.IsBusy,
+                                    IsDoorOpened = printer.IsDoorOpened,
+                                    IsOnline = !printer.IsOffline,
+                                    IsPrinting = printer.IsPrinting,
+                                });
+                            }
+                            Debug.WriteLine("Hllll");
+                            var json = System.Text.Json.JsonSerializer.Serialize(printers);
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
 
-                    //        //update status
-                    //        this.ServerStatus += $"\nClient Request Printers List";
-                    //    }
-                    //    break;
-                    //case "sendtoeveryone":
-                    //    //deserialize message
-                    //    RequestMessage requestMessage = RequestMessage.FromJson(message);
+                            //update status
+                            this.ServerStatus += $"\nClient Request Printers List";
+                        }
+                        break;
+                    case "sendtoeveryone":
+                        try
+                        {
+                            //deserialize message
+                            RequestMessage requestMessage = RequestMessage.FromJson(message);
+                            //broadcast to everyone
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(requestMessage.Message);
 
-                    //    //broadcast to everyone
-                    //    this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(requestMessage.Message);
+                            //notify back tosender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
+                        }
+                        catch (Exception)
+                        {
+                            //notify back tosender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("No Message to send", clientId);
+                        }
+                        break;
+                    case "sendtoserver":
+                        try
+                        {
+                            //deserialize message
+                            RequestMessage requestMessageForServer = RequestMessage.FromJson(message);
 
-                    //    //notify back tosender
-                    //    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
-                    //    break;
-                    //case "sendtoserver":
-                        
-                    //    //deserialize message
-                    //    RequestMessage requestMessageForServer = RequestMessage.FromJson(message);
+                            //update text status
+                            this.ServerStatus += $"\n{clientName} Said : {requestMessageForServer.Message}";
 
-                    //    //update text status
-                    //    this.ServerStatus += $"\n{clientName} Said : {requestMessageForServer.Message}";
+                            //notify back to sender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
+                        }
+                        catch (Exception)
+                        {
+                            //notify back to sender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("No Message to send", clientId);
+                        }
+                        break;
+                    case "print":
+                        //process print
+                        //ProcessPrint(message, clientId);
+                        break;
+                    default:
+                        if (WebSocketServer != null && WebSocketServer.IsListening)
+                        {
+                            List<PrinterModel> printers = new List<PrinterModel>();
+                            LocalPrintServer printServer = new LocalPrintServer();
+                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                            foreach (PrintQueue printer in printQueues)
+                            {
+                                printers.Add(new PrinterModel()
+                                {
+                                    Name = printer.Name,
+                                    HasToner = printer.HasToner,
+                                    IsBusy = printer.IsBusy,
+                                    IsDoorOpened = printer.IsDoorOpened,
+                                    IsOnline = !printer.IsOffline,
+                                    IsPrinting = printer.IsPrinting,
+                                });
+                            }
+                            Debug.WriteLine("Hllll");
+                            var json = System.Text.Json.JsonSerializer.Serialize(printers);
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
 
-                    //    //notify back to sender
-                    //    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
-                    //    break;
-                    //case "print":
-                    //    //process print
-                    //    ProcessPrint(message, clientId);
-                    //    break;
+                            //update status
+                            this.ServerStatus += $"\nClient Request Printers List";
+                        }
+                        break;
                 }
             }
             catch (Exception ex)

@@ -21,8 +21,8 @@ namespace WPFPrintingService
         public string? PrinterName { get; set; }
         [JsonProperty("printMethod")]
         public string? PrintMethod { get; set; }
-        [JsonProperty("templateName")]
-        public string? TemplateName { get; set; }
+        [JsonProperty("printData")]
+        public string? PrintData { get; set; }
     }
 
     internal partial class RequestPrintData

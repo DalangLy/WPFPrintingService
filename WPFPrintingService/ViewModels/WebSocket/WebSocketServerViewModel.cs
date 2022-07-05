@@ -198,8 +198,17 @@ namespace WPFPrintingService
                             PrintDialog dialog = new PrintDialog();
                             dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
 
+                            try
+                            {
+                                List<PrintTemplateModel> templateModel = PrintTemplateModel.FromJson(requestPrintData.PrintData.ToString());
 
-
+                            }
+                            catch (Exception)
+                            {
+                                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Wrong Print format", clientId);
+                                return;
+                            }
+                            
 
 
                             //create template

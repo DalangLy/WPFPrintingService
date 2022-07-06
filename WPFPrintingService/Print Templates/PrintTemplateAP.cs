@@ -51,10 +51,6 @@ namespace WPFPrintingService
                     {
                         //create body row
                         Grid bodyGrid = new Grid();
-
-                        //grid border
-                        bodyGrid.
-
                         bodyGrid.RowDefinitions.Add(new RowDefinition());
 
                         //create body column

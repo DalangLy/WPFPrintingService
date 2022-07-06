@@ -5,9 +5,9 @@ namespace WPFPrintingService
 {
     public partial class PrintTemplate : UserControl
     {
-        public List<PrintTemplateModel> PrintTemplateModels { get; set; }
+        public List<PrintDatum> PrintTemplateModels { get; set; }
 
-        public PrintTemplate(List<PrintTemplateModel> MyList)
+        public PrintTemplate(List<PrintDatum> MyList)
         {
             
             PrintTemplateModels = MyList;

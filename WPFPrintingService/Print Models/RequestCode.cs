@@ -5,7 +5,7 @@ namespace WPFPrintingService
     public partial class RequestCode
     {
         [JsonProperty("code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
     }
 
     public partial class RequestCode

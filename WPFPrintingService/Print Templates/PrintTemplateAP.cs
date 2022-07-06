@@ -8,19 +8,19 @@ namespace WPFPrintingService
     internal class PrintTemplateAP
     {
 
-        public static List<PrintTemplateModel> GetAutoGrid(DependencyObject obj)
+        public static List<PrintDatum> GetAutoGrid(DependencyObject obj)
         {
-            return (List<PrintTemplateModel>)obj.GetValue(AutoGridProperty);
+            return (List<PrintDatum>)obj.GetValue(AutoGridProperty);
         }
 
-        public static void SetAutoGrid(DependencyObject obj, PrintTemplateModel value)
+        public static void SetAutoGrid(DependencyObject obj, PrintDatum value)
         {
             obj.SetValue(AutoGridProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for AutoGrid.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AutoGridProperty =
-            DependencyProperty.RegisterAttached("AutoGrid", typeof(List<PrintTemplateModel>), typeof(PrintTemplateAP), new UIPropertyMetadata(null, OnPropertyChange, OnPropertyUpdate));
+            DependencyProperty.RegisterAttached("AutoGrid", typeof(List<PrintDatum>), typeof(PrintTemplateAP), new UIPropertyMetadata(null, OnPropertyChange, OnPropertyUpdate));
 
         private static object OnPropertyUpdate(DependencyObject d, object baseValue)
         {
@@ -28,7 +28,7 @@ namespace WPFPrintingService
 
             if (baseValue == null) return baseValue;
 
-            List<PrintTemplateModel> models = (List<PrintTemplateModel>)baseValue;
+            List<PrintDatum> models = (List<PrintDatum>)baseValue;
 
                 for (int i = 0; i < models.Count; i++)
                 {
@@ -51,6 +51,10 @@ namespace WPFPrintingService
                     {
                         //create body row
                         Grid bodyGrid = new Grid();
+
+                        //grid border
+                        bodyGrid.
+
                         bodyGrid.RowDefinitions.Add(new RowDefinition());
 
                         //create body column

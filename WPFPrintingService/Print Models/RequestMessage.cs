@@ -5,7 +5,7 @@ namespace WPFPrintingService
     public partial class RequestMessage
     {
         [JsonProperty("message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 
     public partial class RequestMessage

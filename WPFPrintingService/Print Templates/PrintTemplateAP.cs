@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -37,7 +38,7 @@ namespace WPFPrintingService
                     TextBlock headerText = new TextBlock();
                     headerText.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(models[i].Header.Background));
                     headerText.Text = models[i].Header.Text;
-                    headerText.TextAlignment = getTextAlign(models[i].Header.Align);
+                    headerText.TextAlignment = _getTextAlign(models[i].Header.Align);
                     headerText.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(models[i].Header.Foreground));
                     headerText.VerticalAlignment = VerticalAlignment.Center;
                     headerText.FontSize = 22;
@@ -63,7 +64,7 @@ namespace WPFPrintingService
                             TextBlock bodyText = new TextBlock();
                             string text = models[i].Body.BodyRows[j].BodyColumns[k].Text;
                             bodyText.Text = text;
-                            bodyText.TextAlignment = getTextAlign(models[i].Body.BodyRows[j].BodyColumns[k].Align);
+                            bodyText.TextAlignment = _getTextAlign(models[i].Body.BodyRows[j].BodyColumns[k].Align);
                             bodyText.Padding = new Thickness(10, 5, 10, 5);
                             bodyText.FontWeight = models[i].Body.BodyRows[j].BodyColumns[k].Bold ? FontWeights.Bold : FontWeights.Regular;
                             bodyGrid.Children.Add(bodyText);
@@ -101,19 +102,13 @@ namespace WPFPrintingService
 
         }
 
-        private static TextAlignment getTextAlign(string align)
+        private static TextAlignment _getTextAlign(string align)
         {
-            switch (align.ToLower())
-            {
-                case "center":
-                    return TextAlignment.Center;
-                case "right":
-                    return TextAlignment.Right;
-                    case "left":
-                    return TextAlignment.Left;
-                default:
-                    return TextAlignment.Left;
-            }
+            TextAlignment textAlignment = TextAlignment.Center;
+
+            Enum.TryParse(align, true, out textAlignment);
+
+            return textAlignment;
         }
     }
 }

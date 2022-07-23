@@ -37,8 +37,8 @@
             <ColumnDefinition Width="140"/>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="110"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -453,6 +453,19 @@
             Style="{StaticResource MaterialDesignHeadline6TextBlock}"
         />
 
+
+        <Button 
+            Grid.Row="1" 
+            Grid.Column="4"
+            Height="48"
+            Cursor="Hand"
+            VerticalAlignment="Center"
+            Margin="5">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Download Template Json"/>
+                <materialDesign:PackIcon Kind="Download" Margin="4 .5 0 0"/>
+            </StackPanel>
+        </Button>
 
         <!--Button Refresh Printer-->
         <Button

@@ -117,7 +117,7 @@ namespace WPFPrintingService
                         _checkPrintMethod(message, clientId);
                         break;
                     case "sendtoeveryone":
-                        _sentMessageToEveryone(message, clientId);
+                        _sentMessageToEveryone(message, clientId, clientName);
                         break;
                     case "sendtoserver":
                         _sentMessageToServer(clientName, message, clientId);
@@ -126,6 +126,7 @@ namespace WPFPrintingService
                         _sendPrinterListToRequestedClient(clientId, clientName);
                         break;
                     case "ping":
+                        _pingFromClient(clientId, clientName);
                         break;
                     default:
                         throw new CustomException("the request code is not valid");
@@ -141,13 +142,24 @@ namespace WPFPrintingService
             }
         }
 
-        private void _sentMessageToEveryone(string message, string clientId)
+        private void _pingFromClient(string clientId, string clientName)
+        {
+            //update text status
+            this.ServerStatus += $"\nPing From : {clientName}";
+
+            //notify back to sender
+            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Server Replied", clientId);
+        }
+
+        private void _sentMessageToEveryone(string message, string clientId, string clientName)
         {
             try
             {
                 MessageModel? messageModel = MessageModel.FromJson(message);
                 if (messageModel == null) throw new CustomException("message must be valid");
 
+                //update text status
+                this.ServerStatus += $"\n{clientName} Has Sent Message to Everyone : {messageModel.Message}";
 
                 //broadcast to everyone
                 this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(messageModel.Message);

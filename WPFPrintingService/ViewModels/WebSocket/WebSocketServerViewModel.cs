@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -107,12 +108,15 @@ namespace WPFPrintingService
         {
             try
             {
-                RequestCode requestCode = RequestCode.FromJson(message);
+                RequestTypeModel requestTypeModel = RequestTypeModel.FromJson(message);
 
-                if (requestCode.Code == null) return;
+                string requestTypeInLowercase = requestTypeModel.RequestType.ToLower();
 
-                switch (requestCode.Code.ToLower())
+                switch (requestTypeInLowercase)
                 {
+                    case "ping":
+                        //do ping to client
+                        break;
                     case "requestprinterslist":
                         if (WebSocketServer != null && WebSocketServer.IsListening)
                         {
@@ -143,7 +147,7 @@ namespace WPFPrintingService
                         try
                         {
                             //deserialize message
-                            RequestMessage requestMessage = RequestMessage.FromJson(message);
+                            RequestMessageModel requestMessage = RequestMessageModel.FromJson(message);
                             //broadcast to everyone
                             this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(requestMessage.Message);
 
@@ -153,14 +157,14 @@ namespace WPFPrintingService
                         catch (Exception)
                         {
                             //notify back tosender
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("No Message to send", clientId);
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Request Json Syntax Incorrect", clientId);
                         }
                         break;
                     case "sendtoserver":
                         try
                         {
                             //deserialize message
-                            RequestMessage requestMessageForServer = RequestMessage.FromJson(message);
+                            RequestMessageModel requestMessageForServer = RequestMessageModel.FromJson(message);
 
                             //update text status
                             this.ServerStatus += $"\n{clientName} Said : {requestMessageForServer.Message}";
@@ -171,7 +175,7 @@ namespace WPFPrintingService
                         catch (Exception)
                         {
                             //notify back to sender
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("No Message to send", clientId);
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Request Json Syntax Incorrect", clientId);
                         }
                         break;
                     case "print":
@@ -179,36 +183,13 @@ namespace WPFPrintingService
                         ProcessPrint(message, clientId);
                         break;
                     default:
-                        if (WebSocketServer != null && WebSocketServer.IsListening)
-                        {
-                            List<PrinterModel> printers = new List<PrinterModel>();
-                            LocalPrintServer printServer = new LocalPrintServer();
-                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                            foreach (PrintQueue printer in printQueues)
-                            {
-                                printers.Add(new PrinterModel()
-                                {
-                                    Name = printer.Name,
-                                    HasToner = printer.HasToner,
-                                    IsBusy = printer.IsBusy,
-                                    IsDoorOpened = printer.IsDoorOpened,
-                                    IsOnline = !printer.IsOffline,
-                                    IsPrinting = printer.IsPrinting,
-                                });
-                            }
-                            Debug.WriteLine("Hllll");
-                            var json = System.Text.Json.JsonSerializer.Serialize(printers);
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
-
-                            //update status
-                            this.ServerStatus += $"\nClient Request Printers List";
-                        }
+                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("incorrect request type", clientId);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"Wrong Code : {ex.Message}", clientId);
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"Wrong request json syntax : {ex.Message}", clientId);
             }
         }
 
@@ -217,24 +198,32 @@ namespace WPFPrintingService
             try
             {
                 //deserialize request print
-                RequestPrintMeta requestPrintMeta = RequestPrintMeta.FromJson(message);
+                RequestPrintMetaModel requestPrintMeta = RequestPrintMetaModel.FromJson(message);
                 string printerName = requestPrintMeta.PrintMeta.PrinterName;
+
+                JObject json = JObject.Parse(message);
+                var printMeta = json.Last;
+                var ff = printMeta.First;
+                var printTemplateLayout = ff.Last;
+                var printTemplateLayoutString = printTemplateLayout.First;
+                var gg = printTemplateLayoutString.ToString();
+
+                string printMethodInLower = requestPrintMeta.PrintMeta.PrintMethod.ToLower();
 
                 try
                 {
                     //deserialize print data
-                    RequestPrintData requestPrintData = RequestPrintData.FromJson(message);
-                    List<PrintDatum> printData = requestPrintData.PrintMeta.PrintData;
-
+                    PrintTemplateModel printTemplateModel = PrintTemplateModel.FromJson("{ 'printTemplateLayout': { 'rows': [ { 'row': { 'rowBorderTop': 2, 'rowBorderRight': 2, 'rowBorderBottom': 2, 'rowBorderLeft': 2, 'rowBackground': 'red', 'columns': [ { 'column': { 'content': 'Row 1 Col 1', 'rowSpan': 2 } }, { 'column': { 'content': 'Row 1 Col 2', 'columnWidth': 200, 'columnBorderTop': 2, 'columnBorderRight': 2, 'columnBorderBottom': 2, 'columnBorderLeft': 2 } } ] } }, { 'row': { 'columns': [ { 'column': { 'content': 'Row 2 Col 2' } } ] } } ] } }");
+                    
                     //process print
-                    switch (requestPrintMeta.PrintMeta.PrintMethod.ToLower())
+                    switch (printMethodInLower)
                     {
                         case "printandcut":
                             //do print and cut process
-                            _doPrintAndCut(printData, printerName, clientId);
+                            _doPrintAndCut(printTemplateModel, printerName, clientId);
                             break;
                         case "printandkickcashdrawer":
-                            _doPrintAndKickCashDrawer(printData, printerName, clientId);
+                            _doPrintAndKickCashDrawer(printTemplateModel, printerName, clientId);
                             break;
                         case "cut":
                             _doCut(printerName, clientId);
@@ -251,11 +240,11 @@ namespace WPFPrintingService
             }
             catch (Exception)
             {
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Print Meta Format", clientId);
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Incorrect Print Meta Format", clientId);
             }
         }
 
-        private void _doPrintAndCut(List<PrintDatum> printData, string printerName, string clientId, string documentName = "No Name")
+        private void _doPrintAndCut(PrintTemplateModel printTemplateModel, string printerName, string clientId, string documentName = "No Name")
         {
             //do print and cut process
             BackgroundWorker worker = new BackgroundWorker();
@@ -268,7 +257,7 @@ namespace WPFPrintingService
                     PrintDialog dialog = new PrintDialog();
                     dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == printerName);
 
-                    PrintTemplate printTemplate = new PrintTemplate(printData);
+                    PrintTemplate printTemplate = new PrintTemplate(printTemplateModel);
                     dialog.PrintVisual(printTemplate, documentName);
                 });
             };
@@ -280,7 +269,7 @@ namespace WPFPrintingService
             worker.RunWorkerAsync();
         }
 
-        private void _doPrintAndKickCashDrawer(List<PrintDatum> printData, string printerName, string clientId, string documentName = "No Name")
+        private void _doPrintAndKickCashDrawer(PrintTemplateModel printTemplateModel, string printerName, string clientId, string documentName = "No Name")
         {
             //do print and cut process
             BackgroundWorker worker = new BackgroundWorker();
@@ -293,7 +282,7 @@ namespace WPFPrintingService
                     PrintDialog dialog = new PrintDialog();
                     dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == printerName);
 
-                    PrintTemplate printTemplate = new PrintTemplate(printData);
+                    PrintTemplate printTemplate = new PrintTemplate(printTemplateModel);
                     dialog.PrintVisual(printTemplate, documentName);
 
                     //do kick cash drawer process

@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace WPFPrintingService
 {
     public partial class PrintTemplate : UserControl
     {
-        public List<PrintDatum> PrintTemplateModels { get; set; }
+        public PrintTemplateModel PrintTemplateModel { get; set; } = new PrintTemplateModel();
 
-        public PrintTemplate(List<PrintDatum> MyList)
+
+        public PrintTemplate(PrintTemplateModel PrintTemplate)
         {
-            
-            PrintTemplateModels = MyList;
-
             DataContext = this;
+
+
+            PrintTemplateModel = PrintTemplate;
 
             InitializeComponent();
         }

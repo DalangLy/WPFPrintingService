@@ -2,7 +2,7 @@
 
 namespace WPFPrintingService
 {
-    public partial class RequestPrintMeta
+    public partial class RequestPrintMetaModel
     {
         [JsonProperty("printMeta")]
         public PrintMeta PrintMeta { get; set; } = new PrintMeta();
@@ -17,8 +17,8 @@ namespace WPFPrintingService
         public string PrinterName { get; set; } = string.Empty;
     }
 
-    public partial class RequestPrintMeta
+    public partial class RequestPrintMetaModel
     {
-        public static RequestPrintMeta FromJson(string json) => JsonConvert.DeserializeObject<RequestPrintMeta>(json, Converter.Settings);
+        public static RequestPrintMetaModel FromJson(string json) => JsonConvert.DeserializeObject<RequestPrintMetaModel>(json, Converter.Settings);
     }
 }

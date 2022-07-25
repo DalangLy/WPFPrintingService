@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WPFPrintingService
 {
-    public partial class PrintTemplateModel
+    public partial class PrintTemplateLayoutModel
     {
         [JsonProperty("printTemplateLayout")]
         public PrintTemplateLayout PrintTemplateLayout { get; set; } = new PrintTemplateLayout();
@@ -12,31 +12,31 @@ namespace WPFPrintingService
     public partial class PrintTemplateLayout
     {
         [JsonProperty("paddingTop")]
-        public long PaddingTop { get; set; } = 0;
+        public long PaddingTop { get; set; }
 
         [JsonProperty("paddingRight")]
-        public long PaddingRight { get; set; } = 0;
+        public long PaddingRight { get; set; }
 
         [JsonProperty("paddingBottom")]
-        public long PaddingBottom { get; set; } = 0;
+        public long PaddingBottom { get; set; }
 
         [JsonProperty("paddingLeft")]
-        public long PaddingLeft { get; set; } = 0;
+        public long PaddingLeft { get; set; }
 
         [JsonProperty("rowGap")]
-        public long RowGap { get; set; } = 10;
+        public long RowGap { get; set; }
 
         [JsonProperty("paperWidth")]
-        public long PaperWidth { get; set; } = 500;
+        public long PaperWidth { get; set; }
 
         [JsonProperty("paperBackground")]
-        public string PaperBackground { get; set; } = "transparent";
+        public string PaperBackground { get; set; } = string.Empty;
 
         [JsonProperty("fontSize")]
-        public long FontSize { get; set; } = 12;
+        public long FontSize { get; set; }
 
         [JsonProperty("fontFamily")]
-        public string FontFamily { get; set; } = "arial";
+        public string FontFamily { get; set; } = string.Empty;
 
         [JsonProperty("foreground")]
         public string Foreground { get; set; } = string.Empty;
@@ -54,52 +54,52 @@ namespace WPFPrintingService
     public partial class RowRow
     {
         [JsonProperty("rowMarginTop")]
-        public long RowMarginTop { get; set; } = 0;
+        public long RowMarginTop { get; set; }
 
         [JsonProperty("rowMarginRight")]
-        public long RowMarginRight { get; set; } = 0;
+        public long RowMarginRight { get; set; }
 
         [JsonProperty("rowMarginBottom")]
-        public long RowMarginBottom { get; set; } = 0;
+        public long RowMarginBottom { get; set; }
 
         [JsonProperty("rowMarginLeft")]
-        public long RowMarginLeft { get; set; } = 0;
+        public long RowMarginLeft { get; set; }
 
         [JsonProperty("rowPaddingTop")]
-        public long RowPaddingTop { get; set; } = 0;
+        public long RowPaddingTop { get; set; }
 
         [JsonProperty("rowPaddingRight")]
-        public long RowPaddingRight { get; set; } = 0;
+        public long RowPaddingRight { get; set; }
 
         [JsonProperty("rowPaddingBottom")]
-        public long RowPaddingBottom { get; set; } = 0;
+        public long RowPaddingBottom { get; set; }
 
         [JsonProperty("rowPaddingLeft")]
-        public long RowPaddingLeft { get; set; } = 0;
+        public long RowPaddingLeft { get; set; }
 
         [JsonProperty("rowBorderTop")]
-        public long RowBorderTop { get; set; } = 0;
+        public long RowBorderTop { get; set; }
 
         [JsonProperty("rowBorderRight")]
-        public long RowBorderRight { get; set; } = 0;
+        public long RowBorderRight { get; set; }
 
         [JsonProperty("rowBorderBottom")]
-        public long RowBorderBottom { get; set; } = 0;
+        public long RowBorderBottom { get; set; }
 
         [JsonProperty("rowBorderLeft")]
-        public long RowBorderLeft { get; set; } = 0;
+        public long RowBorderLeft { get; set; }
 
         [JsonProperty("rowBackground")]
-        public string RowBackground { get; set; } = "transparent";
+        public string RowBackground { get; set; } = string.Empty;
 
         [JsonProperty("rowHeight")]
-        public long RowHeight { get; set; } = 0;
+        public long RowHeight { get; set; }
 
         [JsonProperty("columnVerticalAlign")]
-        public string ColumnVerticalAlign { get; set; } = "stretch";
+        public string ColumnVerticalAlign { get; set; } = string.Empty;
 
         [JsonProperty("columnHorizontalAlign")]
-        public string ColumnHorizontalAlign { get; set; } = "stretch";
+        public string ColumnHorizontalAlign { get; set; } = string.Empty;
 
         [JsonProperty("columns")]
         public List<ColumnElement> Columns { get; set; } = new List<ColumnElement>();
@@ -117,7 +117,7 @@ namespace WPFPrintingService
         public string Content { get; set; } = string.Empty;
 
         [JsonProperty("contentType")]
-        public string ContentType { get; set; } = "text";
+        public string ContentType { get; set; } = string.Empty;
 
         [JsonProperty("qrCodeLogo")]
         public string QrCodeLogo { get; set; } = string.Empty;
@@ -126,86 +126,91 @@ namespace WPFPrintingService
         public bool Bold { get; set; }
 
         [JsonProperty("foreground")]
-        public string Foreground { get; set; } = "black";
+        public string Foreground { get; set; } = string.Empty;
 
         [JsonProperty("fontSize")]
-        public long FontSize { get; set; } = 0;
+        public long FontSize { get; set; }
 
         [JsonProperty("fontFamily")]
         public string FontFamily { get; set; } = string.Empty;
 
         [JsonProperty("contentWidth")]
-        public long ContentWidth { get; set; } = 0;
+        public long ContentWidth { get; set; }
 
         [JsonProperty("contentHeight")]
-        public long ContentHeight { get; set; } = 0;
+        public long ContentHeight { get; set; }
 
         [JsonProperty("contentHorizontalAlign")]
-        public string ContentHorizontalAlign { get; set; } = "stretch";
+        public string ContentHorizontalAlign { get; set; } = string.Empty;
 
         [JsonProperty("contentVerticalAlign")]
-        public string ContentVerticalAlign { get; set; } = "stretch";
+        public string ContentVerticalAlign { get; set; } = string.Empty;
 
         [JsonProperty("columnBackground")]
-        public string ColumnBackground { get; set; } = "transparent";
+        public string ColumnBackground { get; set; } = string.Empty;
 
         [JsonProperty("columnHorizontalAlign")]
-        public string ColumnHorizontalAlign { get; set; } = "stretch";
+        public string ColumnHorizontalAlign { get; set; } = string.Empty;
 
         [JsonProperty("columnVerticalAlign")]
-        public string ColumnVerticalAlign { get; set; } = "stretch";
+        public string ColumnVerticalAlign { get; set; } = string.Empty;
 
         [JsonProperty("columnMarginTop")]
-        public long ColumnMarginTop { get; set; } = 0;
+        public long ColumnMarginTop { get; set; }
 
         [JsonProperty("columnMarginRight")]
-        public long ColumnMarginRight { get; set; } = 0;
+        public long ColumnMarginRight { get; set; }
 
         [JsonProperty("columnMarginBottom")]
-        public long ColumnMarginBottom { get; set; } = 0;
+        public long ColumnMarginBottom { get; set; }
 
         [JsonProperty("columnMarginLeft")]
-        public long ColumnMarginLeft { get; set; } = 0;
+        public long ColumnMarginLeft { get; set; }
 
         [JsonProperty("columnWidth")]
-        public long ColumnWidth { get; set; } = 0;
+        public long ColumnWidth { get; set; }
 
         [JsonProperty("columnHeight")]
-        public long ColumnHeight { get; set; } = 0;
+        public long ColumnHeight { get; set; }
 
         [JsonProperty("columnPaddingTop")]
-        public long ColumnPaddingTop { get; set; } = 0;
+        public long ColumnPaddingTop { get; set; }
 
         [JsonProperty("columnPaddingRight")]
-        public long ColumnPaddingRight { get; set; } = 0;
+        public long ColumnPaddingRight { get; set; }
 
         [JsonProperty("columnPaddingBottom")]
-        public long ColumnPaddingBottom { get; set; } = 0;
+        public long ColumnPaddingBottom { get; set; }
 
         [JsonProperty("columnPaddingLeft")]
-        public long ColumnPaddingLeft { get; set; } = 0;
+        public long ColumnPaddingLeft { get; set; }
 
         [JsonProperty("columnBorderTop")]
-        public long ColumnBorderTop { get; set; } = 0;
+        public long ColumnBorderTop { get; set; }
 
         [JsonProperty("columnBorderRight")]
-        public long ColumnBorderRight { get; set; } = 0;
+        public long ColumnBorderRight { get; set; }
 
         [JsonProperty("columnBorderBottom")]
-        public long ColumnBorderBottom { get; set; } = 0;
+        public long ColumnBorderBottom { get; set; }
 
         [JsonProperty("columnBorderLeft")]
-        public long ColumnBorderLeft { get; set; } = 0;
-
-        [JsonProperty("rowSpan")]
-        public int RowSpan { get; set; } = 1;
+        public long ColumnBorderLeft { get; set; }
 
         [JsonProperty("colSpan")]
-        public int ColSpan { get; set; } = 1;
+        public int ColSpan { get; set; }
+
+        [JsonProperty("rowSpan")]
+        public int RowSpan { get; set; }
     }
 
-    public partial class PrintTemplateModel
+    public partial class PrintTemplateLayoutModel
     {
-        public static PrintTemplateModel FromJson(string json) => JsonConvert.DeserializeObject<PrintTemplateModel>(json, Converter.Settings);
+        public static PrintTemplateLayoutModel? FromJson(string json) => JsonConvert.DeserializeObject<PrintTemplateLayoutModel>(json, ModelJsonConverter.Settings);
+    }
+
+    public static class PrintTemplateLayoutSerialize
+    {
+        public static string ToJson(this PrintTemplateLayoutModel self) => JsonConvert.SerializeObject(self, ModelJsonConverter.Settings);
     }
 }

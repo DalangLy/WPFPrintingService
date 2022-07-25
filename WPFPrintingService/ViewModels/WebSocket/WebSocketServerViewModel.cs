@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Net;
@@ -108,84 +107,33 @@ namespace WPFPrintingService
         {
             try
             {
-                RequestTypeModel requestTypeModel = RequestTypeModel.FromJson(message);
+                RequestTypeModel? requestTypeModel = RequestTypeModel.FromJson(message);
+                if (requestTypeModel == null) throw new CustomException("json must be valid");
 
-                string requestTypeInLowercase = requestTypeModel.RequestType.ToLower();
-
-                switch (requestTypeInLowercase)
+                string requestType = requestTypeModel.RequestType.ToLower();
+                switch (requestType)
                 {
-                    case "ping":
-                        //do ping to client
-                        break;
-                    case "requestprinterslist":
-                        if (WebSocketServer != null && WebSocketServer.IsListening)
-                        {
-                            List<PrinterModel> printers = new List<PrinterModel>();
-                            LocalPrintServer printServer = new LocalPrintServer();
-                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                            foreach (PrintQueue printer in printQueues)
-                            {
-                                printers.Add(new PrinterModel()
-                                {
-                                    Name = printer.Name,
-                                    HasToner = printer.HasToner,
-                                    IsBusy = printer.IsBusy,
-                                    IsDoorOpened = printer.IsDoorOpened,
-                                    IsOnline = !printer.IsOffline,
-                                    IsPrinting = printer.IsPrinting,
-                                });
-                            }
-                            Debug.WriteLine("Hllll");
-                            var json = System.Text.Json.JsonSerializer.Serialize(printers);
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
-
-                            //update status
-                            this.ServerStatus += $"\nClient Request Printers List";
-                        }
+                    case "print":
+                        _checkPrintMethod(message, clientId);
                         break;
                     case "sendtoeveryone":
-                        try
-                        {
-                            //deserialize message
-                            RequestMessageModel requestMessage = RequestMessageModel.FromJson(message);
-                            //broadcast to everyone
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(requestMessage.Message);
-
-                            //notify back tosender
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
-                        }
-                        catch (Exception)
-                        {
-                            //notify back tosender
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Request Json Syntax Incorrect", clientId);
-                        }
+                        _sentMessageToEveryone(message, clientId);
                         break;
                     case "sendtoserver":
-                        try
-                        {
-                            //deserialize message
-                            RequestMessageModel requestMessageForServer = RequestMessageModel.FromJson(message);
-
-                            //update text status
-                            this.ServerStatus += $"\n{clientName} Said : {requestMessageForServer.Message}";
-
-                            //notify back to sender
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
-                        }
-                        catch (Exception)
-                        {
-                            //notify back to sender
-                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Request Json Syntax Incorrect", clientId);
-                        }
+                        _sentMessageToServer(clientName, message, clientId);
                         break;
-                    case "print":
-                        //process print
-                        ProcessPrint(message, clientId);
+                    case "requestprinterslist":
+                        _sendPrinterListToRequestedClient(clientId, clientName);
+                        break;
+                    case "ping":
                         break;
                     default:
-                        this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("incorrect request type", clientId);
-                        break;
+                        throw new CustomException("the request code is not valid");
                 }
+            }
+            catch (CustomException ex)
+            {
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(ex.Message, clientId);
             }
             catch (Exception ex)
             {
@@ -193,125 +141,249 @@ namespace WPFPrintingService
             }
         }
 
-        private void ProcessPrint(string message, string clientId)
+        private void _sentMessageToEveryone(string message, string clientId)
         {
             try
             {
-                //deserialize request print
-                RequestPrintMetaModel requestPrintMeta = RequestPrintMetaModel.FromJson(message);
-                string printerName = requestPrintMeta.PrintMeta.PrinterName;
+                MessageModel? messageModel = MessageModel.FromJson(message);
+                if (messageModel == null) throw new CustomException("message must be valid");
 
+
+                //broadcast to everyone
+                this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(messageModel.Message);
+
+                //notify back tosender
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException($"wrong message syntax : {ex.Message}");
+            }
+        }
+
+        private void _sentMessageToServer(string clientName, string message, string clientId)
+        {
+            try
+            {
+                MessageModel? messageModel = MessageModel.FromJson(message);
+                if (messageModel == null) throw new CustomException("message must be valid");
+
+
+                //update text status
+                this.ServerStatus += $"\n{clientName} Said : {messageModel.Message}";
+
+                //notify back to sender
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException($"wrong message syntax : {ex.Message}");
+            }
+        }
+
+        private void _sendPrinterListToRequestedClient(string clientId, string clientName)
+        {
+            if (WebSocketServer != null && WebSocketServer.IsListening)
+            {
+                List<PrinterModel> printers = new List<PrinterModel>();
+                LocalPrintServer printServer = new LocalPrintServer();
+                PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                foreach (PrintQueue printer in printQueues)
+                {
+                    printers.Add(new PrinterModel()
+                    {
+                        Name = printer.Name,
+                        HasToner = printer.HasToner,
+                        IsBusy = printer.IsBusy,
+                        IsDoorOpened = printer.IsDoorOpened,
+                        IsOnline = !printer.IsOffline,
+                        IsPrinting = printer.IsPrinting,
+                    });
+                }
+                var json = System.Text.Json.JsonSerializer.Serialize(printers);
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(json, clientId);
+
+                //update status
+                this.ServerStatus += $"\n{clientName} Request Printers List";
+            }
+        }
+
+        private void _checkPrintMethod(string message, string clientId)
+        {
+            try
+            {
+                PrintMetaModel? myPrintMetaModel = PrintMetaModel.FromJson(message);
+                if (myPrintMetaModel == null) throw new CustomException("print meta must be valid");
+
+                string printerName = myPrintMetaModel.PrintMeta.PrinterName;
+                if (printerName == "") throw new CustomException("printer name must be valid");
+                //find printer by name
+                ///
+                ///
+
+                string printMethod = myPrintMetaModel.PrintMeta.PrintMethod.ToLower();
+                if (printMethod == "") throw new CustomException("print method must be valid");
+
+                //deserialize print template layout
                 JObject json = JObject.Parse(message);
-                var printMeta = json.Last;
-                var ff = printMeta.First;
-                var printTemplateLayout = ff.Last;
-                var printTemplateLayoutString = printTemplateLayout.First;
-                var gg = printTemplateLayoutString.ToString();
+                JToken? printMeta = json["printMeta"];
+                if (printMeta == null) throw new CustomException("invalid print meta");
 
-                string printMethodInLower = requestPrintMeta.PrintMeta.PrintMethod.ToLower();
+                //check if print template layout is not valid
+                JToken? printTemplateLayoutObject = printMeta["printTemplateLayout"];
+                if (printTemplateLayoutObject == null || printTemplateLayoutObject.First == null) throw new CustomException("invalid print template layout");
 
-                try
+
+
+                switch (printMethod)
                 {
-                    //deserialize print data
-                    PrintTemplateModel printTemplateModel = PrintTemplateModel.FromJson("{ 'printTemplateLayout': { 'rows': [ { 'row': { 'rowBorderTop': 2, 'rowBorderRight': 2, 'rowBorderBottom': 2, 'rowBorderLeft': 2, 'rowBackground': 'red', 'columns': [ { 'column': { 'content': 'Row 1 Col 1', 'rowSpan': 2 } }, { 'column': { 'content': 'Row 1 Col 2', 'columnWidth': 200, 'columnBorderTop': 2, 'columnBorderRight': 2, 'columnBorderBottom': 2, 'columnBorderLeft': 2 } } ] } }, { 'row': { 'columns': [ { 'column': { 'content': 'Row 2 Col 2' } } ] } } ] } }");
-                    
-                    //process print
-                    switch (printMethodInLower)
-                    {
-                        case "printandcut":
-                            //do print and cut process
-                            _doPrintAndCut(printTemplateModel, printerName, clientId);
-                            break;
-                        case "printandkickcashdrawer":
-                            _doPrintAndKickCashDrawer(printTemplateModel, printerName, clientId);
-                            break;
-                        case "cut":
-                            _doCut(printerName, clientId);
-                            break;
-                        case "kickcashdrawer":
-                            _doKickCashDrawer(printerName, clientId);
-                            break;
-                    }
-                }
-                catch (Exception)
-                {
-                    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Wrong Print Data Format", clientId);
+                    case "printandcut":
+                        _printAndCut(printMeta.ToString(), printerName, clientId);
+                        break;
+                    case "cut":
+                        _doCut(printerName, clientId);
+                        break;
+                    case "printandkickcashdrawer":
+                        _printAndKickCashDrawer(printMeta.ToString(), printerName, clientId);
+                        break;
+                    case "kickcashdrawer":
+                        _doKickCashDrawer(printerName, clientId);
+                        break;
+                    default:
+                        throw new CustomException("invalid print method");
                 }
             }
-            catch (Exception)
+            catch (CustomException ex)
             {
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Incorrect Print Meta Format", clientId);
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException($"wrong print meta syntax : {ex.Message}");
             }
         }
 
-        private void _doPrintAndCut(PrintTemplateModel printTemplateModel, string printerName, string clientId, string documentName = "No Name")
+        private void _printAndCut(string printMetaJsonString, string printerName, string clientId)
         {
-            //do print and cut process
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (s, e) =>
+            try
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                //deserialize print layout model
+                PrintTemplateLayoutModel? printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printMetaJsonString);
+                if (printTemplateLayoutModel == null) throw new CustomException("Print Template Layout must be valid");
+
+
+
+
+                //process print in background
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
                 {
-                    LocalPrintServer printServer = new LocalPrintServer();
-                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                    PrintDialog dialog = new PrintDialog();
-                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == printerName);
-
-                    PrintTemplate printTemplate = new PrintTemplate(printTemplateModel);
-                    dialog.PrintVisual(printTemplate, documentName);
-                });
-            };
-            worker.RunWorkerCompleted += (s, e) =>
-            {
-                //Notify Back to sender
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
-            };
-            worker.RunWorkerAsync();
-        }
-
-        private void _doPrintAndKickCashDrawer(PrintTemplateModel printTemplateModel, string printerName, string clientId, string documentName = "No Name")
-        {
-            //do print and cut process
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (s, e) =>
-            {
-                App.Current.Dispatcher.Invoke((Action)delegate
-                {
-                    LocalPrintServer printServer = new LocalPrintServer();
-                    PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                    PrintDialog dialog = new PrintDialog();
-                    dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == printerName);
-
-                    PrintTemplate printTemplate = new PrintTemplate(printTemplateModel);
-                    dialog.PrintVisual(printTemplate, documentName);
-
-                    //do kick cash drawer process
-                    PrintDocument printDocument = new PrintDocument();
-                    printDocument.PrinterSettings.PrinterName = printerName;
-
-                    //open cash drawer command
-                    const string ESC1 = "\u001B";
-                    const string p = "\u0070";
-                    const string m = "\u0000";
-                    const string t1 = "\u0025";
-                    const string t2 = "\u0250";
-                    const string openTillCommand = ESC1 + p + m + t1 + t2;
-                    bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
-                    if (_cashDrawerOpened)
+                    App.Current.Dispatcher.Invoke((Action)delegate
                     {
+                        LocalPrintServer printServer = new LocalPrintServer();
+                        PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                        PrintDialog dialog = new PrintDialog();
+                        PrintQueue? selectedPrinter = printQueues.FirstOrDefault(x => x.Name == printerName);
+                        if (selectedPrinter == null) throw new CustomException("Printer Not Found");
+                        dialog.PrintQueue = selectedPrinter;
 
-                    }
-                    printDocument.Dispose();
-                });
-            };
-            worker.RunWorkerCompleted += (s, e) =>
+                        PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                        dialog.PrintVisual(printTemplate, "Print Document");
+                    });
+                };
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    //Notify Back to sender
+                    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print and Cut Finished", clientId);
+                };
+                worker.RunWorkerAsync();
+
+
+            }
+            catch (CustomException ex)
             {
-                //Notify Back to sender
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
-            };
-            worker.RunWorkerAsync();
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException($"wrong print template layout syntax : {ex.Message}");
+            }
         }
-    
+
+        private void _printAndKickCashDrawer(string printMetaJsonString, string printerName, string clientId)
+        {
+            try
+            {
+                //deserialize print layout model
+                PrintTemplateLayoutModel? printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printMetaJsonString);
+                if (printTemplateLayoutModel == null) throw new CustomException("Print Template Layout must be valid");
+
+
+
+
+                //process print in background
+                //do print and cut process
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, e) =>
+                {
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        LocalPrintServer printServer = new LocalPrintServer();
+                        PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                        PrintDialog dialog = new PrintDialog();
+                        PrintQueue? selectedPrinter = printQueues.FirstOrDefault(x => x.Name == printerName);
+                        if (selectedPrinter == null) throw new CustomException("Printer Not Found");
+                        dialog.PrintQueue = selectedPrinter;
+
+                        PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                        dialog.PrintVisual(printTemplate, "Print Document");
+
+                        //do kick cash drawer process
+                        PrintDocument printDocument = new PrintDocument();
+                        printDocument.PrinterSettings.PrinterName = printerName;
+
+                        //open cash drawer command
+                        const string ESC1 = "\u001B";
+                        const string p = "\u0070";
+                        const string m = "\u0000";
+                        const string t1 = "\u0025";
+                        const string t2 = "\u0250";
+                        const string openTillCommand = ESC1 + p + m + t1 + t2;
+                        bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+                        if (_cashDrawerOpened)
+                        {
+
+                        }
+                        printDocument.Dispose();
+                    });
+                };
+                worker.RunWorkerCompleted += (s, e) =>
+                {
+                    //Notify Back to sender
+                    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
+                };
+                worker.RunWorkerAsync();
+
+
+            }
+            catch (CustomException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw new CustomException($"wrong print template layout syntax : {ex.Message}");
+            }
+        }
+
         private void _doKickCashDrawer(string printerName, string clientId)
         {
             PrintDocument printDocument = new PrintDocument();

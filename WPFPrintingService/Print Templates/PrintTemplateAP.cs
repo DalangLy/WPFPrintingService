@@ -12,19 +12,19 @@ namespace WPFPrintingService
 {
     internal class PrintTemplateAP
     {
-        public static PrintTemplateModel GetAutoGrid(DependencyObject obj)
+        public static PrintTemplateLayoutModel GetAutoGrid(DependencyObject obj)
         {
-            return (PrintTemplateModel)obj.GetValue(AutoGridProperty);
+            return (PrintTemplateLayoutModel)obj.GetValue(AutoGridProperty);
         }
 
-        public static void SetAutoGrid(DependencyObject obj, PrintTemplateModel value)
+        public static void SetAutoGrid(DependencyObject obj, PrintTemplateLayoutModel value)
         {
             obj.SetValue(AutoGridProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for AutoGrid.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AutoGridProperty =
-            DependencyProperty.RegisterAttached("AutoGrid", typeof(PrintTemplateModel), typeof(PrintTemplateAP), new UIPropertyMetadata(null, OnPropertyChange, OnPropertyUpdate));
+            DependencyProperty.RegisterAttached("AutoGrid", typeof(PrintTemplateLayoutModel), typeof(PrintTemplateAP), new UIPropertyMetadata(null, OnPropertyChange, OnPropertyUpdate));
 
         private static object OnPropertyUpdate(DependencyObject d, object baseValue)
         {
@@ -32,7 +32,7 @@ namespace WPFPrintingService
 
             if (baseValue == null) return baseValue;
 
-            PrintTemplateModel printTemplate = (PrintTemplateModel)baseValue;
+            PrintTemplateLayoutModel printTemplate = (PrintTemplateLayoutModel)baseValue;
 
             long paperWidth = printTemplate.PrintTemplateLayout.PaperWidth;
             if (paperWidth > 0)
@@ -371,7 +371,7 @@ namespace WPFPrintingService
             return baseValue;
         }
 
-        private static Border _buildColumnContent(ColumnColumn column, PrintTemplateModel printTemplate)
+        private static Border _buildColumnContent(ColumnColumn column, PrintTemplateLayoutModel printTemplate)
         {
             Border contentBorder = new Border();
             long columnBorderTop = column.ColumnBorderTop;

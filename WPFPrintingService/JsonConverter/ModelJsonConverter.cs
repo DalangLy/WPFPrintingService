@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace WPFPrintingService
 {
-    internal static class Converter
+    internal static class ModelJsonConverter
     {
         public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {

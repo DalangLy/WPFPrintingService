@@ -4,10 +4,10 @@ namespace WPFPrintingService
 {
     public partial class PrintTemplate : UserControl
     {
-        public PrintTemplateModel PrintTemplateModel { get; set; } = new PrintTemplateModel();
+        public PrintTemplateLayoutModel PrintTemplateModel { get; set; } = new PrintTemplateLayoutModel();
 
 
-        public PrintTemplate(PrintTemplateModel PrintTemplate)
+        public PrintTemplate(PrintTemplateLayoutModel PrintTemplate)
         {
             DataContext = this;
 

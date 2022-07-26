@@ -262,18 +262,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1FD634A7285F2E08C35479DEA0CC7338"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2A10BCDA329ED9D82434D48B9104A4C9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_DE4BF9F9168146FC8D6E8796F1E12703"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -371,6 +359,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5F14701B0E8D37816867A7169E7AA786"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_1FD634A7285F2E08C35479DEA0CC7338"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_2A10BCDA329ED9D82434D48B9104A4C9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -493,6 +493,16 @@
                 "FrameworkVersion" = "8:.NETFramework,Version=v4.7.2"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=863262"
+                }
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_29999A40F27042C8B841F3F7AE8C51EC"
+                {
+                "Name" = "8:.NET Core"
+                "Message" = "8:[VSDNETCOREMSG]"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:https://dotnet.microsoft.com/download/dotnet-core/[NetCoreVerMajorDotMinor]"
+                "IsNETCore" = "11:TRUE"
+                "Architecture" = "2:0"
+                "Runtime" = "2:0"
                 }
             }
         }
@@ -1844,8 +1854,8 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:For Printing"
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:_15F89FABBE6742EAB5D35F61CA4200EA"
-        "ARPIconIndex" = "3:32512"
+        "ARPPRODUCTICON" = "8:_FE63226460604945A01C12BCF34E338B"
+        "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
@@ -2376,7 +2386,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DCCACFE1322D42D29F8AD3137DF0E359"
             {
-            "SourcePath" = "8:..\\WPFPrintingService\\obj\\Debug\\net6.0-windows\\WPFPrintingService.dll"
+            "SourcePath" = "8:..\\WPFPrintingService\\obj\\Release\\net6.0-windows\\WPFPrintingService.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B9BEB2A0B9B94A8F87FC7DD53D616195"

@@ -41,7 +41,7 @@
             <ColumnDefinition Width="110"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="70"/>
             <RowDefinition Height="200"/>
             <RowDefinition Height="*"/>
@@ -50,15 +50,19 @@
         </Grid.RowDefinitions>
         
         <!--Label Service-->
-        <TextBlock 
+        <StackPanel 
             Grid.Row="0" 
             Grid.Column="0"
-            Margin="5"
-            Text="Service"
-            VerticalAlignment="Center" 
-            Foreground="Red" 
-            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-        />
+            Margin="5" 
+            Orientation="Horizontal"
+            VerticalAlignment="Stretch" >
+            <materialDesign:PackIcon Kind="Server" Height="30" Width="30" Margin="0 0 10 0" VerticalAlignment="Center"/>
+            <TextBlock 
+                Text="Service"
+                VerticalAlignment="Center" 
+                Foreground="Black" 
+                Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+        </StackPanel>
         
         <!--Check box to start service on app start-->
         <CheckBox 
@@ -318,13 +322,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Ping" Width="*">
+                <!--<DataGridTemplateColumn Header="Ping" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Ping"></Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                </DataGridTemplateColumn>-->
             </DataGrid.Columns>
         </DataGrid>
         
@@ -448,17 +452,23 @@
             SnapsToDevicePixels="True" />
 
 
-        <!--List printer label-->
-        <TextBlock 
+        <!--Available Printers label-->
+        <StackPanel 
             Grid.Row="1"
             Grid.Column="3"
-            Text="Available Printers"
             HorizontalAlignment="Left"
             Margin="5" 
-            VerticalAlignment="Center" 
-            Foreground="Red"
-            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-        />
+            Orientation="Horizontal"
+            VerticalAlignment="Stretch" >
+            <materialDesign:PackIcon Kind="Printer" Height="30" Width="30" Margin="0 0 10 0" VerticalAlignment="Center"/>
+            <TextBlock 
+                Text="Available Printers"
+                VerticalAlignment="Center" 
+                Foreground="Black"
+                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+            />
+        </StackPanel>
+        
 
         <!--Button download json template-->
         <Button 

@@ -30,7 +30,7 @@ namespace WPFPrintingService
             } 
         }
 
-        private int _port = 1100;
+        private int _port = 2713;
         public int Port { get { return _port; } }
     }
 }

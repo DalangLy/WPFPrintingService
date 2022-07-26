@@ -237,10 +237,10 @@
                         VerticalAlignment="Stretch"
                         >
                         <TextBlock 
-                            Text="Server IP : 192.168.0.137"
+                            Text="TCP Host IP : ws://192.168.0.137"
                             HorizontalAlignment="Stretch"/>
                         <TextBlock
-                            Text="Server PORT : 1100"  
+                            Text="Server PORT : 2713"  
                             HorizontalAlignment="Stretch"/>
                     </StackPanel>
                     <TextBlock

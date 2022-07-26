@@ -81,7 +81,7 @@
 
         <!--Button Start Server-->
         <Border
-             Grid.Row="1" 
+            Grid.Row="1" 
             Grid.Column="0"
             VerticalAlignment="Center"
             Margin="5"
@@ -109,11 +109,10 @@
             DataContext="{x:Static local:WebSocketServerViewModel.Instance}"
             Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource BoolToVisConverter} }">
             <Button
-            
-            DataContext="{x:Static local:StopServiceViewModel.Instance}"
-            Command="{Binding ConfirmStopServiceCommand}"
-            Cursor="Hand"
-            Height="48">
+                DataContext="{x:Static local:StopServiceViewModel.Instance}"
+                Command="{Binding ConfirmStopServiceCommand}"
+                Cursor="Hand"
+                Height="48">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Stop"/>
                     <materialDesign:PackIcon Kind="Stop" Margin="4 0.5 0 0"/>
@@ -349,7 +348,7 @@
             AcceptsReturn="True">
             <TextBox.Text>
                 <Binding Path="MyMessageInput" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay"  NotifyOnValidationError="True" ValidatesOnNotifyDataErrors="True">
-                    <Binding.ValidationRules >
+                    <Binding.ValidationRules>
                         <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
                     </Binding.ValidationRules>
                 </Binding>

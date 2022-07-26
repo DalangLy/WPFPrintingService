@@ -78,6 +78,8 @@ namespace WPFPrintingService
         {
             this._webSocketClientViewModel = WebSocketServerViewModel.Instance;
 
+            this.MyMessageInput = "Hello From Server";
+
             this.SendMessageToAllClientsCommand = new SendMessageToAllClientCommand(async (p) => await InvokeSendMessageToAllClient(p));
             this.CloseSentMessageDialogCommand = new CloseSentMessageDialogCommand(this);
         }

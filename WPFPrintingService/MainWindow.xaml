@@ -41,7 +41,7 @@
             <ColumnDefinition Width="110"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="70"/>
             <RowDefinition Height="70"/>
             <RowDefinition Height="200"/>
             <RowDefinition Height="*"/>
@@ -278,7 +278,7 @@
                     </StackPanel>
                 </DataTemplate>
             </GroupBox.HeaderTemplate>
-            <TextBlock Text="{Binding ServerStatus}" Margin="6,6,6,6" TextWrapping="Wrap"/>
+            <TextBox Text="{Binding ServerStatus}" Margin="6,6,6,6" TextWrapping="Wrap" Style="{StaticResource MaterialDesignComboBoxEditableTextBox}" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
         </GroupBox>
 
 
@@ -454,7 +454,7 @@
 
         <!--Available Printers label-->
         <StackPanel 
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.Column="3"
             HorizontalAlignment="Left"
             Margin="5" 
@@ -473,7 +473,7 @@
         <!--Button download json template-->
         <Button 
             x:Name="btnDownloadJsonTemplate"
-            Grid.Row="1" 
+            Grid.Row="0" 
             Grid.Column="4"
             Height="48"
             Cursor="Hand"
@@ -488,7 +488,7 @@
         <!--Button Refresh Printer-->
         <Button
             DataContext="{x:Static local:PrintersViewModel.Instance}"
-            Grid.Row="1"
+            Grid.Row="0"
             Grid.Column="6"
             HorizontalAlignment="Right"
             Margin="5" 
@@ -526,7 +526,7 @@
 
         <!--List Printers-->
         <local:ListPrintersView
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="3"
             Grid.ColumnSpan="3"
             Grid.RowSpan="3"

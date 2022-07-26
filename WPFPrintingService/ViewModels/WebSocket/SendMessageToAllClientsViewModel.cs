@@ -16,7 +16,7 @@ namespace WPFPrintingService
             get { return _instance ?? (_instance = new SendMessageToAllClientsViewModel()); }
         }
 
-        private string _messageInput;
+        private string _messageInput = String.Empty;
 
         public string MyMessageInput
         {

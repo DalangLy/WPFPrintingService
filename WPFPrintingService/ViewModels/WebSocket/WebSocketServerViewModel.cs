@@ -162,7 +162,12 @@ namespace WPFPrintingService
                 this.ServerStatus += $"\n{clientName} Has Sent Message to Everyone : {messageModel.Message}";
 
                 //broadcast to everyone
-                this.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(messageModel.Message);
+                for (int eachClientIndex = 0; eachClientIndex < ConnectedWebSocketClients.Count; eachClientIndex++)
+                {
+                    string eachId = ConnectedWebSocketClients[eachClientIndex].ID;
+                    if (eachId == clientId) continue;
+                    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"{clientName} Said : {messageModel.Message}", eachId);
+                }
 
                 //notify back tosender
                 this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);

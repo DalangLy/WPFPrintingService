@@ -143,28 +143,33 @@
                                         <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Print And Cut" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <!--<Button Command="{Binding PrintAndCutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print And Cut" />-->
                                 </ListBoxItem>
                                 <ListBoxItem Cursor="Hand">
+                                    <ListBoxItem.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding PrintAndKickOutCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}"/>
+                                    </ListBoxItem.InputBindings>
                                     <StackPanel Orientation="Horizontal" Height="45">
                                         <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Print &amp; Kich Cash Drawer" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <!--<Button Command="{Binding PrintAndKickOutCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print &amp; Kich Cash Drawer" Margin="2.5,5,2.5,5" Cursor="Hand"/>-->
                                 </ListBoxItem>
                                 <ListBoxItem Cursor="Hand">
+                                    <ListBoxItem.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding CutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}"/>
+                                    </ListBoxItem.InputBindings>
                                     <StackPanel Orientation="Horizontal" Height="45">
                                         <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Cut Only" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <!--<Button Command="{Binding CutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Cut Only"  Margin="2.5,5,2.5,5" Cursor="Hand"/>-->
                                 </ListBoxItem>
                                 <ListBoxItem Cursor="Hand">
+                                    <ListBoxItem.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding KickCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}"/>
+                                    </ListBoxItem.InputBindings>
                                     <StackPanel Orientation="Horizontal" Height="45">
                                         <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Kick Cash Drawer (Till)" VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <!--<Button Command="{Binding KickCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Cursor="Hand"/>-->
                                 </ListBoxItem>
                             </ListBox>
                         </materialDesign:PopupBox>

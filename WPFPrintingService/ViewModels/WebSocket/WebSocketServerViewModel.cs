@@ -410,7 +410,7 @@ namespace WPFPrintingService
                 {
                     if (e.Cancelled) return;
                     //Notify Back to sender
-                    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
+                    this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print And Kick Cash Drawer Success", clientId);
                 };
                 worker.RunWorkerAsync();
 

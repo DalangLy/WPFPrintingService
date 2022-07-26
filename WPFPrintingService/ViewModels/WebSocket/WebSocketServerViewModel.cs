@@ -258,7 +258,7 @@ namespace WPFPrintingService
                 switch (printMethod)
                 {
                     case "printandcut":
-                        _printAndCut(printMeta.ToString(), printerName, clientId);
+                        _printAndCut(printTemplateLayoutObject.ToString(), printerName, clientId);
                         break;
                     case "cut":
                         _doCut(printerName, clientId);
@@ -283,15 +283,13 @@ namespace WPFPrintingService
             }
         }
 
-        private void _printAndCut(string printMetaJsonString, string printerName, string clientId)
+        private void _printAndCut(string printTemplateLayout, string printerName, string clientId)
         {
             try
             {
                 //deserialize print layout model
-                PrintTemplateLayoutModel? printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printMetaJsonString);
+                PrintTemplateLayoutModel? printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printTemplateLayout);
                 if (printTemplateLayoutModel == null) throw new CustomException("Print Template Layout must be valid");
-
-
 
 
                 //process print in background
@@ -300,19 +298,35 @@ namespace WPFPrintingService
                 {
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
-                        LocalPrintServer printServer = new LocalPrintServer();
-                        PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                        PrintDialog dialog = new PrintDialog();
-                        PrintQueue? selectedPrinter = printQueues.FirstOrDefault(x => x.Name == printerName);
-                        if (selectedPrinter == null) throw new CustomException("Printer Not Found");
-                        dialog.PrintQueue = selectedPrinter;
+                        try
+                        {
+                            LocalPrintServer printServer = new LocalPrintServer();
+                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                            PrintDialog dialog = new PrintDialog();
+                            PrintQueue? selectedPrinter = printQueues.FirstOrDefault(x => x.Name == printerName);
+                            if (selectedPrinter == null) throw new CustomException("Printer Not Found");
+                            dialog.PrintQueue = selectedPrinter;
 
-                        PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
-                        dialog.PrintVisual(printTemplate, "Print Document");
+                            PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                            dialog.PrintVisual(printTemplate, "Print Document");
+                        }
+                        catch(CustomException ex)
+                        {
+                            e.Cancel = true;
+                            //Notify Back to sender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(ex.Message, clientId);
+                        }
+                        catch (Exception ex)
+                        {
+                            e.Cancel = true;
+                            //Notify Back to sender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"Print Failed : {ex.Message}", clientId);
+                        }
                     });
                 };
                 worker.RunWorkerCompleted += (s, e) =>
                 {
+                    if (e.Cancelled) return;
                     //Notify Back to sender
                     this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print and Cut Finished", clientId);
                 };
@@ -348,37 +362,53 @@ namespace WPFPrintingService
                 {
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
-                        LocalPrintServer printServer = new LocalPrintServer();
-                        PrintQueueCollection printQueues = printServer.GetPrintQueues();
-                        PrintDialog dialog = new PrintDialog();
-                        PrintQueue? selectedPrinter = printQueues.FirstOrDefault(x => x.Name == printerName);
-                        if (selectedPrinter == null) throw new CustomException("Printer Not Found");
-                        dialog.PrintQueue = selectedPrinter;
-
-                        PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
-                        dialog.PrintVisual(printTemplate, "Print Document");
-
-                        //do kick cash drawer process
-                        PrintDocument printDocument = new PrintDocument();
-                        printDocument.PrinterSettings.PrinterName = printerName;
-
-                        //open cash drawer command
-                        const string ESC1 = "\u001B";
-                        const string p = "\u0070";
-                        const string m = "\u0000";
-                        const string t1 = "\u0025";
-                        const string t2 = "\u0250";
-                        const string openTillCommand = ESC1 + p + m + t1 + t2;
-                        bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
-                        if (_cashDrawerOpened)
+                        try
                         {
+                            LocalPrintServer printServer = new LocalPrintServer();
+                            PrintQueueCollection printQueues = printServer.GetPrintQueues();
+                            PrintDialog dialog = new PrintDialog();
+                            PrintQueue? selectedPrinter = printQueues.FirstOrDefault(x => x.Name == printerName);
+                            if (selectedPrinter == null) throw new CustomException("Printer Not Found");
+                            dialog.PrintQueue = selectedPrinter;
 
+                            PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                            dialog.PrintVisual(printTemplate, "Print Document");
+
+                            //do kick cash drawer process
+                            PrintDocument printDocument = new PrintDocument();
+                            printDocument.PrinterSettings.PrinterName = printerName;
+
+                            //open cash drawer command
+                            const string ESC1 = "\u001B";
+                            const string p = "\u0070";
+                            const string m = "\u0000";
+                            const string t1 = "\u0025";
+                            const string t2 = "\u0250";
+                            const string openTillCommand = ESC1 + p + m + t1 + t2;
+                            bool _cashDrawerOpened = RawPrinterHelper.SendStringToPrinter(printDocument.PrinterSettings.PrinterName, openTillCommand);
+                            if (_cashDrawerOpened)
+                            {
+
+                            }
+                            printDocument.Dispose();
                         }
-                        printDocument.Dispose();
+                        catch (CustomException ex)
+                        {
+                            e.Cancel = true;
+                            //Notify Back to sender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(ex.Message, clientId);
+                        }
+                        catch (Exception ex)
+                        {
+                            e.Cancel = true;
+                            //Notify Back to sender
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"Print Failed : {ex.Message}", clientId);
+                        }
                     });
                 };
                 worker.RunWorkerCompleted += (s, e) =>
                 {
+                    if (e.Cancelled) return;
                     //Notify Back to sender
                     this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print Success", clientId);
                 };

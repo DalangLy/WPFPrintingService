@@ -136,6 +136,9 @@
                         <materialDesign:PopupBox>
                             <ListBox DataContext="{x:Static local:TestPrinterViewModel.Instance}">
                                 <ListBoxItem Cursor="Hand">
+                                    <ListBoxItem.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding PrintAndCutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}"/>
+                                    </ListBoxItem.InputBindings>
                                     <StackPanel Orientation="Horizontal" Height="45">
                                         <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
                                         <TextBlock Text="Print And Cut" VerticalAlignment="Center"/>

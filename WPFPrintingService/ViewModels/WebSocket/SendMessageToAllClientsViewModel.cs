@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.Net;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace WPFPrintingService
@@ -13,6 +16,20 @@ namespace WPFPrintingService
         {
             get { return _instance ?? (_instance = new SendMessageToAllClientsViewModel()); }
         }
+
+        private string _messageInput;
+
+        public string MyMessageInput
+        {
+            get { 
+                return _messageInput; 
+            }
+            set { 
+                _messageInput = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public ICommand SendMessageToAllClientsCommand { get; set; }
         public ICommand CloseSentMessageDialogCommand { get; set; }
@@ -54,12 +71,9 @@ namespace WPFPrintingService
 
         private async Task InvokeSendMessageToAllClient(object p)
         {
-            Debug.WriteLine(p);
-            if (p == null) return;
-            string message = (string)p;
             this.IsSendingMessageToAllClients = true; //show sending progress dialog
             await Task.Delay(1000 * 5);//delay 5 seconds
-            this._webSocketClientViewModel.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(message);
+            this._webSocketClientViewModel.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(_messageInput);
             this.IsSendingMessageToAllClients = false; //remove sending progress dialog
             this.IsSentMessageToAllClientsSuccess = true;//show sent dialog
         }
@@ -108,6 +122,21 @@ namespace WPFPrintingService
         {
             mAction?.Invoke();
             pAction?.Invoke(parameter);
+        }
+    }
+
+    public class NotEmptyValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            return string.IsNullOrWhiteSpace((value ?? "").ToString())
+                ? new ValidationResult(false, "Field is required.")
+                : ValidationResult.ValidResult;
+            //if (IPAddress.TryParse(value.ToString(), out IPAddress ipAddress))
+            //{
+            //    return ValidationResult.ValidResult;
+            //}
+            //return new ValidationResult(false, "IP Address Is Invalid");
         }
     }
 }

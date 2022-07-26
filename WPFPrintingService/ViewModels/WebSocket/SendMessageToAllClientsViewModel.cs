@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -58,6 +57,20 @@ namespace WPFPrintingService
             }
         }
 
+        private bool _isNoClientConnected;
+
+        public bool IsNoClientConnected
+        {
+            get { 
+                return _isNoClientConnected; 
+            }
+            set { 
+                _isNoClientConnected = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         //inject websocket view model
         private WebSocketServerViewModel _webSocketClientViewModel;
 
@@ -71,6 +84,14 @@ namespace WPFPrintingService
 
         private async Task InvokeSendMessageToAllClient(object p)
         {
+            if (p == null) return;
+            ObservableCollection<ClientWebSocketModel> list = (ObservableCollection<ClientWebSocketModel>)p;
+            if(list.Count <= 0)
+            {
+                this.IsNoClientConnected = true;
+                return;
+            }
+
             this.IsSendingMessageToAllClients = true; //show sending progress dialog
             await Task.Delay(1000 * 5);//delay 5 seconds
             this._webSocketClientViewModel.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(_messageInput);
@@ -130,13 +151,8 @@ namespace WPFPrintingService
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             return string.IsNullOrWhiteSpace((value ?? "").ToString())
-                ? new ValidationResult(false, "Field is required.")
+                ? new ValidationResult(false, "Message is required.")
                 : ValidationResult.ValidResult;
-            //if (IPAddress.TryParse(value.ToString(), out IPAddress ipAddress))
-            //{
-            //    return ValidationResult.ValidResult;
-            //}
-            //return new ValidationResult(false, "IP Address Is Invalid");
         }
     }
 }

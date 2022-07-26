@@ -78,7 +78,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Online" Width="80">
+            <DataGridTemplateColumn Header="Online" Width="110">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding IsOnline, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
@@ -91,7 +91,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Is Printing" Width="80">
+            <DataGridTemplateColumn Header="Is Printing" Width="110">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding IsPrinting, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
@@ -104,7 +104,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Door Opened" Width="80">
+            <DataGridTemplateColumn Header="Door Opened" Width="110">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding IsDoorOpened, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
@@ -117,7 +117,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Is Busy" Width="80">
+            <DataGridTemplateColumn Header="Is Busy" Width="110">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding IsBusy, Converter={local:ConvertBooleanToYesNo}}" VerticalAlignment="Center" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis">
@@ -130,15 +130,41 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Test Actions" Width="*">
+            <DataGridTemplateColumn Header="Test Actions" Width="110">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" DataContext="{x:Static local:TestPrinterViewModel.Instance}">
-                            <Button Command="{Binding PrintAndCutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print And Cut" Margin="5,5,2.5,5" Cursor="Hand"/>
-                            <Button Command="{Binding PrintAndKickOutCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print &amp; Kich Cash Drawer" Margin="2.5,5,2.5,5" Cursor="Hand"/>
-                            <Button Command="{Binding CutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Cut Only"  Margin="2.5,5,2.5,5" Cursor="Hand"/>
-                            <Button Command="{Binding KickCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Cursor="Hand"/>
-                        </StackPanel>
+                        <materialDesign:PopupBox>
+                            <ListBox DataContext="{x:Static local:TestPrinterViewModel.Instance}">
+                                <ListBoxItem Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal" Height="45">
+                                        <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Print And Cut" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <!--<Button Command="{Binding PrintAndCutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print And Cut" />-->
+                                </ListBoxItem>
+                                <ListBoxItem Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal" Height="45">
+                                        <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Print &amp; Kich Cash Drawer" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <!--<Button Command="{Binding PrintAndKickOutCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Print &amp; Kich Cash Drawer" Margin="2.5,5,2.5,5" Cursor="Hand"/>-->
+                                </ListBoxItem>
+                                <ListBoxItem Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal" Height="45">
+                                        <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Cut Only" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <!--<Button Command="{Binding CutCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Cut Only"  Margin="2.5,5,2.5,5" Cursor="Hand"/>-->
+                                </ListBoxItem>
+                                <ListBoxItem Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal" Height="45">
+                                        <materialDesign:PackIcon Kind="Broadcast" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Kick Cash Drawer (Till)" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <!--<Button Command="{Binding KickCashDrawerCommand}" CommandParameter="{Binding SelectedItem, ElementName=GG}" Content="Kick Cash Drawer (Till)" Margin="2.5,5,5,5" Cursor="Hand"/>-->
+                                </ListBoxItem>
+                            </ListBox>
+                        </materialDesign:PopupBox>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>

@@ -82,7 +82,7 @@ namespace WPFPrintingService
                         rowBackground = "transparent";
                     }
                     rowBorder.Background = _getColorByCode(rowBackground);
-                    rowBorder.BorderThickness = new Thickness(rowBorderTop, rowBorderRight, rowBorderBottom, rowBorderLeft);
+                    rowBorder.BorderThickness = new Thickness(rowBorderLeft, rowBorderTop, rowBorderRight, rowBorderBottom);
                     Grid rowGrid = new Grid();
                     rowBorder.Child = rowGrid;
                     long rowHeight = rows[currentRowIndex - 1].Row.RowHeight;
@@ -100,11 +100,21 @@ namespace WPFPrintingService
                         int rowSpanCount = columns[currentColumnIndex - 1].Column.RowSpan;
                         if (rowSpanCount < 2)
                         {
-                            //reset to 1
+                            //reset to 0
                             rowSpanCount = 0;
                         }
+                        else
+                        {
+                            rowSpanCount -= 1;
+                        }
 
-                        int expectedRowDefintionToCreate = rowSpanCount + (currentRowIndex - 1);
+                        int expectedRowDefintionToCreate = rowSpanCount;
+                        //if (rowSpanCount > 1)
+                        //{
+                        //    expectedRowDefintionToCreate = rowSpanCount + (currentRowIndex - 1);
+
+                        //}
+                        
                         if (expectedRowDefintionToCreate > numberOfNestedRowsToCreate)
                         {
                             numberOfNestedRowsToCreate += (expectedRowDefintionToCreate - numberOfNestedRowsToCreate);
@@ -160,12 +170,15 @@ namespace WPFPrintingService
                 }
                 else
                 {
-                    //add row definition to existed grid row
-                    for (int rowDefinitionIndex = 0; rowDefinitionIndex < numberOfNestedRowsToCreate; rowDefinitionIndex++)
+                    if(rowIndex == 0)
                     {
-                        RowDefinition rowDefinition = new RowDefinition();
-                        tempRowGrid.RowDefinitions.Add(rowDefinition);
+                        //add row definition to existed grid row
+                        RowDefinition rowDefinition1 = new RowDefinition();
+                        tempRowGrid.RowDefinitions.Add(rowDefinition1);
                     }
+                    //add row definition to existed grid row
+                    RowDefinition rowDefinition = new RowDefinition();
+                    tempRowGrid.RowDefinitions.Add(rowDefinition);
                     numberOfNestedRowsToCreate--;
 
 
@@ -234,7 +247,7 @@ namespace WPFPrintingService
                                         nextNestedRowColumnIndex = new NextNestedRowColumnIndex()
                                         {
                                             ColumnIndex = i,
-                                            RowIndex = currentRowIndex - 2,
+                                            RowIndex = rowIndex - 1,
                                             RowSpan = previousColumnElements[myIndex].Column.RowSpan,
                                             ColSpan = 1
                                         };
@@ -245,7 +258,7 @@ namespace WPFPrintingService
                                         c.Add(new NextNestedRowColumnIndex()
                                         {
                                             ColumnIndex = i,
-                                            RowIndex = currentRowIndex - 2,
+                                            RowIndex = rowIndex - 1,
                                             RowSpan = previousColumnElements[myIndex].Column.RowSpan,
                                             ColSpan = 1
                                         });
@@ -259,7 +272,7 @@ namespace WPFPrintingService
                             c.Add(new NextNestedRowColumnIndex()
                             {
                                 ColumnIndex = i,
-                                RowIndex = currentRowIndex - 2,
+                                RowIndex = rowIndex - 1,
                                 RowSpan = 1,
                                 ColSpan = 1
                             });
@@ -286,7 +299,7 @@ namespace WPFPrintingService
 
                     //create index for this row by using last row data
                     nextColIndex.Clear();
-                    List<NextNestedRowColumnIndex> lastRowColumns = c.Where(e => e.RowIndex == currentRowIndex - 2).ToList();
+                    List<NextNestedRowColumnIndex> lastRowColumns = c.Where(e => e.RowIndex == (rowIndex-1)).ToList();
                     int skipIndex = 0;
                     //here the problem
                     for (int jj = 0; jj < tempRowGrid.ColumnDefinitions.Count; jj++)
@@ -358,9 +371,19 @@ namespace WPFPrintingService
                             Border contentBorder = _buildColumnContent(columns[currentColumnIndex - 1].Column, printTemplate);
                             tempRowGrid.Children.Add(contentBorder);
                             Grid.SetColumn(contentBorder, nextColIndex[currentColumnIndex - 1]);
-                            Grid.SetColumnSpan(contentBorder, columns[currentColumnIndex - 1].Column.ColSpan);
+                            int columnColSpan = columns[currentColumnIndex - 1].Column.ColSpan;
+                            if(columnColSpan < 1)
+                            {
+                                columnColSpan = 1;
+                            }
+                            Grid.SetColumnSpan(contentBorder, columnColSpan);
                             Grid.SetRow(contentBorder, rowIndex);
-                            Grid.SetRowSpan(contentBorder, columns[currentColumnIndex - 1].Column.RowSpan);
+                            int columnRowSpan = columns[currentColumnIndex - 1].Column.RowSpan;
+                            if(columnRowSpan < 1)
+                            {
+                                columnRowSpan = 1;
+                            }
+                            Grid.SetRowSpan(contentBorder, columnRowSpan);
                         }
                     }
                 }
@@ -435,7 +458,8 @@ namespace WPFPrintingService
                     TextBlock textBlock = new TextBlock();
                     textBlock.Text = column.Content;
                     textBlock.VerticalAlignment = VerticalAlignment.Center;
-                    textBlock.TextAlignment = TextAlignment.Center;
+                    textBlock.TextAlignment = _getTextAlign(column.ContentHorizontalAlign);
+                    textBlock.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
                     long masterFontSize = printTemplate.PrintTemplateLayout.FontSize;
                     long fontSize = column.FontSize;
                     if (fontSize <= 0)

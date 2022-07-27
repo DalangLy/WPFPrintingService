@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 
 namespace WPFPrintingService
@@ -21,9 +22,16 @@ namespace WPFPrintingService
                 {
                     using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
                     {
-                        socket.Connect("8.8.8.8", 65530);
-                        IPEndPoint? endPoint = socket.LocalEndPoint as IPEndPoint;
-                        _systemIP = endPoint!.Address.ToString();
+                        try
+                        {
+                            socket.Connect("8.8.8.8", 65530);
+                            IPEndPoint? endPoint = socket.LocalEndPoint as IPEndPoint;
+                            _systemIP = endPoint!.Address.ToString();
+                        }
+                        catch (System.Exception)
+                        {
+                            Debug.WriteLine("Something went wrong");
+                        }
                     }
                 }
                 return _systemIP; 

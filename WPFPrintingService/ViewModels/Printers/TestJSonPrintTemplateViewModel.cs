@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Printing;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -32,7 +30,7 @@ namespace WPFPrintingService
             }
         }
 
-        private string _printJsonTemplateStatus;
+        private string _printJsonTemplateStatus = string.Empty;
 
         public string PrintJsonTemplateStatus
         {
@@ -46,23 +44,24 @@ namespace WPFPrintingService
 
         public TestJSonPrintTemplateViewModel()
         {
-            //IsShowPrintJSonTemplateDialog = true;
-            this.TestJsonTemplateCommand = new TestJsonPrintTemplateCommand(async (e) => await InvokePrintJsonTemplate(e));
-            this.ShowTestJsonTemplateDialogCommand = new ShowTestJsonTemplateDialogCommandClass(async () => await InvokeShowPrintJsonTemplateDialog());
+            this.TestJsonTemplateCommand = new TestJsonPrintTemplateCommand((e) => InvokePrintJsonTemplate(e));
+            this.ShowTestJsonTemplateDialogCommand = new ShowTestJsonTemplateDialogCommandClass(() => InvokeShowPrintJsonTemplateDialog());
         }
 
-        private async Task InvokeShowPrintJsonTemplateDialog()
+        private void InvokeShowPrintJsonTemplateDialog()
         {
-            Debug.WriteLine("Show Dialog");
             IsShowPrintJSonTemplateDialog = true;
         }
 
-        private async Task InvokePrintJsonTemplate(object? param)
+        private void InvokePrintJsonTemplate(object? param)
         {
             if (param == null) return;
             string jsonString = (string)param;
-            if (jsonString == "") return;
-            Debug.WriteLine("Print PDF");
+            if (jsonString == "")
+            {
+                PrintJsonTemplateStatus = "Print Template Json is Required";
+                return;
+            };
 
             try
             {
@@ -84,11 +83,11 @@ namespace WPFPrintingService
                 if (printTemplateLayoutObject == null || printTemplateLayoutObject.First == null) throw new CustomException("invalid print template layout");
 
 
-                PrintTemplateLayoutModel printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printTemplateLayoutObject.ToString());
+                PrintTemplateLayoutModel? printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printTemplateLayoutObject.ToString());
                 if (printTemplateLayoutModel == null) throw new CustomException("Print Template Layout must be valid");
 
                 PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
-                dialog.PrintVisual(printTemplate, "Test");
+                dialog.PrintVisual(printTemplate, "Test JSon Template");
 
                 this.IsShowPrintJSonTemplateDialog = false;
             }
@@ -96,9 +95,9 @@ namespace WPFPrintingService
             {
                 PrintJsonTemplateStatus = $"Print Json Failed : {ex.Message}";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                PrintJsonTemplateStatus = $"Print Json Failed : {ex.Message}";
+                PrintJsonTemplateStatus = $"Invalid JSON Syntax";
             }
         }
     }

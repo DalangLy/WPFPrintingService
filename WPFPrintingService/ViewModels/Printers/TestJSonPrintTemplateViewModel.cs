@@ -29,7 +29,7 @@ namespace WPFPrintingService
 
         public TestJSonPrintTemplateViewModel()
         {
-            //IsShowPrintJSonTemplateDialog = true;
+            IsShowPrintJSonTemplateDialog = true;
             this.TestJsonTemplateCommand = new TestJsonPrintTemplateCommand(async (e) => await InvokePrintJsonTemplate(e));
             this.ShowTestJsonTemplateDialogCommand = new ShowTestJsonTemplateDialogCommandClass(async () => await InvokeShowPrintJsonTemplateDialog());
         }

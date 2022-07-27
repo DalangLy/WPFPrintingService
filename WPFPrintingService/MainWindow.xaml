@@ -526,6 +526,8 @@
                         Grid.Row="2"
                         VerticalAlignment="Stretch"
                         Name="jsonTemplateInput"
+                        AcceptsReturn="true"
+                        TextWrapping="Wrap"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
                     <Separator Grid.Row="3" Background="White"/>

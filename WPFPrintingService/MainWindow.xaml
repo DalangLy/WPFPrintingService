@@ -482,7 +482,7 @@
             Command="{Binding ShowTestJsonTemplateDialogCommand}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Test JSon Template"/>
-                <materialDesign:PackIcon Kind="Download" Margin="4 .5 0 0"/>
+                <materialDesign:PackIcon Kind="CardBulletedOutline" Margin="4 .5 0 0"/>
             </StackPanel>
         </Button>
         <materialDesign:DialogHost

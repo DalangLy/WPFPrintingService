@@ -63,7 +63,7 @@ namespace WPFPrintingService
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Print Json Failed");
+                Debug.WriteLine($"Print Json Failed : {ex.Message}");
             }
         }
     }

@@ -4,7 +4,6 @@ using System.Windows.Data;
 using System.Globalization;
 using MaterialDesignThemes.Wpf;
 using System.IO;
-using System.Text.Json;
 
 namespace WPFPrintingService
 {
@@ -63,10 +62,10 @@ namespace WPFPrintingService
             {
                 // Save document
                 string filename = dlg.FileName;
-                string jsonTemplate = "{ 'printTemplateLayout': { 'paddingTop': 0, 'paddingRight': 0, 'paddingBottom': 0, 'paddingLeft': 0, 'rowGap': 5, 'paperWidth': 500, 'paperBackground': 'transparent', 'fontSize': 12, 'fontFamily':'aril', 'foreground': 'black', 'rows': [ { 'row': { 'rowMarginTop': 0, 'rowMarginRight': 0, 'rowMarginBottom': 0, 'rowMarginLeft': 0, 'rowPaddingTop': 0, 'rowPaddingRight': 0, 'rowPaddingBottom': 0, 'rowPaddingLeft': 0, 'rowBorderTop': 0, 'rowBorderRight': 0, 'rowBorderBottom': 0, 'rowBorderLeft': 0, 'rowBackground': 'blue', 'rowHeight': 0, 'columnVerticalAlign': 'stretch', 'columnHorizontalAlign': 'stretch', 'columns': [ { 'column': { 'content': 'FPTP', 'contentType': 'text', 'qrCodeLogo': '', 'bold': true, 'foreground': 'black', 'fontSize': 22, 'fontFamily': 'Aril', 'contentWidth': 0, 'contentHeight': 0, 'contentHorizontalAlign': 'center', 'contentVerticalAlign': 'center', 'columnBackground': 'gray', 'columnHorizontalAlign': 'stretch', 'columnVerticalAlign': 'stretch', 'columnMarginTop': 0, 'columnMarginRight': 0, 'columnMarginBottom': 0, 'columnMarginLeft': 0, 'columnWidth': 0, 'columnHeight': 0, 'columnPaddingTop': 0, 'columnPaddingRight': 0, 'columnPaddingBottom': 0, 'columnPaddingLeft': 0, 'columnBorderTop': 0, 'columnBorderRight': 0, 'columnBorderBottom': 0, 'columnBorderLeft': 0, 'colSpan': 0, 'rowSpan': 0 } } ] } } ] } }";
-                PrintTemplateLayoutModel? layoutModel = PrintTemplateLayoutModel.FromJson(jsonTemplate);
-                string json = JsonSerializer.Serialize(layoutModel);
-                File.WriteAllText(filename, json);
+                string jsonTemplate = "{ \"requestType\": \"print\", \"printMeta\": { \"printerName\": \"Microsoft Print to PDF\", \"printMethod\": \"printandcut\", \"printTemplateLayout\": { \"PrintTemplateLayout\": { \"PaddingTop\": 0, \"PaddingRight\": 0, \"PaddingBottom\": 0, \"PaddingLeft\": 0, \"RowGap\": 5, \"PaperWidth\": 500, \"PaperBackground\": \"transparent\", \"FontSize\": 12, \"FontFamily\": \"aril\", \"Foreground\": \"black\", \"Rows\": [ { \"Row\": { \"RowMarginTop\": 0, \"RowMarginRight\": 0, \"RowMarginBottom\": 0, \"RowMarginLeft\": 0, \"RowPaddingTop\": 0, \"RowPaddingRight\": 0, \"RowPaddingBottom\": 0, \"RowPaddingLeft\": 0, \"RowBorderTop\": 0, \"RowBorderRight\": 0, \"RowBorderBottom\": 0, \"RowBorderLeft\": 0, \"RowBackground\": \"blue\", \"RowHeight\": 0, \"ColumnVerticalAlign\": \"stretch\", \"ColumnHorizontalAlign\": \"stretch\", \"Columns\": [ { \"Column\": { \"Content\": \"FPTP\", \"ContentType\": \"text\", \"QrCodeLogo\": \"\", \"Bold\": true, \"Foreground\": \"black\", \"FontSize\": 22, \"FontFamily\": \"Aril\", \"ContentWidth\": 0, \"ContentHeight\": 0, \"ContentHorizontalAlign\": \"center\", \"ContentVerticalAlign\": \"center\", \"ColumnBackground\": \"gray\", \"ColumnHorizontalAlign\": \"stretch\", \"ColumnVerticalAlign\": \"stretch\", \"ColumnMarginTop\": 0, \"ColumnMarginRight\": 0, \"ColumnMarginBottom\": 0, \"ColumnMarginLeft\": 0, \"ColumnWidth\": 0, \"ColumnHeight\": 0, \"ColumnPaddingTop\": 0, \"ColumnPaddingRight\": 0, \"ColumnPaddingBottom\": 0, \"ColumnPaddingLeft\": 0, \"ColumnBorderTop\": 0, \"ColumnBorderRight\": 0, \"ColumnBorderBottom\": 0, \"ColumnBorderLeft\": 0, \"ColSpan\": 0, \"RowSpan\": 0 } } ] } } ] } } } }";
+                //PrintTemplateLayoutModel? layoutModel = PrintTemplateLayoutModel.FromJson(jsonTemplate);
+                //string json = JsonSerializer.Serialize(layoutModel);
+                File.WriteAllText(filename, jsonTemplate);
             }
 
 

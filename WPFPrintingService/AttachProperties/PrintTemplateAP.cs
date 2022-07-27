@@ -403,7 +403,6 @@ namespace WPFPrintingService
                         image.Height = contentHeight;
                     }
                     image.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
-                    //contentBorder.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
                     contentBorder.Child = image;
                     break;
                 case "barcode":
@@ -416,6 +415,7 @@ namespace WPFPrintingService
                     {
                         barCodeImage.Height = contentHeight;
                     }
+                    barCodeImage.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
                     contentBorder.Child = barCodeImage;
                     break;
                 case "qrcode":
@@ -428,6 +428,7 @@ namespace WPFPrintingService
                     {
                         qrCodeImage.Height = contentHeight;
                     }
+                    qrCodeImage.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
                     contentBorder.Child = qrCodeImage;
                     break;
                 default:
@@ -531,7 +532,7 @@ namespace WPFPrintingService
             }
             catch (Exception)
             {
-                return Brushes.Black;
+                return Brushes.Transparent;
             }
         }
 

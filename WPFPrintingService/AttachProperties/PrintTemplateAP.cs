@@ -402,7 +402,8 @@ namespace WPFPrintingService
                     {
                         image.Height = contentHeight;
                     }
-                    contentBorder.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
+                    image.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
+                    //contentBorder.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
                     contentBorder.Child = image;
                     break;
                 case "barcode":
@@ -442,7 +443,14 @@ namespace WPFPrintingService
                     }
                     textBlock.FontSize = fontSize;
                     textBlock.FontWeight = column.Bold ? FontWeights.Bold : FontWeights.Regular;
-                    textBlock.Foreground = _getColorByCode(column.Foreground);
+                    string masterForeground = printTemplate.PrintTemplateLayout.Foreground;
+                    if (masterForeground == "") masterForeground = "black";
+                    string foreground = column.Foreground;
+                    if(foreground == "" || foreground == "transparent")
+                    {
+                        foreground = masterForeground;
+                    }
+                    textBlock.Foreground = _getColorByCode(foreground);
                     contentBorder.Child = textBlock;
                     break;
             }
@@ -517,7 +525,14 @@ namespace WPFPrintingService
 
         private static Brush _getColorByCode(string colorCode)
         {
-            return new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
+            try
+            {
+                return new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
+            }
+            catch (Exception)
+            {
+                return Brushes.Black;
+            }
         }
 
         private static Image _buildQRCodeImage(string value)

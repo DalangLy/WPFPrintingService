@@ -500,7 +500,7 @@
                 <Grid Width="600" Height="500" Margin="5">
                     
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="150"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -514,7 +514,7 @@
                     <TextBlock
                         Grid.Row="0"
                         Text="Json Template" 
-                        Margin="5" 
+                        Margin="5"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
@@ -527,7 +527,8 @@
                         VerticalAlignment="Center"
                         Margin="5"
                         FontSize="10"
-                        Cursor="Hand">
+                        Cursor="Hand"
+                        TextAlignment="Right">
                         <TextBlock.ToolTip>
                             <ToolTip>
                                 <TextBlock Text="{Binding PrintJsonTemplateStatus}"/>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Printing;
@@ -31,6 +32,18 @@ namespace WPFPrintingService
             }
         }
 
+        private string _printJsonTemplateStatus;
+
+        public string PrintJsonTemplateStatus
+        {
+            get { return _printJsonTemplateStatus; }
+            set { 
+                _printJsonTemplateStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public TestJSonPrintTemplateViewModel()
         {
             //IsShowPrintJSonTemplateDialog = true;
@@ -58,16 +71,34 @@ namespace WPFPrintingService
                 PrintDialog dialog = new PrintDialog();
                 dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
 
-                PrintTemplateLayoutModel printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(jsonString.Replace(Environment.NewLine, " "));
+
+
+                //deserialize print template layout
+                string cleanJsonString = jsonString.Replace(Environment.NewLine, " ");
+                JObject json = JObject.Parse(cleanJsonString);
+                JToken? printMeta = json["printMeta"];
+                if (printMeta == null) throw new CustomException("invalid print meta");
+
+                //check if print template layout is not valid
+                JToken? printTemplateLayoutObject = printMeta["printTemplateLayout"];
+                if (printTemplateLayoutObject == null || printTemplateLayoutObject.First == null) throw new CustomException("invalid print template layout");
+
+
+                PrintTemplateLayoutModel printTemplateLayoutModel = PrintTemplateLayoutModel.FromJson(printTemplateLayoutObject.ToString());
+                if (printTemplateLayoutModel == null) throw new CustomException("Print Template Layout must be valid");
 
                 PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
                 dialog.PrintVisual(printTemplate, "Test");
 
                 this.IsShowPrintJSonTemplateDialog = false;
             }
+            catch(CustomException ex)
+            {
+                PrintJsonTemplateStatus = $"Print Json Failed : {ex.Message}";
+            }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Print Json Failed : {ex.Message}");
+                PrintJsonTemplateStatus = $"Print Json Failed : {ex.Message}";
             }
         }
     }

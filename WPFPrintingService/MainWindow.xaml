@@ -501,6 +501,7 @@
                     
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
@@ -518,12 +519,30 @@
                         VerticalAlignment="Center"
                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
 
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Text="{Binding PrintJsonTemplateStatus}"
+                        Foreground="Red"
+                        VerticalAlignment="Center"
+                        Margin="5"
+                        FontSize="10"
+                        Cursor="Hand">
+                        <TextBlock.ToolTip>
+                            <ToolTip>
+                                <TextBlock Text="{Binding PrintJsonTemplateStatus}"/>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+
                     <Separator 
                         Grid.Row="1" 
+                        Grid.ColumnSpan="2"
                         Background="White"/>
                     
                     <TextBox
                         Grid.Row="2"
+                        Grid.ColumnSpan="2"
                         VerticalAlignment="Stretch"
                         Name="jsonTemplateInput"
                         AcceptsReturn="true"
@@ -531,10 +550,14 @@
                         VerticalScrollBarVisibility="Auto"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
-                    <Separator Grid.Row="3" Background="White"/>
+                    <Separator 
+                        Grid.Row="3" 
+                        Background="White"
+                        Grid.ColumnSpan="2"/>
 
                     <Button
                         Grid.Row="4"
+                        Grid.ColumnSpan="2"
                         Height="48"
                         Content="Print Test PDF"
                         Command="{Binding TestJsonTemplateCommand}"

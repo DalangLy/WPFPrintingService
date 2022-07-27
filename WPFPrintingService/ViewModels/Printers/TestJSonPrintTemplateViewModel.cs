@@ -10,7 +10,11 @@ namespace WPFPrintingService
 {
     internal class TestJSonPrintTemplateViewModel : BaseViewModel
     {
-        public static TestJSonPrintTemplateViewModel Instance => new TestJSonPrintTemplateViewModel();
+        private static TestJSonPrintTemplateViewModel? _instance;
+        public static TestJSonPrintTemplateViewModel Instance
+        {
+            get { return _instance ?? (_instance = new TestJSonPrintTemplateViewModel()); }
+        }
 
         public ICommand ShowTestJsonTemplateDialogCommand { get; set; }
 

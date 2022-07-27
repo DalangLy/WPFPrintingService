@@ -460,6 +460,7 @@ namespace WPFPrintingService
                     textBlock.VerticalAlignment = VerticalAlignment.Center;
                     textBlock.TextAlignment = _getTextAlign(column.ContentHorizontalAlign);
                     textBlock.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
+                    textBlock.VerticalAlignment = _getVerticalAlignContent(column.ContentVerticalAlign);
                     long masterFontSize = printTemplate.PrintTemplateLayout.FontSize;
                     long fontSize = column.FontSize;
                     if (fontSize <= 0)

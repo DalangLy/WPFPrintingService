@@ -75,6 +75,14 @@ namespace WPFPrintingService
                         //add client to list
                         this.ConnectedWebSocketClients.Add(new ClientWebSocketModel() { Name = connectedClientName, ID = connectedClientId, IP = connectedClientIp });
                         this.ServerStatus += $"\n{connectedClientName} has joined";
+
+                        //broadcast to everyone
+                        for (int eachClientIndex = 0; eachClientIndex < ConnectedWebSocketClients.Count; eachClientIndex++)
+                        {
+                            string eachId = ConnectedWebSocketClients[eachClientIndex].ID;
+                            if (eachId == connectedClientId) continue;
+                            this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"{connectedClientName} Has Joined", eachId);
+                        }
                     });
                 },
                 (sender, args, clientId, clientName, message) =>
@@ -170,7 +178,7 @@ namespace WPFPrintingService
                 }
 
                 //notify back tosender
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent to Everyone", clientId);
             }
             catch (CustomException ex)
             {
@@ -194,7 +202,7 @@ namespace WPFPrintingService
                 this.ServerStatus += $"\n{clientName} Said : {messageModel.Message}";
 
                 //notify back to sender
-                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent", clientId);
+                this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Message Sent to Server", clientId);
             }
             catch (CustomException ex)
             {

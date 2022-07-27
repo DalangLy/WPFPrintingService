@@ -32,8 +32,8 @@ namespace WPFPrintingService
 
             this._onClientConnected(this, EventArgs.Empty, _getClientId() ,_getClientIP(), _getClientName());
 
+            //notify back to client
             Send("Connected");
-            Sessions.Broadcast($"{_getClientName()} Has Joined");
         }
 
         protected override void OnMessage(MessageEventArgs e)

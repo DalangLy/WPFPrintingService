@@ -528,6 +528,7 @@
                         Name="jsonTemplateInput"
                         AcceptsReturn="true"
                         TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
                     <Separator Grid.Row="3" Background="White"/>

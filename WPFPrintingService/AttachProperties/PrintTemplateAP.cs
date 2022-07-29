@@ -34,105 +34,80 @@ namespace WPFPrintingService
 
             PrintTemplateLayoutModel printTemplate = (PrintTemplateLayoutModel)baseValue;
 
-            long paperWidth = printTemplate.PrintTemplateLayout.PaperWidth;
-            if (paperWidth > 0)
-            {
-                stackPanel.Width = paperWidth;
-            }
-            else
-            {
-                stackPanel.Width = 500;
-            }
-            string paperBackground = printTemplate.PrintTemplateLayout.PaperBackground;
-            if (paperBackground == "")
-            {
-                stackPanel.Background = Brushes.White;
-            }
-            else
-            {
-                stackPanel.Background = _getColorByCode(paperBackground);
-            }
+
+            List<RowElement> rowsData = printTemplate.PrintTemplateLayout.Rows;
 
 
-            List<RowElement> rows = printTemplate.PrintTemplateLayout.Rows;
-            int numberOfNestedRowsToCreate = 0;
-            Grid tempRowGrid = new Grid();
-            int rowIndex = 0;
+            Grid tempRow = new Grid();
+            int rowDataIndex = 0;//this can't be change manually
+            bool isRowSpan = false;
 
 
-            List<NextNestedRowColumnIndex> c = new List<NextNestedRowColumnIndex>();
-            List<int> nextColIndex = new List<int>();
-            for (int currentRowIndex = 1; currentRowIndex <= rows.Count; currentRowIndex++)
+
+            List<GG> availableSpaces = new List<GG>();
+            int subRowIndex = 1;
+            while (rowDataIndex < rowsData.Count)
             {
-                //done
-                if (numberOfNestedRowsToCreate <= 0)
+                if (!isRowSpan)
                 {
-                    int nextColumnIndex = 0;
-                    rowIndex = 0;
-                    //create new grid as row
-                    Border rowBorder = new Border();
-                    rowBorder.BorderBrush = Brushes.Black;
-                    long rowBorderTop = rows[currentRowIndex - 1].Row.RowBorderTop;
-                    long rowBorderBottom = rows[currentRowIndex - 1].Row.RowBorderBottom;
-                    long rowBorderLeft = rows[currentRowIndex - 1].Row.RowBorderLeft;
-                    long rowBorderRight = rows[currentRowIndex - 1].Row.RowBorderRight;
-                    string rowBackground = rows[currentRowIndex - 1].Row.RowBackground;
+                    #region create new row
+                    subRowIndex = 1;
+                    //create non-row-span row
+                    Border row = new Border();
+                    row.BorderBrush = Brushes.Black;
+                    row.BorderThickness = new Thickness(2);
+                    Grid rowInner = new Grid();
+                    tempRow = rowInner;
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowInner.RowDefinitions.Add(rowDefinition);
+                    row.Child = rowInner;
+
+
+
+
+
+                    //style the row
+                    row.BorderBrush = Brushes.Black;
+                    long rowBorderTop = rowsData[rowDataIndex].Row.RowBorderTop;
+                    long rowBorderBottom = rowsData[rowDataIndex].Row.RowBorderBottom;
+                    long rowBorderLeft = rowsData[rowDataIndex].Row.RowBorderLeft;
+                    long rowBorderRight = rowsData[rowDataIndex].Row.RowBorderRight;
+                    string rowBackground = rowsData[rowDataIndex].Row.RowBackground;
                     if (rowBackground == "")
                     {
                         rowBackground = "transparent";
                     }
-                    rowBorder.Background = _getColorByCode(rowBackground);
-                    rowBorder.BorderThickness = new Thickness(rowBorderLeft, rowBorderTop, rowBorderRight, rowBorderBottom);
-                    Grid rowGrid = new Grid();
-                    rowBorder.Child = rowGrid;
-                    long rowHeight = rows[currentRowIndex - 1].Row.RowHeight;
+                    row.Background = _getColorByCode(rowBackground);
+                    row.BorderThickness = new Thickness(rowBorderLeft, rowBorderTop, rowBorderRight, rowBorderBottom);
+                    long rowHeight = rowsData[rowDataIndex].Row.RowHeight;
                     if (rowHeight > 0)
                     {
-                        rowBorder.Height = rowHeight;
+                        row.Height = rowHeight;
                     }
 
-                    //create column for each row
-                    List<ColumnElement> columns = rows[currentRowIndex - 1].Row.Columns;
 
-                    for (int currentColumnIndex = 1; currentColumnIndex <= columns.Count; currentColumnIndex++)
+
+
+
+                    List<ColumnElement> columnsData = rowsData[rowDataIndex].Row.Columns;
+
+
+                    //create column definition
+                    int createColumnDefinitionIndex = 0;
+                    foreach (ColumnElement eachColumnData in columnsData)
                     {
+                        //create column definition
+                        int colSpan = eachColumnData.Column.ColSpan;
+                        if (colSpan < 1) { colSpan = 1; }
 
-                        int rowSpanCount = columns[currentColumnIndex - 1].Column.RowSpan;
-                        if (rowSpanCount < 2)
-                        {
-                            //reset to 0
-                            rowSpanCount = 0;
-                        }
-                        else
-                        {
-                            rowSpanCount -= 1;
-                        }
+                        int columnDifintionCount = rowInner.ColumnDefinitions.Count;
+                        int remainingColumnDifinitionToCreate = (colSpan + createColumnDefinitionIndex) - columnDifintionCount;
+                        if (remainingColumnDifinitionToCreate <= 0) continue;
 
-                        int expectedRowDefintionToCreate = rowSpanCount;
-                        //if (rowSpanCount > 1)
-                        //{
-                        //    expectedRowDefintionToCreate = rowSpanCount + (currentRowIndex - 1);
-
-                        //}
-                        
-                        if (expectedRowDefintionToCreate > numberOfNestedRowsToCreate)
-                        {
-                            numberOfNestedRowsToCreate += (expectedRowDefintionToCreate - numberOfNestedRowsToCreate);
-                        }
-
-                        //check colspan
-                        int colSpanCount = columns[currentColumnIndex - 1].Column.ColSpan;
-                        if (colSpanCount < 2)
-                        {
-                            //reset to 1
-                            colSpanCount = 1;
-                        }
-                        long columnWidth = columns[currentColumnIndex - 1].Column.ColumnWidth / colSpanCount;
-                        //create column defintions
-                        for (int columnDefintionIndex = 0; columnDefintionIndex < colSpanCount; columnDefintionIndex++)
+                        long columnWidth = eachColumnData.Column.ColumnWidth;
+                        for (int colSpanIndex = 0; colSpanIndex < remainingColumnDifinitionToCreate; colSpanIndex++)
                         {
                             ColumnDefinition columnDefinition = new ColumnDefinition();
-
                             if (columnWidth > 0)
                             {
                                 columnDefinition.Width = new GridLength(columnWidth, GridUnitType.Pixel);
@@ -141,253 +116,196 @@ namespace WPFPrintingService
                             {
                                 columnDefinition.Width = new GridLength(1, GridUnitType.Star);
                             }
-                            rowGrid.ColumnDefinitions.Add(columnDefinition);
+                            rowInner.ColumnDefinitions.Add(columnDefinition);
+                            createColumnDefinitionIndex++;
+                        }
+                    }
+
+
+                    //create content
+                    int nextColumnIndex = 0;
+                    int colSpanRemaining = 0;
+                    int colDataIndex = 0;
+                    for (int eachColumnIndex = 0; eachColumnIndex < rowInner.ColumnDefinitions.Count; eachColumnIndex++)
+                    {
+                        if (colSpanRemaining > 1)
+                        {
+                            nextColumnIndex++;
+                            colSpanRemaining--;
+                            continue;
                         }
 
+                        ColumnColumn colData = columnsData[colDataIndex].Column;
+                        colDataIndex++;
+
+                        int colSpan = colData.ColSpan;
+                        if (colSpan < 1) { colSpan = 1; }
+                        colSpanRemaining = colSpan;
+
+                        int rowSpan = colData.RowSpan;
+                        if (rowSpan < 1) { rowSpan = 1; }
+                        if (rowSpan > 1)
+                        {
+                            isRowSpan = true;
+                        }
+
+
                         //create content
-                        //Border contentBorder = new Border();
-                        //contentBorder.BorderThickness = new Thickness(2);
-                        //contentBorder.BorderBrush = Brushes.Black;
-                        //TextBlock textBlock = new TextBlock();
-                        //textBlock.Text = columns[currentColumnIndex - 1].Column.Content;
-                        //textBlock.VerticalAlignment = VerticalAlignment.Center;
-                        //textBlock.TextAlignment = TextAlignment.Center;
-                        //contentBorder.Child = textBlock;
-                        Border contentBorder = _buildColumnContent(columns[currentColumnIndex - 1].Column, printTemplate);
-                        rowGrid.Children.Add(contentBorder);
-                        Grid.SetColumn(contentBorder, nextColumnIndex);
-                        Grid.SetColumnSpan(contentBorder, colSpanCount);
-                        Grid.SetRow(contentBorder, 0);
-                        Grid.SetRowSpan(contentBorder, rowSpanCount == 0 ? 1 : rowSpanCount);
-
-                        nextColumnIndex += colSpanCount;
-
+                        Border column = _buildColumnContent(colData, printTemplate);
+                        rowInner.Children.Add(column);
+                        Grid.SetColumn(column, nextColumnIndex);
+                        Grid.SetRow(column, 0);
+                        Grid.SetColumnSpan(column, colSpan);
+                        Grid.SetRowSpan(column, rowSpan);
+                        nextColumnIndex++;
                     }
 
                     //add row to stackpanel
-                    tempRowGrid = rowGrid;
-                    stackPanel.Children.Add(rowBorder);
+                    stackPanel.Children.Add(row);
+
+                    //increment row index each time new row
+                    rowDataIndex++;
+                    #endregion
                 }
                 else
                 {
-                    if(rowIndex == 0)
+                    //create sub row
+
+
+                    //find available space for next row column
+                    List<ColumnElement> lastRowOfSubRow = rowsData[rowDataIndex - 1].Row.Columns;
+
+
+                    //find new available space for this row by looking back to last row columns
+                    List<GG> tempAvailableSpaces = new List<GG>();
+                    int lastRowIndex = 0;
+                    int colSCount = 0;
+                    int availableSpacesCount = availableSpaces.Count;
+                    if (availableSpacesCount > 0)
                     {
-                        //add row definition to existed grid row
-                        RowDefinition rowDefinition1 = new RowDefinition();
-                        tempRowGrid.RowDefinitions.Add(rowDefinition1);
-                    }
-                    //add row definition to existed grid row
-                    RowDefinition rowDefinition = new RowDefinition();
-                    tempRowGrid.RowDefinitions.Add(rowDefinition);
-                    numberOfNestedRowsToCreate--;
-
-
-                    rowIndex++;
-
-
-                    //check if more column defintions need to create
-                    List<ColumnElement> columns = rows[currentRowIndex - 1].Row.Columns;
-                    int checkNumberOfColumnToCreateMore = 0;
-                    for (int columnDefintionIndex = 0; columnDefintionIndex < columns.Count; columnDefintionIndex++)
-                    {
-                        int colSpan = columns[columnDefintionIndex].Column.ColSpan;
-                        if (colSpan < 2)
+                        int rowDefToCreate = 0;
+                        for (int i = 0; i < tempRow.ColumnDefinitions.Count; i++)
                         {
-                            colSpan = 1;
-                        }
-                        checkNumberOfColumnToCreateMore += colSpan;
-                    }
-
-                    //create more new column defintion
-                    int numberOfColumnToCreateMore = checkNumberOfColumnToCreateMore - tempRowGrid.ColumnDefinitions.Count;
-                    if (numberOfColumnToCreateMore >= 1)
-                    {
-                        ColumnDefinition columnDefinition = new ColumnDefinition();
-                        tempRowGrid.ColumnDefinitions.Add(columnDefinition);
-                    }
-
-
-
-
-
-
-
-
-
-                    //saparate each columns to and remove colspan to get single column
-                    List<ColumnElement> previousColumnElements = rows[currentRowIndex - 2].Row.Columns;
-                    int remainColSpan = 1;
-                    int myIndex = 0;
-                    NextNestedRowColumnIndex nextNestedRowColumnIndex = new NextNestedRowColumnIndex();
-                    for (int i = 0; i < tempRowGrid.ColumnDefinitions.Count; i++)
-                    {
-                        int minStartIndex = 0;
-                        if (nextColIndex.Count > 0)
-                        {
-                            minStartIndex = nextColIndex.Min();
-                        }
-
-
-                        if (i >= minStartIndex)
-                        {
-                            if (remainColSpan > 1)
+                            //if it is row 2, 3 , 4,...
+                            if (availableSpaces[i].RowSpan > 0)//not available
                             {
-                                nextNestedRowColumnIndex.ColumnIndex = i;
-                                c.Add(nextNestedRowColumnIndex);
-                                remainColSpan--;
+                                tempAvailableSpaces.Add(new GG() { RowSpan = availableSpaces[i].RowSpan - 1 });
                             }
                             else
                             {
-                                if (myIndex < previousColumnElements.Count)
+                                if (lastRowIndex < lastRowOfSubRow.Count)
                                 {
-                                    int colSpan = previousColumnElements[myIndex].Column.ColSpan;
-                                    if (colSpan > 1)
+                                    ColumnColumn selectedColumn = lastRowOfSubRow[lastRowIndex].Column;
+                                    int cs = selectedColumn.ColSpan;
+                                    if (cs < 1) { cs = 1; }
+                                    int rs = selectedColumn.RowSpan;
+                                    if (rs < 1) { rs = 1; }
+                                    int ff = (rs - 1) + subRowIndex;
+                                    if (ff > tempRow.RowDefinitions.Count)
                                     {
-                                        remainColSpan = colSpan;
-                                        nextNestedRowColumnIndex = new NextNestedRowColumnIndex()
-                                        {
-                                            ColumnIndex = i,
-                                            RowIndex = rowIndex - 1,
-                                            RowSpan = previousColumnElements[myIndex].Column.RowSpan,
-                                            ColSpan = 1
-                                        };
-                                        c.Add(nextNestedRowColumnIndex);
+                                        rowDefToCreate = ff - tempRow.RowDefinitions.Count;
                                     }
-                                    else
-                                    {
-                                        c.Add(new NextNestedRowColumnIndex()
-                                        {
-                                            ColumnIndex = i,
-                                            RowIndex = rowIndex - 1,
-                                            RowSpan = previousColumnElements[myIndex].Column.RowSpan,
-                                            ColSpan = 1
-                                        });
-                                    }
-                                    myIndex++;
+                                    tempAvailableSpaces.Add(new GG() { RowSpan = rs - 1 });
+                                    lastRowIndex++;
+                                }
+                                else
+                                {
+                                    tempAvailableSpaces.Add(new GG() { RowSpan = 0 });
                                 }
                             }
                         }
-                        else
+                        availableSpaces = tempAvailableSpaces;
+
+                        //create more row definition
+                        for (int i = 0; i < rowDefToCreate; i++)
                         {
-                            c.Add(new NextNestedRowColumnIndex()
-                            {
-                                ColumnIndex = i,
-                                RowIndex = rowIndex - 1,
-                                RowSpan = 1,
-                                ColSpan = 1
-                            });
+                            RowDefinition rd = new RowDefinition();
+                            tempRow.RowDefinitions.Add(rd);
                         }
                     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    //create index for this row by using last row data
-                    nextColIndex.Clear();
-                    List<NextNestedRowColumnIndex> lastRowColumns = c.Where(e => e.RowIndex == (rowIndex-1)).ToList();
-                    int skipIndex = 0;
-                    //here the problem
-                    for (int jj = 0; jj < tempRowGrid.ColumnDefinitions.Count; jj++)
+                    else
                     {
-                        if (jj < lastRowColumns.Count)
+                        #region done create next available space for second row of sub row
+                        int rowDefToCreate = 0;
+                        //if it is row 1 from sub row (not the entired rows)
+                        for (int i = 0; i < tempRow.ColumnDefinitions.Count; i++)
                         {
-                            int rowSpanExisted = (lastRowColumns[jj].RowSpan + lastRowColumns[jj].RowIndex) - rowIndex;
-
-                            if (rowSpanExisted > 0)
+                            if (colSCount > 1)
                             {
-                                skipIndex = (lastRowColumns[jj].ColSpan + jj) - 1;
-                                continue;
+                                GG lastSaved = availableSpaces.Last();
+                                availableSpaces.Add(lastSaved);
+                                colSCount--;
                             }
-
-
-                            for (int m = 0; m < lastRowColumns[jj].ColSpan; m++)
+                            else
                             {
-                                skipIndex += (jj + m) - skipIndex;
-
-                                nextColIndex.Add(skipIndex);
+                                ColumnColumn selectedColumn = lastRowOfSubRow[lastRowIndex].Column;
+                                int rs = selectedColumn.RowSpan;
+                                if (rs < 1) { rs = 1; }
+                                if (rs > rowDefToCreate)
+                                {
+                                    rowDefToCreate = rs - 1;
+                                }
+                                int cs = selectedColumn.ColSpan;
+                                if (cs < 1) { cs = 1; }
+                                colSCount = cs;
+                                availableSpaces.Add(new GG() { RowSpan = rs - 1 });
+                                lastRowIndex++;
                             }
-
-
                         }
+
+                        //create more row defintion
+                        for (int i = 0; i < rowDefToCreate; i++)
+                        {
+                            RowDefinition rd = new RowDefinition();
+                            tempRow.RowDefinitions.Add(rd);
+                        }
+                        #endregion
                     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    int columnAvailableForNewRowColumn = availableSpaces.Where(e => e.RowSpan <= 0).Count();
+                    if (columnAvailableForNewRowColumn <= 0 || columnAvailableForNewRowColumn >= tempRow.ColumnDefinitions.Count)
+                    {
+                        isRowSpan = false;
+                        subRowIndex = 1;
+                        availableSpaces.Clear();
+                        continue;
+                    };
 
 
 
                     //create content
-                    for (int currentColumnIndex = 1; currentColumnIndex <= nextColIndex.Count; currentColumnIndex++)
+                    int nextColumnDataIndex = 0;
+                    List<ColumnElement> nextColumnData = rowsData[rowDataIndex].Row.Columns;
+                    for (int i = 0; i < tempRow.ColumnDefinitions.Count; i++)
                     {
-                        if (currentColumnIndex <= columns.Count)
+                        if (availableSpaces[i].RowSpan > 0)
                         {
-                            int colSpan = columns[currentColumnIndex - 1].Column.ColSpan;
-                            if (colSpan < 2)
-                            {
-                                colSpan = 1;
-                            }
-                            int rowSpan = columns[currentColumnIndex - 1].Column.RowSpan;
-                            if (rowSpan < 2)
-                            {
-                                rowSpan = 0;
-                            }
-
-                            //Border contentBorder = new Border();
-                            //contentBorder.BorderThickness = new Thickness(2);
-                            //contentBorder.BorderBrush = Brushes.Black;
-                            //TextBlock textBlock = new TextBlock();
-                            //textBlock.Text = columns[currentColumnIndex - 1].Column.Content;
-                            //textBlock.VerticalAlignment = VerticalAlignment.Center;
-                            //textBlock.TextAlignment = TextAlignment.Center;
-                            //contentBorder.Child = textBlock;
-                            Border contentBorder = _buildColumnContent(columns[currentColumnIndex - 1].Column, printTemplate);
-                            tempRowGrid.Children.Add(contentBorder);
-                            Grid.SetColumn(contentBorder, nextColIndex[currentColumnIndex - 1]);
-                            int columnColSpan = columns[currentColumnIndex - 1].Column.ColSpan;
-                            if(columnColSpan < 1)
-                            {
-                                columnColSpan = 1;
-                            }
-                            Grid.SetColumnSpan(contentBorder, columnColSpan);
-                            Grid.SetRow(contentBorder, rowIndex);
-                            int columnRowSpan = columns[currentColumnIndex - 1].Column.RowSpan;
-                            if(columnRowSpan < 1)
-                            {
-                                columnRowSpan = 1;
-                            }
-                            Grid.SetRowSpan(contentBorder, columnRowSpan);
+                            continue;
                         }
+
+                        ColumnColumn selectedColumnData = nextColumnData[nextColumnDataIndex].Column;
+                        int colSpan = selectedColumnData.ColSpan;
+                        if (colSpan < 1) { colSpan = 1; }
+                        int rowSpan = selectedColumnData.RowSpan;
+                        if (rowSpan < 1) { rowSpan = 1; }
+
+                        Border column = _buildColumnContent(selectedColumnData, printTemplate);
+                        tempRow.Children.Add(column);
+                        Grid.SetColumn(column, i);
+                        Grid.SetRow(column, subRowIndex);
+                        Grid.SetColumnSpan(column, colSpan);
+                        Grid.SetRowSpan(column, rowSpan);
+                        nextColumnDataIndex++;
                     }
+
+                    subRowIndex++;
+
+                    //increment row index each time new row
+                    rowDataIndex++;
                 }
             }
+
+
 
 
 
@@ -472,7 +390,7 @@ namespace WPFPrintingService
                     string masterForeground = printTemplate.PrintTemplateLayout.Foreground;
                     if (masterForeground == "") masterForeground = "black";
                     string foreground = column.Foreground;
-                    if(foreground == "" || foreground == "transparent")
+                    if (foreground == "" || foreground == "transparent")
                     {
                         foreground = masterForeground;
                     }
@@ -482,11 +400,6 @@ namespace WPFPrintingService
             }
 
             return contentBorder;
-        }
-
-        private static void OnPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-
         }
 
         private static HorizontalAlignment _getHorizontalAlignContent(string alignContent)
@@ -596,13 +509,15 @@ namespace WPFPrintingService
             barcodeImg.Source = barcodeImageSource;
             return barcodeImg;
         }
+
+        private static void OnPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
     }
 
-    internal class NextNestedRowColumnIndex
+    internal class GG
     {
-        public int ColSpan { get; set; }
         public int RowSpan { get; set; }
-        public int ColumnIndex { get; set; }
-        public int RowIndex { get; set; }
     }
 }

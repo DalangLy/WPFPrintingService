@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Printing;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -68,7 +69,9 @@ namespace WPFPrintingService
                 LocalPrintServer printServer = new LocalPrintServer();
                 PrintQueueCollection printQueues = printServer.GetPrintQueues();
                 PrintDialog dialog = new PrintDialog();
-                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                dialog.PrintTicket.PageOrientation = PageOrientation.Portrait;
+                //dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "POS80 Printer");
 
 
 
@@ -87,6 +90,11 @@ namespace WPFPrintingService
                 if (printTemplateLayoutModel == null) throw new CustomException("Print Template Layout must be valid");
 
                 PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                printTemplate.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                Size visualSize = printTemplate.DesiredSize;
+                printTemplate.Arrange(new Rect(new Point(0, 0), visualSize));
+                printTemplate.UpdateLayout();
+                dialog.PrintTicket.PageMediaSize = new PageMediaSize(visualSize.Width, visualSize.Height);
                 dialog.PrintVisual(printTemplate, "Test JSon Template");
 
                 this.IsShowPrintJSonTemplateDialog = false;

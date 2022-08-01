@@ -7,6 +7,7 @@ using System.Drawing.Printing;
 using System.Linq;
 using System.Net;
 using System.Printing;
+using System.Windows;
 using System.Windows.Controls;
 using WebSocketSharp.Server;
 
@@ -321,6 +322,11 @@ namespace WPFPrintingService
                             dialog.PrintQueue = selectedPrinter;
 
                             PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                            printTemplate.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                            Size visualSize = printTemplate.DesiredSize;
+                            printTemplate.Arrange(new Rect(new Point(0, 0), visualSize));
+                            printTemplate.UpdateLayout();
+                            dialog.PrintTicket.PageMediaSize = new PageMediaSize(visualSize.Width, visualSize.Height);
                             dialog.PrintVisual(printTemplate, "Print Document");
                         }
                         catch(CustomException ex)
@@ -385,6 +391,11 @@ namespace WPFPrintingService
                             dialog.PrintQueue = selectedPrinter;
 
                             PrintTemplate printTemplate = new PrintTemplate(printTemplateLayoutModel);
+                            printTemplate.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                            Size visualSize = printTemplate.DesiredSize;
+                            printTemplate.Arrange(new Rect(new Point(0, 0), visualSize));
+                            printTemplate.UpdateLayout();
+                            dialog.PrintTicket.PageMediaSize = new PageMediaSize(visualSize.Width, visualSize.Height);
                             dialog.PrintVisual(printTemplate, "Print Document");
 
                             //do kick cash drawer process

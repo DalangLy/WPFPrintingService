@@ -35,6 +35,29 @@ namespace WPFPrintingService
             PrintTemplateLayoutModel printTemplate = (PrintTemplateLayoutModel)baseValue;
 
 
+            //style paper
+            long paperWidth = printTemplate.PrintTemplateLayout.PaperWidth;
+            if (paperWidth > 0)
+            {
+                stackPanel.Width = paperWidth;
+            }
+            else
+            {
+                stackPanel.Width = 270;// paper roll 80mm
+            }
+            string paperBackground = printTemplate.PrintTemplateLayout.PaperBackground;
+            if (paperBackground == "")
+            {
+                stackPanel.Background = Brushes.White;
+            }
+            else
+            {
+                stackPanel.Background = _getColorByCode(paperBackground);
+            }
+
+
+
+
             List<RowElement> rowsData = printTemplate.PrintTemplateLayout.Rows;
 
 

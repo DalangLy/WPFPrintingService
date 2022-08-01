@@ -107,7 +107,16 @@ namespace WPFPrintingService
                     {
                         row.Height = rowHeight;
                     }
-
+                    long rowMarginTop = rowsData[rowDataIndex].Row.RowMarginTop;
+                    long rowMarginBottom = rowsData[rowDataIndex].Row.RowMarginBottom;
+                    long rowMarginLeft = rowsData[rowDataIndex].Row.RowMarginLeft;
+                    long rowMarginRight = rowsData[rowDataIndex].Row.RowMarginRight;
+                    row.Margin = new Thickness(rowMarginLeft, rowMarginTop, rowMarginRight, rowMarginBottom);
+                    long rowPaddingTop = rowsData[rowDataIndex].Row.RowPaddingTop;
+                    long rowPaddingBottom = rowsData[rowDataIndex].Row.RowPaddingBottom;
+                    long rowPaddingLeft = rowsData[rowDataIndex].Row.RowPaddingLeft;
+                    long rowPaddingRight = rowsData[rowDataIndex ].Row.RowPaddingRight;
+                    row.Padding = new Thickness(rowPaddingLeft, rowPaddingTop, rowPaddingRight, rowPaddingBottom);
 
 
 
@@ -367,6 +376,17 @@ namespace WPFPrintingService
                 contentBorder.Height = columnHeight;
             }
 
+            long columnMarginTop = column.ColumnMarginTop;
+            long columnMarginRight = column.ColumnMarginRight;
+            long columnMarginBottom = column.ColumnMarginBottom;
+            long columnMarginLeft = column.ColumnMarginLeft;
+            contentBorder.Margin = new Thickness(columnMarginLeft, columnMarginTop, columnMarginRight, columnMarginBottom);
+
+            long columnPaddingTop = column.ColumnPaddingTop;
+            long columnPaddingRight = column.ColumnPaddingRight;
+            long columnPaddingBottom = column.ColumnPaddingBottom;
+            long columnPaddingLeft = column.ColumnPaddingLeft;
+            contentBorder.Padding = new Thickness(columnPaddingLeft, columnPaddingTop, columnPaddingRight, columnPaddingBottom);
 
             long contentWidth = column.ContentWidth;
             long contentHeight = column.ContentHeight;

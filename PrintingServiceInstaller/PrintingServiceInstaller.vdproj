@@ -43,6 +43,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -97,6 +105,16 @@
         {
             "LaunchCondition"
             {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_FD8ED3F2FECB4FA6A178AC0FE47ABFDB"
+                {
+                "Name" = "8:.NET Core"
+                "Message" = "8:[VSDNETCOREMSG]"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:https://dotnet.microsoft.com/download/dotnet-core/[NetCoreVerMajorDotMinor]"
+                "IsNETCore" = "11:TRUE"
+                "Architecture" = "2:0"
+                "Runtime" = "2:0"
+                }
             }
         }
         "File"
@@ -188,15 +206,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:PrintingServiceInstaller"
-        "ProductCode" = "8:{644A7793-70A0-4A6E-B88D-9AE42EB1DDB2}"
-        "PackageCode" = "8:{96B6CA33-068A-4B75-A3F4-DC638C217145}"
+        "ProductCode" = "8:{C917F797-C0F5-4A74-B2E3-BFBD60C3A657}"
+        "PackageCode" = "8:{BF5CC6A6-9F74-4BFC-A0F7-A360C1A9C923}"
         "UpgradeCode" = "8:{CC96A5E0-EED8-4341-9112-02B9BC3AAF07}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:3.0.0.0"
         "Manufacturer" = "8:ATECH"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -738,7 +756,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_19AF8EA794884F3D97475FE19B873944"
             {
-            "SourcePath" = "8:..\\WPFPrintingService\\obj\\Release\\net6.0-windows\\WPFPrintingService.dll"
+            "SourcePath" = "8:..\\WPFPrintingService\\obj\\Debug\\net6.0-windows\\WPFPrintingService.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_63FB3D5237E54A67AF7E03817C176774"

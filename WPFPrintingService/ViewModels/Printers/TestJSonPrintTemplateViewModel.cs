@@ -70,8 +70,8 @@ namespace WPFPrintingService
                 PrintQueueCollection printQueues = printServer.GetPrintQueues();
                 PrintDialog dialog = new PrintDialog();
                 dialog.PrintTicket.PageOrientation = PageOrientation.Portrait;
-                //dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
-                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "POS80 Printer");
+                dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "Microsoft Print to PDF");
+                //dialog.PrintQueue = printQueues.FirstOrDefault(x => x.Name == "POS80 Printer");
 
 
 

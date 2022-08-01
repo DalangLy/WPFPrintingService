@@ -185,6 +185,22 @@ namespace WPFPrintingService
 
                     //add row to stackpanel
                     stackPanel.Children.Add(row);
+                    
+                    //add row gap
+                    if (rowDataIndex < rowsData.Count)
+                    {
+                        long rowGap = printTemplate.PrintTemplateLayout.RowGap;
+                        if(rowGap < 0)
+                        {
+                            rowGap = 0;
+                        }
+                        Separator separator = new Separator();
+                        separator.Height = rowGap;
+                        separator.Background = Brushes.Transparent;
+                        separator.Margin = new Thickness(0);
+                        separator.Padding = new Thickness(0);
+                        stackPanel.Children.Add(separator);
+                    }
 
                     //increment row index each time new row
                     rowDataIndex++;

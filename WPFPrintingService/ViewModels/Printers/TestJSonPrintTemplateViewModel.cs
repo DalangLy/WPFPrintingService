@@ -103,9 +103,9 @@ namespace WPFPrintingService
             {
                 PrintJsonTemplateStatus = $"Print Json Failed : {ex.Message}";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                PrintJsonTemplateStatus = $"Invalid JSON Syntax";
+                PrintJsonTemplateStatus = $"Invalid JSON Syntax : {ex.Message}";
             }
         }
     }

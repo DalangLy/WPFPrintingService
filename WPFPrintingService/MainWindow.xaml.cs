@@ -84,6 +84,11 @@ namespace WPFPrintingService
             //    }
             //}
         }
+
+        private void btnOnOfflineExit_Click(object sender, RoutedEventArgs e)
+        {
+            _shutdownThisApplication();
+        }
     }
 
     public sealed class ParametrizedBooleanToVisibilityConverter : IValueConverter

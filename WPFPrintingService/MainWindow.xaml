@@ -63,7 +63,11 @@
             <materialDesign:DialogHost.DialogContent>
                 <StackPanel
                     Margin="16">
+                    <materialDesign:PackIcon Kind="CloseNetwork" HorizontalAlignment="Center" Width="50" Height="50" Foreground="Red"/>
+                    <Separator Background="Transparent" Height="10"/>
                     <TextBlock Text="Device Not Connect to LAN Or Network"/>
+                    <Separator Background="Transparent" Height="10"/>
+                    <Button x:Name="btnOnOfflineExit" Content="Exit" Click="btnOnOfflineExit_Click" Height="48"/>
                 </StackPanel>
             </materialDesign:DialogHost.DialogContent>
         </materialDesign:DialogHost>

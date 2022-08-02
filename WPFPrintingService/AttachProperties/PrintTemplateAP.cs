@@ -386,7 +386,7 @@ namespace WPFPrintingService
             long columnPaddingRight = column.ColumnPaddingRight;
             long columnPaddingBottom = column.ColumnPaddingBottom;
             long columnPaddingLeft = column.ColumnPaddingLeft;
-            contentBorder.Padding = new Thickness(columnPaddingLeft, columnPaddingTop, columnPaddingRight, columnPaddingBottom);
+            contentBorder.Padding = new Thickness(columnPaddingLeft <= 0 ? 0 : columnPaddingLeft, columnPaddingTop <= 0 ? 2 : columnPaddingTop, columnPaddingRight <= 0 ? 0 : columnPaddingRight, columnPaddingBottom <= 0 ? 2 : columnPaddingBottom);
 
             long contentWidth = column.ContentWidth;
             long contentHeight = column.ContentHeight;
@@ -439,6 +439,14 @@ namespace WPFPrintingService
                     textBlock.HorizontalAlignment = _getHorizontalAlignContent(column.ContentHorizontalAlign);
                     textBlock.VerticalAlignment = _getVerticalAlignContent(column.ContentVerticalAlign);
                     textBlock.TextWrapping = TextWrapping.Wrap;
+                    string masterFontFamily = printTemplate.PrintTemplateLayout.FontFamily;
+                    if (masterFontFamily == "") masterFontFamily = "MicrosoftU+0020YaHei";
+                    string fontFamily = column.FontFamily;
+                    if(fontFamily == "")
+                    {
+                        fontFamily = masterFontFamily;
+                    }
+                    textBlock.FontFamily = new FontFamily(fontFamily);
                     long masterFontSize = printTemplate.PrintTemplateLayout.FontSize;
                     long fontSize = column.FontSize;
                     if (fontSize <= 0)

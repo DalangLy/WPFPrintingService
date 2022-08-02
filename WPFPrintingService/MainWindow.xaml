@@ -109,7 +109,7 @@
             VerticalAlignment="Center"
             Margin="5"
             DataContext="{x:Static local:WebSocketServerViewModel.Instance}"
-            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource InvertBoolToVisConverter} }">
+            Visibility="{Binding IsServiceRunning, Converter={local:InvertBoolToVisibilityConverter}}">
             <Button
             DataContext="{x:Static local:StartServiceViewModel.Instance}"
             Command="{Binding StartServiceCommand}"

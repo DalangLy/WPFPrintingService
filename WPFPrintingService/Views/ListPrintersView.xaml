@@ -10,47 +10,6 @@
              d:DesignWidth="800"
              DataContext="{x:Static local:PrintersViewModel.Instance}">
 
-    <!--<DataGrid
-        Margin="0 8 0 0"
-        ItemsSource="{Binding Printers}"
-        CanUserSortColumns="True"
-        CanUserAddRows="False"
-        AutoGenerateColumns="False"
-        materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-        materialDesign:DataGridAssist.ColumnHeaderPadding="8">
-        <DataGrid.Columns>
-            <materialDesign:DataGridTextColumn/>
-            <materialDesign:DataGridTextColumn
-                Binding="{Binding Name}"
-                Header="Name"
-                IsReadOnly="true"
-                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
-            <materialDesign:DataGridTextColumn
-                Binding="{Binding IsOnline}"
-                Header="Offline"
-                IsReadOnly="true"
-                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
-            <materialDesign:DataGridTextColumn
-                Binding="{Binding IsPrinting}"
-                Header="Printing"
-                IsReadOnly="true"
-                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
-            <materialDesign:DataGridTextColumn
-                Binding="{Binding IsBusy}"
-                Header="Busy"
-                IsReadOnly="true"
-                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
-            <materialDesign:DataGridTextColumn
-                Binding="{Binding IsDoorOpened}"
-                Header="Door Opened"
-                IsReadOnly="true"
-                ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}" />
-        </DataGrid.Columns>
-    </DataGrid>-->
-
-
-
-
     <DataGrid
         x:Name="GG"
             ItemsSource="{Binding Printers}"

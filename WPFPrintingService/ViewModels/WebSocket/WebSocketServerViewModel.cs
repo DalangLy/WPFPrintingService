@@ -37,7 +37,7 @@ namespace WPFPrintingService
         private bool _isServiceRunning;
         public bool IsServiceRunning
         {
-            get { return true; }
+            get { return _isServiceRunning; }
             set
             {
                 _isServiceRunning = value;
@@ -77,6 +77,7 @@ namespace WPFPrintingService
 
         public void stopService()
         {
+            if (this.WebSocketServer == null) return;
             this.WebSocketServer.RemoveWebSocketService("/");
             this.WebSocketServer.Stop();
             if (!this.WebSocketServer.IsListening)

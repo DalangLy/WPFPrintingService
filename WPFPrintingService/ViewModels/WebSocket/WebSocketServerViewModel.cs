@@ -45,13 +45,34 @@ namespace WPFPrintingService
             }
         }
 
-        public WebSocketServer WebSocketServer;
+        public WebSocketServer? WebSocketServer;
+
+        private bool _isDeviceWirelessConnectionFailed;
+
+        public bool IsDeviceWirelessConnectionFailed
+        {
+            get { return _isDeviceWirelessConnectionFailed; }
+            set { 
+                _isDeviceWirelessConnectionFailed = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private WebSocketServerViewModel()
         {
             //initial websocket server
-            this.WebSocketServer = new WebSocketServer(IPAddress.Parse(AppSingleton.GetInstance.SystemIP), AppSingleton.GetInstance.Port);
-            this.WebSocketServer.KeepClean = false;
+            try
+            {
+                IsDeviceWirelessConnectionFailed = false;
+
+                this.WebSocketServer = new WebSocketServer(IPAddress.Parse(AppSingleton.GetInstance.SystemIP), AppSingleton.GetInstance.Port);
+                this.WebSocketServer.KeepClean = false;
+            }
+            catch (Exception)
+            {
+                IsDeviceWirelessConnectionFailed = true;
+            }
         }
 
         public void stopService()
@@ -67,6 +88,7 @@ namespace WPFPrintingService
       
         public void StartService()
         {
+            if (this.WebSocketServer == null) return;
             //add web socket server listeners
             this.WebSocketServer.AddWebSocketService<WebSocketServerListener>("/", () => new WebSocketServerListener((sender, args, connectedClientId, connectedClientIp, connectedClientName) =>
                 {

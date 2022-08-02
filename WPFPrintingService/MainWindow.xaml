@@ -50,6 +50,24 @@
             <RowDefinition Height="70"/>
         </Grid.RowDefinitions>
         
+        <!--Not Connection To Land Dialog-->
+        <materialDesign:DialogHost
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.RowSpan="6"
+            Grid.ColumnSpan="7"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Panel.ZIndex="100"
+            IsOpen="{Binding IsDeviceWirelessConnectionFailed}">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel
+                    Margin="16">
+                    <TextBlock Text="Device Not Connect to LAN Or Network"/>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+        
         <!--Label Service-->
         <StackPanel 
             Grid.Row="0" 

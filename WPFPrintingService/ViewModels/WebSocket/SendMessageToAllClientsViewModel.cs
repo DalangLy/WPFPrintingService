@@ -84,13 +84,33 @@ namespace WPFPrintingService
             this.CloseSentMessageDialogCommand = new CloseSentMessageDialogCommand(this);
         }
 
+        private string _sendMessageToAllClientFailedMessage;
+
+        public string SendMessageToAllClientFailedMessage
+        {
+            get { return _sendMessageToAllClientFailedMessage; }
+            set { 
+                _sendMessageToAllClientFailedMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private async Task InvokeSendMessageToAllClient(object p)
         {
             if (p == null) return;
+            if (this._webSocketClientViewModel.WebSocketServer == null) return;
+            if (!this._webSocketClientViewModel.WebSocketServer.IsListening)
+            {
+                this.IsNoClientConnected = true;
+                this.SendMessageToAllClientFailedMessage = "Server Not Running";
+                return;
+            }
             ObservableCollection<ClientWebSocketModel> list = (ObservableCollection<ClientWebSocketModel>)p;
             if(list.Count <= 0)
             {
                 this.IsNoClientConnected = true;
+                this.SendMessageToAllClientFailedMessage = "No Client Connected";
                 return;
             }
 

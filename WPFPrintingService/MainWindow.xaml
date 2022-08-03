@@ -410,7 +410,7 @@
             <materialDesign:DialogHost.DialogContent>
                 <StackPanel
                     Margin="16">
-                    <TextBlock Text="No Client Connected"/>
+                    <TextBlock Text="{Binding SendMessageToAllClientFailedMessage}"/>
                 </StackPanel>
             </materialDesign:DialogHost.DialogContent>
         </materialDesign:DialogHost>

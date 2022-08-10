@@ -36,7 +36,7 @@ namespace WPFPrintingService
 
 
             //style paper
-            long paperWidth = printTemplate.PrintTemplateLayout.PaperWidth;
+            long paperWidth = printTemplate.PrintTemplateLayout.PaperWidth ?? 0;
             if (paperWidth > 0)
             {
                 stackPanel.Width = paperWidth;
@@ -91,10 +91,10 @@ namespace WPFPrintingService
 
                     //style the row
                     row.BorderBrush = Brushes.Black;
-                    long rowBorderTop = rowsData[rowDataIndex].Row.RowBorderTop;
-                    long rowBorderBottom = rowsData[rowDataIndex].Row.RowBorderBottom;
-                    long rowBorderLeft = rowsData[rowDataIndex].Row.RowBorderLeft;
-                    long rowBorderRight = rowsData[rowDataIndex].Row.RowBorderRight;
+                    long rowBorderTop = rowsData[rowDataIndex].Row.RowBorderTop ?? 0;
+                    long rowBorderBottom = rowsData[rowDataIndex].Row.RowBorderBottom ?? 0;
+                    long rowBorderLeft = rowsData[rowDataIndex].Row.RowBorderLeft ?? 0;
+                    long rowBorderRight = rowsData[rowDataIndex].Row.RowBorderRight ?? 0;
                     string rowBackground = rowsData[rowDataIndex].Row.RowBackground;
                     if (rowBackground == "")
                     {
@@ -102,20 +102,20 @@ namespace WPFPrintingService
                     }
                     row.Background = _getColorByCode(rowBackground);
                     row.BorderThickness = new Thickness(rowBorderLeft, rowBorderTop, rowBorderRight, rowBorderBottom);
-                    long rowHeight = rowsData[rowDataIndex].Row.RowHeight;
+                    long rowHeight = rowsData[rowDataIndex].Row.RowHeight ?? 0;
                     if (rowHeight > 0)
                     {
                         row.Height = rowHeight;
                     }
-                    long rowMarginTop = rowsData[rowDataIndex].Row.RowMarginTop;
-                    long rowMarginBottom = rowsData[rowDataIndex].Row.RowMarginBottom;
-                    long rowMarginLeft = rowsData[rowDataIndex].Row.RowMarginLeft;
-                    long rowMarginRight = rowsData[rowDataIndex].Row.RowMarginRight;
+                    long rowMarginTop = rowsData[rowDataIndex].Row.RowMarginTop ?? 0;
+                    long rowMarginBottom = rowsData[rowDataIndex].Row.RowMarginBottom ?? 0;
+                    long rowMarginLeft = rowsData[rowDataIndex].Row.RowMarginLeft ?? 0;
+                    long rowMarginRight = rowsData[rowDataIndex].Row.RowMarginRight ?? 0;
                     row.Margin = new Thickness(rowMarginLeft, rowMarginTop, rowMarginRight, rowMarginBottom);
-                    long rowPaddingTop = rowsData[rowDataIndex].Row.RowPaddingTop;
-                    long rowPaddingBottom = rowsData[rowDataIndex].Row.RowPaddingBottom;
-                    long rowPaddingLeft = rowsData[rowDataIndex].Row.RowPaddingLeft;
-                    long rowPaddingRight = rowsData[rowDataIndex ].Row.RowPaddingRight;
+                    long rowPaddingTop = rowsData[rowDataIndex].Row.RowPaddingTop ?? 0;
+                    long rowPaddingBottom = rowsData[rowDataIndex].Row.RowPaddingBottom ?? 0;
+                    long rowPaddingLeft = rowsData[rowDataIndex].Row.RowPaddingLeft ?? 0;
+                    long rowPaddingRight = rowsData[rowDataIndex ].Row.RowPaddingRight ?? 0;
                     row.Padding = new Thickness(rowPaddingLeft, rowPaddingTop, rowPaddingRight, rowPaddingBottom);
 
 
@@ -129,14 +129,14 @@ namespace WPFPrintingService
                     foreach (ColumnElement eachColumnData in columnsData)
                     {
                         //create column definition
-                        int colSpan = eachColumnData.Column.ColSpan;
+                        int colSpan = eachColumnData.Column.ColSpan ?? 0;
                         if (colSpan < 1) { colSpan = 1; }
 
                         int columnDifintionCount = rowInner.ColumnDefinitions.Count;
                         int remainingColumnDifinitionToCreate = (colSpan + createColumnDefinitionIndex) - columnDifintionCount;
                         if (remainingColumnDifinitionToCreate <= 0) continue;
 
-                        long columnWidth = eachColumnData.Column.ColumnWidth;
+                        long columnWidth = eachColumnData.Column.ColumnWidth ?? 0;
                         for (int colSpanIndex = 0; colSpanIndex < remainingColumnDifinitionToCreate; colSpanIndex++)
                         {
                             ColumnDefinition columnDefinition = new ColumnDefinition();
@@ -170,11 +170,11 @@ namespace WPFPrintingService
                         ColumnColumn colData = columnsData[colDataIndex].Column;
                         colDataIndex++;
 
-                        int colSpan = colData.ColSpan;
+                        int colSpan = colData.ColSpan ?? 0;
                         if (colSpan < 1) { colSpan = 1; }
                         colSpanRemaining = colSpan;
 
-                        int rowSpan = colData.RowSpan;
+                        int rowSpan = colData.RowSpan ?? 0;
                         if (rowSpan < 1) { rowSpan = 1; }
                         if (rowSpan > 1)
                         {
@@ -198,7 +198,7 @@ namespace WPFPrintingService
                     //add row gap
                     if (rowDataIndex < rowsData.Count)
                     {
-                        long rowGap = printTemplate.PrintTemplateLayout.RowGap;
+                        long rowGap = printTemplate.PrintTemplateLayout.RowGap ?? 0;
                         if(rowGap < 0)
                         {
                             rowGap = 0;
@@ -244,9 +244,9 @@ namespace WPFPrintingService
                                 if (lastRowIndex < lastRowOfSubRow.Count)
                                 {
                                     ColumnColumn selectedColumn = lastRowOfSubRow[lastRowIndex].Column;
-                                    int cs = selectedColumn.ColSpan;
+                                    int cs = selectedColumn.ColSpan ?? 0;
                                     if (cs < 1) { cs = 1; }
-                                    int rs = selectedColumn.RowSpan;
+                                    int rs = selectedColumn.RowSpan ?? 0;
                                     if (rs < 1) { rs = 1; }
                                     int ff = (rs - 1) + subRowIndex;
                                     if (ff > tempRow.RowDefinitions.Count)
@@ -287,13 +287,13 @@ namespace WPFPrintingService
                             else
                             {
                                 ColumnColumn selectedColumn = lastRowOfSubRow[lastRowIndex].Column;
-                                int rs = selectedColumn.RowSpan;
+                                int rs = selectedColumn.RowSpan ?? 0;
                                 if (rs < 1) { rs = 1; }
                                 if (rs > rowDefToCreate)
                                 {
                                     rowDefToCreate = rs - 1;
                                 }
-                                int cs = selectedColumn.ColSpan;
+                                int cs = selectedColumn.ColSpan ?? 0;
                                 if (cs < 1) { cs = 1; }
                                 colSCount = cs;
                                 availableSpaces.Add(new GG() { RowSpan = rs - 1 });
@@ -332,9 +332,9 @@ namespace WPFPrintingService
                         }
 
                         ColumnColumn selectedColumnData = nextColumnData[nextColumnDataIndex].Column;
-                        int colSpan = selectedColumnData.ColSpan;
+                        int colSpan = selectedColumnData.ColSpan ?? 0;
                         if (colSpan < 1) { colSpan = 1; }
-                        int rowSpan = selectedColumnData.RowSpan;
+                        int rowSpan = selectedColumnData.RowSpan ?? 0;
                         if (rowSpan < 1) { rowSpan = 1; }
 
                         Border column = _buildColumnContent(selectedColumnData, printTemplate);
@@ -363,33 +363,33 @@ namespace WPFPrintingService
         private static Border _buildColumnContent(ColumnColumn column, PrintTemplateLayoutModel printTemplate)
         {
             Border contentBorder = new Border();
-            long columnBorderTop = column.ColumnBorderTop;
-            long columnBorderRight = column.ColumnBorderRight;
-            long columnBorderBottom = column.ColumnBorderBottom;
-            long columnBorderLeft = column.ColumnBorderLeft;
+            long columnBorderTop = column.ColumnBorderTop ?? 0;
+            long columnBorderRight = column.ColumnBorderRight ?? 0;
+            long columnBorderBottom = column.ColumnBorderBottom ?? 0;
+            long columnBorderLeft = column.ColumnBorderLeft ?? 0;
             contentBorder.BorderThickness = new Thickness(columnBorderLeft, columnBorderTop, columnBorderRight, columnBorderBottom);
             contentBorder.BorderBrush = Brushes.Black;
             contentBorder.Background = _getColorByCode(column.ColumnBackground);
-            long columnHeight = column.ColumnHeight;
+            long columnHeight = column.ColumnHeight ?? 0;
             if (columnHeight > 0)
             {
                 contentBorder.Height = columnHeight;
             }
 
-            long columnMarginTop = column.ColumnMarginTop;
-            long columnMarginRight = column.ColumnMarginRight;
-            long columnMarginBottom = column.ColumnMarginBottom;
-            long columnMarginLeft = column.ColumnMarginLeft;
+            long columnMarginTop = column.ColumnMarginTop ?? 0;
+            long columnMarginRight = column.ColumnMarginRight ?? 0;
+            long columnMarginBottom = column.ColumnMarginBottom ?? 0;
+            long columnMarginLeft = column.ColumnMarginLeft ?? 0;
             contentBorder.Margin = new Thickness(columnMarginLeft, columnMarginTop, columnMarginRight, columnMarginBottom);
 
-            long columnPaddingTop = column.ColumnPaddingTop;
-            long columnPaddingRight = column.ColumnPaddingRight;
-            long columnPaddingBottom = column.ColumnPaddingBottom;
-            long columnPaddingLeft = column.ColumnPaddingLeft;
+            long columnPaddingTop = column.ColumnPaddingTop ?? 0;
+            long columnPaddingRight = column.ColumnPaddingRight ?? 0;
+            long columnPaddingBottom = column.ColumnPaddingBottom ?? 0;
+            long columnPaddingLeft = column.ColumnPaddingLeft ?? 0;
             contentBorder.Padding = new Thickness(columnPaddingLeft <= 0 ? 0 : columnPaddingLeft, columnPaddingTop <= 0 ? 2 : columnPaddingTop, columnPaddingRight <= 0 ? 0 : columnPaddingRight, columnPaddingBottom <= 0 ? 2 : columnPaddingBottom);
 
-            long contentWidth = column.ContentWidth;
-            long contentHeight = column.ContentHeight;
+            long contentWidth = column.ContentWidth ?? 0;
+            long contentHeight = column.ContentHeight ?? 0;
             switch (column.ContentType)
             {
                 case "image":
@@ -427,21 +427,21 @@ namespace WPFPrintingService
                     textBlock.VerticalAlignment = _getVerticalAlignContent(column.ContentVerticalAlign);
                     textBlock.TextWrapping = TextWrapping.Wrap;
                     string masterFontFamily = printTemplate.PrintTemplateLayout.FontFamily;
-                    if (masterFontFamily == "") masterFontFamily = "MicrosoftU+0020YaHei";
+                    if (masterFontFamily == "" || masterFontFamily == null) masterFontFamily = "MicrosoftU+0020YaHei";
                     string fontFamily = column.FontFamily;
-                    if(fontFamily == "")
+                    if(fontFamily == "" || fontFamily == null)
                     {
                         fontFamily = masterFontFamily;
                     }
                     textBlock.FontFamily = new FontFamily(fontFamily);
-                    long masterFontSize = printTemplate.PrintTemplateLayout.FontSize;
-                    long fontSize = column.FontSize;
+                    long masterFontSize = printTemplate.PrintTemplateLayout.FontSize ?? 0;
+                    long fontSize = column.FontSize ?? 0;
                     if (fontSize <= 0)
                     {
                         fontSize = masterFontSize;
                     }
                     textBlock.FontSize = fontSize;
-                    textBlock.FontWeight = column.Bold ? FontWeights.Bold : FontWeights.Regular;
+                    textBlock.FontWeight = (column.Bold ?? false) ? FontWeights.Bold : FontWeights.Regular;
                     string masterForeground = printTemplate.PrintTemplateLayout.Foreground;
                     if (masterForeground == "") masterForeground = "black";
                     string foreground = column.Foreground;
@@ -520,7 +520,7 @@ namespace WPFPrintingService
         private static Brush _getColorByCode(string colorCode)
         {
             try
-            {
+            {   if(colorCode == null) return Brushes.Transparent;
                 return new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
             }
             catch (Exception)

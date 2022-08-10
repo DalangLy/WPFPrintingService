@@ -443,9 +443,9 @@ namespace WPFPrintingService
                     textBlock.FontSize = fontSize;
                     textBlock.FontWeight = (column.Bold ?? false) ? FontWeights.Bold : FontWeights.Regular;
                     string masterForeground = printTemplate.PrintTemplateLayout.Foreground;
-                    if (masterForeground == "") masterForeground = "black";
+                    if (masterForeground == "" || masterForeground == null) masterForeground = "black";
                     string foreground = column.Foreground;
-                    if (foreground == "" || foreground == "transparent")
+                    if (foreground == "" || foreground == "transparent" || foreground == null)
                     {
                         foreground = masterForeground;
                     }

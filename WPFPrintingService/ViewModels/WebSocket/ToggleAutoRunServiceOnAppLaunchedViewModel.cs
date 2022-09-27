@@ -47,6 +47,7 @@ namespace WPFPrintingService
         public void Execute(object? parameter)
         {
             if (parameter == null) return;
+            //save isCheck status to app property local storage
             bool isChecked = (bool)parameter;
             Properties.Settings.Default.RunServiceOnAppLaunched = isChecked;
             Properties.Settings.Default.Save();

@@ -355,12 +355,14 @@ namespace WPFPrintingService
                         catch(CustomException ex)
                         {
                             e.Cancel = true;
+                            if (this.WebSocketServer == null) return;
                             //Notify Back to sender
                             this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo(ex.Message, clientId);
                         }
                         catch (Exception ex)
                         {
                             e.Cancel = true;
+                            if (this.WebSocketServer == null) return;
                             //Notify Back to sender
                             this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo($"Print Failed : {ex.Message}", clientId);
                         }

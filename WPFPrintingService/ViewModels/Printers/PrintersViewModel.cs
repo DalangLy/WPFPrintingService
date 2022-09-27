@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Management;
 using System.Printing;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -42,10 +44,30 @@ namespace WPFPrintingService
 
             foreach (PrintQueue printer in GetAllSystemPrintersSingleton.GetInstance.Printers)
             {
+                bool IsOffline = false;
+                ManagementObjectSearcher searcher = new
+                ManagementObjectSearcher("SELECT * FROM Win32_Printer where Name='" + printer.Name + "'");
+                foreach (ManagementObject foundPrinter in searcher.Get())
+                {
+                    //foreach (PropertyData property in foundPrinter.Properties)
+                    //{
+                    //    //Debug.WriteLine(property.Name);
+                    //    //foreach (QualifierData q in property.Qualifiers)
+                    //    //{
+                            
+                    //    //}
+                    //    //Console.WriteLine();
+                    //}
+                    ////Debug.WriteLine(foundPrinter["Queued"]);
+                    //Debug.WriteLine(foundPrinter["Availability"]);
+                    IsOffline = (bool)foundPrinter["WorkOffline"];
+                }
+                
+
                 Printers.Add(new PrinterModel()
                 {
                     Name = printer.Name,
-                    IsOnline = printer.IsOffline,
+                    IsOnline = !IsOffline,
                     IsBusy = printer.IsBusy,
                     IsDoorOpened = printer.IsDoorOpened,
                     HasToner = printer.HasToner,

@@ -50,7 +50,7 @@ namespace WPFPrintingService
             
             if (isChecked)
             {
-                //set run on start up
+                //set app to run on start up
                 RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 Assembly curAssembly = Assembly.GetExecutingAssembly();
                 //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
@@ -58,7 +58,7 @@ namespace WPFPrintingService
             }
             else
             {
-                //remove run on start up
+                //remove app from runing at start up
                 RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 Assembly curAssembly = Assembly.GetExecutingAssembly();
                 //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
@@ -67,7 +67,7 @@ namespace WPFPrintingService
             Properties.Settings.Default.LaunchAppAtWindowsStartUp = isChecked;
             Properties.Settings.Default.Save();
 
-            //update ui
+            //update ui (checkbox to check or uncheck)
             this._autoLaunchAppAtWindowsStartUpViewModel.IsLaunchAppAtWindowsStartUp = isChecked;
         }
     }

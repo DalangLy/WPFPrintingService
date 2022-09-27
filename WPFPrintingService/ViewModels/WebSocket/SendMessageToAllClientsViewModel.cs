@@ -115,7 +115,7 @@ namespace WPFPrintingService
             }
 
             this.IsSendingMessageToAllClients = true; //show sending progress dialog
-            await Task.Delay(1000 * 5);//delay 5 seconds
+            await Task.Delay(1000);//delay 1 seconds
             this._webSocketClientViewModel.WebSocketServer.WebSocketServices["/"].Sessions.Broadcast(_messageInput);
             this.IsSendingMessageToAllClients = false; //remove sending progress dialog
             this.IsSentMessageToAllClientsSuccess = true;//show sent dialog

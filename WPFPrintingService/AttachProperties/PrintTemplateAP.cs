@@ -43,7 +43,7 @@ namespace WPFPrintingService
             }
             else
             {
-                stackPanel.Width = 270;// paper roll 80mm
+                stackPanel.Width = 270;// paper width (roll 80mm print paper) 
             }
             string paperBackground = printTemplate.PrintTemplateLayout.PaperBackground;
             if (paperBackground == "")
@@ -52,7 +52,7 @@ namespace WPFPrintingService
             }
             else
             {
-                stackPanel.Background = _getColorByCode(paperBackground);
+                stackPanel.Background = _getColorByColorName(paperBackground);
             }
 
 
@@ -67,7 +67,7 @@ namespace WPFPrintingService
 
 
 
-            List<GG> availableSpaces = new List<GG>();
+            List<EmptySpace> availableSpaces = new List<EmptySpace>();
             int subRowIndex = 1;
             while (rowDataIndex < rowsData.Count)
             {
@@ -89,7 +89,7 @@ namespace WPFPrintingService
 
 
 
-                    //style the row
+                    //style each row
                     row.BorderBrush = Brushes.Black;
                     long rowBorderTop = rowsData[rowDataIndex].Row.RowBorderTop ?? 0;
                     long rowBorderBottom = rowsData[rowDataIndex].Row.RowBorderBottom ?? 0;
@@ -100,7 +100,7 @@ namespace WPFPrintingService
                     {
                         rowBackground = "transparent";
                     }
-                    row.Background = _getColorByCode(rowBackground);
+                    row.Background = _getColorByColorName(rowBackground);
                     row.BorderThickness = new Thickness(rowBorderLeft, rowBorderTop, rowBorderRight, rowBorderBottom);
                     long rowHeight = rowsData[rowDataIndex].Row.RowHeight ?? 0;
                     if (rowHeight > 0)
@@ -154,7 +154,7 @@ namespace WPFPrintingService
                     }
 
 
-                    //create content
+                    //create column content
                     int nextColumnIndex = 0;
                     int colSpanRemaining = 0;
                     int colDataIndex = 0;
@@ -225,7 +225,7 @@ namespace WPFPrintingService
 
 
                     //find new available space for this row by looking back to last row columns
-                    List<GG> tempAvailableSpaces = new List<GG>();
+                    List<EmptySpace> tempAvailableSpaces = new List<EmptySpace>();
                     int lastRowIndex = 0;
                     int colSCount = 0;
                     int availableSpacesCount = availableSpaces.Count;
@@ -237,7 +237,7 @@ namespace WPFPrintingService
                             //if it is row 2, 3 , 4,...
                             if (availableSpaces[i].RowSpan > 0)//not available
                             {
-                                tempAvailableSpaces.Add(new GG() { RowSpan = availableSpaces[i].RowSpan - 1 });
+                                tempAvailableSpaces.Add(new EmptySpace() { RowSpan = availableSpaces[i].RowSpan - 1 });
                             }
                             else
                             {
@@ -253,12 +253,12 @@ namespace WPFPrintingService
                                     {
                                         rowDefToCreate = ff - tempRow.RowDefinitions.Count;
                                     }
-                                    tempAvailableSpaces.Add(new GG() { RowSpan = rs - 1 });
+                                    tempAvailableSpaces.Add(new EmptySpace() { RowSpan = rs - 1 });
                                     lastRowIndex++;
                                 }
                                 else
                                 {
-                                    tempAvailableSpaces.Add(new GG() { RowSpan = 0 });
+                                    tempAvailableSpaces.Add(new EmptySpace() { RowSpan = 0 });
                                 }
                             }
                         }
@@ -280,7 +280,7 @@ namespace WPFPrintingService
                         {
                             if (colSCount > 1)
                             {
-                                GG lastSaved = availableSpaces.Last();
+                                EmptySpace lastSaved = availableSpaces.Last();
                                 availableSpaces.Add(lastSaved);
                                 colSCount--;
                             }
@@ -296,7 +296,7 @@ namespace WPFPrintingService
                                 int cs = selectedColumn.ColSpan ?? 0;
                                 if (cs < 1) { cs = 1; }
                                 colSCount = cs;
-                                availableSpaces.Add(new GG() { RowSpan = rs - 1 });
+                                availableSpaces.Add(new EmptySpace() { RowSpan = rs - 1 });
                                 lastRowIndex++;
                             }
                         }
@@ -369,7 +369,7 @@ namespace WPFPrintingService
             long columnBorderLeft = column.ColumnBorderLeft ?? 0;
             contentBorder.BorderThickness = new Thickness(columnBorderLeft, columnBorderTop, columnBorderRight, columnBorderBottom);
             contentBorder.BorderBrush = Brushes.Black;
-            contentBorder.Background = _getColorByCode(column.ColumnBackground);
+            contentBorder.Background = _getColorByColorName(column.ColumnBackground);
             long columnHeight = column.ColumnHeight ?? 0;
             if (columnHeight > 0)
             {
@@ -449,7 +449,7 @@ namespace WPFPrintingService
                     {
                         foreground = masterForeground;
                     }
-                    textBlock.Foreground = _getColorByCode(foreground);
+                    textBlock.Foreground = _getColorByColorName(foreground);
                     contentBorder.Child = textBlock;
                     break;
             }
@@ -517,11 +517,11 @@ namespace WPFPrintingService
             }
         }
 
-        private static Brush _getColorByCode(string colorCode)
+        private static Brush _getColorByColorName(string colorName)
         {
             try
-            {   if(colorCode == null) return Brushes.Transparent;
-                return new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
+            {   if(colorName == null) return Brushes.Transparent;
+                return new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorName));
             }
             catch (Exception)
             {
@@ -569,11 +569,11 @@ namespace WPFPrintingService
 
         private static void OnPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-
+            //do nothing
         }
     }
 
-    internal class GG
+    internal class EmptySpace
     {
         public int RowSpan { get; set; }
     }

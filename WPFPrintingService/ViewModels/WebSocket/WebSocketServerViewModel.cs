@@ -369,6 +369,7 @@ namespace WPFPrintingService
                 worker.RunWorkerCompleted += (s, e) =>
                 {
                     if (e.Cancelled) return;
+                    if (this.WebSocketServer == null) return;
                     //Notify Back to sender
                     this.WebSocketServer.WebSocketServices["/"].Sessions.SendTo("Print and Cut Finished", clientId);
                 };

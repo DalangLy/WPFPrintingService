@@ -20,7 +20,7 @@
             VerticalAlignment="Center"
             Margin="5"
             Command="{Binding StartWebSocketServer}"
-            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource InvertBoolToVisConverter}, ConverterParameter=false }"
+            Visibility="{Binding Path=IsServiceRunning, Converter={StaticResource ConvertBoolToVisibilityEnum}, ConverterParameter=false }"
             Cursor="Hand">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Start"/>

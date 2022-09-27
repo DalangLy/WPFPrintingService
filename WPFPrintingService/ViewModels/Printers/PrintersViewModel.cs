@@ -79,7 +79,7 @@ namespace WPFPrintingService
         private async Task InvokeRefreshPrinterList()
         {
             this.IsRefreshingPrinters = true;
-            await Task.Delay(1000);
+            await Task.Delay(500);
             this._loadAllPrinters();
             this.IsRefreshingPrinters = false;
         }

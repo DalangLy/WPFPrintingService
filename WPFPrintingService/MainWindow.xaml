@@ -630,7 +630,7 @@
             VerticalAlignment="Stretch"
             Panel.ZIndex="100"
             DataContext="{x:Static local:PrintersViewModel.Instance}"
-            IsOpen="{Binding IsRefreshingPrinters}">
+            IsOpen="{Binding IsShowRefreshingPrintersIndicator}">
             <materialDesign:DialogHost.DialogContent>
                 <StackPanel
                     Margin="16">

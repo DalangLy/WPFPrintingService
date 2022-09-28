@@ -51,24 +51,61 @@ namespace WPFPrintingService
             if (isChecked)
             {
                 //set app to run on start up
-                RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                Assembly curAssembly = Assembly.GetExecutingAssembly();
-                //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
-                key!.SetValue("DX Printing Service", curAssembly.Location);
+                RunAtStartUp.GetInstance().enable();
             }
             else
             {
                 //remove app from runing at start up
-                RegistryKey? key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                Assembly curAssembly = Assembly.GetExecutingAssembly();
-                //key.SetValue(curAssembly.GetName().Name, curAssembly.Location);
-                key!.DeleteValue("DX Printing Service");
+                RunAtStartUp.GetInstance().disable();
             }
-            Properties.Settings.Default.LaunchAppAtWindowsStartUp = isChecked;
-            Properties.Settings.Default.Save();
 
-            //update ui (checkbox to check or uncheck)
+            saveStatusToApplicationLocalStorage(isChecked);
+
+            updateCheckBoxUI(isChecked);
+        }
+
+        private void saveStatusToApplicationLocalStorage(bool isEnableToRunAtStartUp)
+        {
+            Properties.Settings.Default.LaunchAppAtWindowsStartUp = isEnableToRunAtStartUp;
+            Properties.Settings.Default.Save();
+        }
+
+        private void updateCheckBoxUI(bool isChecked)
+        {
             this._autoLaunchAppAtWindowsStartUpViewModel.IsLaunchAppAtWindowsStartUp = isChecked;
+        }
+    }
+
+    internal class RunAtStartUp
+    {
+        private RegistryKey? _key;
+        private Assembly _curAssembly;
+        private string _registryKeyName = "DX Printing Service";
+
+        private static RunAtStartUp _instance = new RunAtStartUp();
+
+
+        private RunAtStartUp()
+        {
+            _key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            _curAssembly = Assembly.GetExecutingAssembly();
+        }
+
+        public static RunAtStartUp GetInstance()
+        {
+            return _instance;
+        }
+
+        public RunAtStartUp enable()
+        {
+            _key!.SetValue(_registryKeyName, _curAssembly.Location);
+            return this;
+        }
+
+        public RunAtStartUp disable()
+        {
+            _key!.DeleteValue(_registryKeyName);
+            return this;
         }
     }
 }

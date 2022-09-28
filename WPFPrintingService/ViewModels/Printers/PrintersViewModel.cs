@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.Concurrent;
 using System.Management;
 using System.Printing;
 using System.Threading.Tasks;
@@ -16,22 +15,21 @@ namespace WPFPrintingService
             get { return _instance ?? (_instance = new PrintersViewModel()); }
         }
 
-        public ObservableCollection<PrinterModel> Printers { get; set; } = new ObservableCollection<PrinterModel>();
+        public ConcurrentBag<PrinterModel> Printers { get; set; } = new ConcurrentBag<PrinterModel>();
 
-        private bool _isRefreshingPrinters;
+        private bool _isShowRefreshingPrintersIndicator;
 
-        public bool IsRefreshingPrinters
+        public bool IsShowRefreshingPrintersIndicator
         {
-            get { return _isRefreshingPrinters; }
+            get { return _isShowRefreshingPrintersIndicator; }
             set { 
-                _isRefreshingPrinters = value; 
+                _isShowRefreshingPrintersIndicator = value; 
                 OnPropertyChanged();
             }
         }
 
 
         public PrintersViewModel() {
-            //load all printers
             this._loadAllPrinters();
 
             //setup command
@@ -42,28 +40,16 @@ namespace WPFPrintingService
         {
             if(Printers.Count > 0) Printers.Clear();
 
-            foreach (PrintQueue printer in GetAllSystemPrintersSingleton.GetInstance.Printers)
+            foreach (PrintQueue printer in new LocalPrintServer().GetPrintQueues())
             {
                 bool IsOffline = false;
                 ManagementObjectSearcher searcher = new
                 ManagementObjectSearcher("SELECT * FROM Win32_Printer where Name='" + printer.Name + "'");
                 foreach (ManagementObject foundPrinter in searcher.Get())
                 {
-                    //foreach (PropertyData property in foundPrinter.Properties)
-                    //{
-                    //    //Debug.WriteLine(property.Name);
-                    //    //foreach (QualifierData q in property.Qualifiers)
-                    //    //{
-                            
-                    //    //}
-                    //    //Console.WriteLine();
-                    //}
-                    ////Debug.WriteLine(foundPrinter["Queued"]);
-                    //Debug.WriteLine(foundPrinter["Availability"]);
                     IsOffline = (bool)foundPrinter["WorkOffline"];
                 }
                 
-
                 Printers.Add(new PrinterModel()
                 {
                     Name = printer.Name,
@@ -78,10 +64,15 @@ namespace WPFPrintingService
 
         private async Task InvokeRefreshPrinterList()
         {
-            this.IsRefreshingPrinters = true;
-            await Task.Delay(500);
-            this._loadAllPrinters();
-            this.IsRefreshingPrinters = false;
+            this.IsShowRefreshingPrintersIndicator = true;
+
+            //reload all printer in other thread to avoid ui loading indicator lagging
+            await Task.Run(() =>
+            {
+                this._loadAllPrinters();
+            });
+                
+            this.IsShowRefreshingPrintersIndicator = false;
         }
 
         public ICommand RefreshPrintersListCommand { get; set; }

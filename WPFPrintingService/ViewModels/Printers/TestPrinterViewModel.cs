@@ -35,7 +35,7 @@ namespace WPFPrintingService
         public void Execute(object? parameter)
         {
             if (parameter == null) return;
-            PrinterModel printer = (PrinterModel) parameter;
+            PrinterModel printer = (PrinterModel)parameter;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += (s, e) =>

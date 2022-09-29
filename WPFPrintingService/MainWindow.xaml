@@ -237,6 +237,7 @@
             VerticalAlignment="Stretch"
             x:Name="serverInfoDialog"
             Panel.ZIndex="100"
+            DataContext="{x:Static local:SystemInfoViewModel.Instance}"
             CloseOnClickAway="True">
             <materialDesign:DialogHost.DialogContent>
                 <Grid Width="300" Height="130" Margin="5">
@@ -262,11 +263,9 @@
                         Margin="5"
                         VerticalAlignment="Stretch"
                         >
-                        <TextBlock 
-                            Text="TCP Host IP : ws://192.168.0.137"
-                            HorizontalAlignment="Stretch"/>
+                        <TextBlock Text="{Binding IP}" HorizontalAlignment="Stretch"/>
                         <TextBlock
-                            Text="Server PORT : 2713"  
+                            Text="{Binding Port}"  
                             HorizontalAlignment="Stretch"/>
                     </StackPanel>
                     <TextBlock

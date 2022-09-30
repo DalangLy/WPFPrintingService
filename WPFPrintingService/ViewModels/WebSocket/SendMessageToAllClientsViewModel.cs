@@ -84,7 +84,7 @@ namespace WPFPrintingService
             this.CloseSentMessageDialogCommand = new CloseSentMessageDialogCommand(this);
         }
 
-        private string _sendMessageToAllClientFailedMessage;
+        private string _sendMessageToAllClientFailedMessage = string.Empty;
 
         public string SendMessageToAllClientFailedMessage
         {
@@ -170,6 +170,7 @@ namespace WPFPrintingService
 
     public class NotEmptyValidationRule : ValidationRule
     {
+        //check if send message to all client field is empty
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             return string.IsNullOrWhiteSpace((value ?? "").ToString())
